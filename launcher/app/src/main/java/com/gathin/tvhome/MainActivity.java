@@ -4476,6 +4476,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     grid.setTranslationY(0f);
                     horizontalDockCollapseInProgress = false;
                     pendingDockCollapseDirection = -1;
+                    // A cancelled collapse never reaches the idle-layout completion callback.
+                    // Drop the deferred launch here so it cannot leak into a later, unrelated collapse.
+                    if (pendingQuickSettingsOpen != null) {
+                        android.util.Log.e("TvHome.QuickSettings",
+                                "Deferred popup cancelled because its Dock collapse animation was cancelled");
+                        pendingQuickSettingsOpen = null;
+                    }
                 }
             }
 
