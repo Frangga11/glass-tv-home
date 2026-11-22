@@ -22,7 +22,7 @@ import org.robolectric.annotation.Config;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
 public class WifiSettingsDialogTest {
-    @Test public void popupUsesCompactTopRightGeometryAndLowBackdropDim() {
+    @Test public void popupUsesCompactTopRightGeometryAndReadableBackdropDim() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> { });
         assertNotNull(dialog);
@@ -30,7 +30,9 @@ public class WifiSettingsDialogTest {
         assertNotNull(window);
         android.view.WindowManager.LayoutParams params = window.getAttributes();
         assertEquals(Gravity.TOP | Gravity.RIGHT, WifiSettingsDialog.anchoredWindowGravity());
-        assertTrue(WifiSettingsDialog.popupDimAmount() <= 0.10f);
+        assertEquals(TvUiTokens.POPUP_DIM_AMOUNT, WifiSettingsDialog.popupDimAmount(), 0.001f);
+        assertEquals(TvUiTokens.POPUP_DIM_AMOUNT, params.dimAmount, 0.001f);
+        assertTrue((params.flags & android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND) != 0);
         View networkList = window.getDecorView().findViewWithTag("wifi_network_list");
         assertNotNull(networkList);
         assertTrue(networkList instanceof android.widget.ScrollView);
