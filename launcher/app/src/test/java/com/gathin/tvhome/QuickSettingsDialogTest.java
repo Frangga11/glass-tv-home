@@ -141,6 +141,11 @@ public class QuickSettingsDialogTest {
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
+        System.out.println("QSD_AFTER_SHOW root=" + views[0].getWidth() + "x" + views[0].getHeight()
+                + " anchor=" + views[0].getChildAt(0).getTop() + "/" + views[0].getChildAt(0).getHeight()
+                + " dock=" + views[0].getChildAt(1).getTop() + "/" + views[0].getChildAt(1).getHeight()
+                + " dockBottomMargin=" + ((FrameLayout.LayoutParams) views[0].getChildAt(1).getLayoutParams()).bottomMargin
+                + " density=" + activity.getResources().getDisplayMetrics().density);
 
         int[] hostAt = new int[2], anchorAt = new int[2], dockAt = new int[2];
         views[0].getLocationOnScreen(hostAt);
@@ -182,6 +187,11 @@ public class QuickSettingsDialogTest {
         FrameLayout[] views = host(activity, productionDockTopDp(activity) - 1);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
+        System.out.println("QSD_INSUFFICIENT root=" + views[0].getWidth() + "x" + views[0].getHeight()
+                + " anchor=" + views[0].getChildAt(0).getTop() + "/" + views[0].getChildAt(0).getHeight()
+                + " dock=" + views[0].getChildAt(1).getTop() + "/" + views[0].getChildAt(1).getHeight()
+                + " dockBottomMargin=" + ((FrameLayout.LayoutParams) views[0].getChildAt(1).getLayoutParams()).bottomMargin
+                + " density=" + activity.getResources().getDisplayMetrics().density);
         assertEquals("dockTopDp=" + (productionDockTopDp(activity) - 1)
                 + ", dockHeightPx=" + views[0].getChildAt(1).getHeight()
                 + ", rootHeightPx=" + views[0].getHeight(), null, dialog);
