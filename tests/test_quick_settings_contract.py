@@ -36,7 +36,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx)", DIALOG)
         self.assertIn("availablePanelHeight(dockTop, top, bottomClearancePx)", DIALOG)
         self.assertIn("int width = dp(density, 245);", DIALOG)
-        self.assertIn("private static final int PANEL_HEIGHT_DP = 320;", DIALOG)
+        self.assertIn("private static final int PANEL_HEIGHT_DP = 330;", DIALOG)
         self.assertIn("int panelHeight = fixedPanelHeight;", DIALOG)
         self.assertIn("if (naturalHeight > fixedPanelHeight || fixedPanelHeight > availableHeight)", DIALOG)
         self.assertNotIn("addVerticalFlexGap", DIALOG)
@@ -77,7 +77,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("static int panelTopInHost(", DIALOG)
         self.assertIn("static int availablePanelHeight(", DIALOG)
         self.assertIn("params.y = panelTop;", DIALOG)
-        self.assertIn("assertEquals(5, dockTop - (panelTop + content.getMeasuredHeight()));", (ROOT / "launcher/app/src/test/java/com/gathin/tvhome/QuickSettingsDialogTest.java").read_text(encoding="utf-8"))
+        self.assertIn("assertEquals(5, dockTop - (panelTop + content.getMeasuredHeight()));
+        assertEquals(330, Math.round(content.getMeasuredHeight() / activity.getResources().getDisplayMetrics().density));", (ROOT / "launcher/app/src/test/java/com/gathin/tvhome/QuickSettingsDialogTest.java").read_text(encoding="utf-8"))
         self.assertIn("lp.height = dp(density, tileHeightDp);", DIALOG)
         self.assertIn("params.x = finalPanelLeft;", DIALOG)
         self.assertIn("settingsIconCenterX(settingsAnchor, anchorAt[0], density)", DIALOG)
