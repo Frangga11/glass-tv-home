@@ -35,6 +35,18 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("Backdrop.watch(decor)", style)
         self.assertIn("window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))", style)
 
+    def test_quick_settings_and_wifi_use_consistent_popup_isolation(self):
+        quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
+        wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
+        for source in (quick, wifi):
+            self.assertIn("TvUiTokens.POPUP_GLASS_VEIL_COLOR", source)
+            self.assertIn("TvUiTokens.POPUP_GLASS_VEIL_ALPHA", source)
+            self.assertIn("TvUiTokens.POPUP_DIM_AMOUNT", source)
+        self.assertIn("window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)", quick)
+        self.assertIn("params.dimAmount = popupDimAmount()", quick)
+        self.assertNotIn("window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)", quick)
+        self.assertIn("window.setDimAmount(popupDimAmount())", wifi)
+
     def test_glass_disabled_mode_keeps_an_opaque_structural_surface(self):
         glass = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
         self.assertIn('getBoolean("glass_effects_enabled", true)', glass)
