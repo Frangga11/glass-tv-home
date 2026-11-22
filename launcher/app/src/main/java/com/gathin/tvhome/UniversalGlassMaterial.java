@@ -49,9 +49,8 @@ final class UniversalGlassMaterial {
         if (!isGlassEnabled(context)) {
             return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
         }
-        // Reuse the existing low-radius wallpaper blur, then add a defined slate-silver face.
-        // The panel stays distinct from Home without changing the global backdrop pipeline.
-        if (owner != null) Backdrop.watch(owner);
+        // Quick Settings receives a one-shot crop of the Activity window, blurred locally.
+        // Do not register it as a wallpaper-only Backdrop watcher.
         return new UniversalGlassDrawable(owner, density, radiusDp, false, true, true);
     }
 
