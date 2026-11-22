@@ -28,6 +28,7 @@ public class WifiSettingsDialogTest {
         assertNotNull(dialog);
         android.view.Window window = dialog.getWindow();
         assertNotNull(window);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
         android.view.WindowManager.LayoutParams params = window.getAttributes();
         assertEquals(Gravity.TOP | Gravity.RIGHT, WifiSettingsDialog.anchoredWindowGravity());
         assertEquals(TvUiTokens.POPUP_DIM_AMOUNT, WifiSettingsDialog.popupDimAmount(), 0.001f);
