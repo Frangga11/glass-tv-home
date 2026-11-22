@@ -212,3 +212,14 @@ The current reconciliation pass is administratively complete for the reviewed qu
 - Latest verified pre-documentation main head: `91fd188c17dc2f4c20560506599bfba51bc28466`; exact-head CI run #2300 / `44165609627` passed both required jobs. QA artifact ID `14364708365` is a 1,442,432-byte ZIP (not APK size) and expires 24 November 2026.
 - No branch deletion, force update, or application-source change was performed in this documentation synchronization pass.
 - The new authoritative checkpoint is `GTVH-DOCUMENTATION-INTEGRATION-SYNC-CHECKPOINT-2026-11-18.md`. Exact-head CI for the documentation update is the final closeout gate; do not mark that post-update validation complete until the resulting run passes.
+
+
+## PR #170 baseline restoration and synchronization — 22 November 2026
+
+- Owner-directed authoritative checkpoint restored to **PR #170**, exact commit `2208afbc896f6b08d699156714e7d58dc964f721` (short SHA `2208afbc`).
+- Immutable QA reference branch: `baseline/pr-170-2dp-qa-2026-11-22`, created at that exact commit. Verified APK: 1,653,150 bytes; SHA-256 `33724e5d3daba097178e943434c685d9feafeb502a8bf5d65284f62b9a5b6955`. APK archive validation passed; CI run `44981544358` succeeded for required jobs. Release-publisher workflow was skipped; this is a CI QA APK, not a release publication.
+- PR #170 remains OPEN / DRAFT / UNMERGED. PR #171 is CLOSED / UNMERGED and is not to be reused. A live open-PR search found no open PR numbered above #170.
+- PR #169 and lower-numbered open PRs are not “newer PRs”; some are parent/history or separate workstreams. They were not closed by this direction and must not be indiscriminately closed or folded into this baseline.
+- Comparison against current `main` reports the PR #170 checkpoint line as 107 commits ahead and 1 behind, with merge base `71f3a051a25fd66cabfd1740756cc36442dc92cc`. The comparison includes multiple shared-glass, Dock, Glider, popup, and test files. **Do not merge directly to main until the cumulative diff and the one-commit divergence are audited and an explicit integration path is verified.**
+- Synchronization scope: preserve this checkpoint and its verified APK identity; no Android source changes are authorized by this documentation record. CI success and APK validity are recorded; physical Mi TV Stick visual acceptance is not newly claimed here.
+- Continuation rule: use PR #170 commit `2208afbc...` as the working reference; do not switch back to PR #169 or revive PR #171. Reconcile docs and audit the cumulative integration before any merge to `main`.
