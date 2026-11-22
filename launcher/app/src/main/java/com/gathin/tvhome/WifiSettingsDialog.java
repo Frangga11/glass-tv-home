@@ -86,7 +86,7 @@ final class WifiSettingsDialog {
         if (scanPending) {
             scanPending = false;
             scanState.setText(R.string.wifi_scan_timeout);
-scanState.setVisibility(View.VISIBLE);
+            scanState.setVisibility(View.VISIBLE);
             showCachedResults();
         }
     }
@@ -102,7 +102,7 @@ scanState.setVisibility(View.VISIBLE);
                 scanState.setVisibility(View.GONE);
             } else {
                 scanState.setText(R.string.wifi_scan_limited);
-scanState.setVisibility(View.VISIBLE);
+                scanState.setVisibility(View.VISIBLE);
             }
             showCachedResults();
         }
@@ -136,6 +136,8 @@ scanState.setVisibility(View.VISIBLE);
         wifiToggle.setMinHeight(dp(density, 20));
         wifiToggle.setGravity(Gravity.CENTER);
         wifiToggle.setTextSize(toggleTextSizeSp());
+        // The 20dp capsule is exact-height; remove generic action padding to avoid clipping 11sp text.
+        wifiToggle.setPadding(0, 0, 0, 0);
         
         header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 41), dp(density, 20)));
         content.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 26)));
@@ -159,6 +161,10 @@ scanState.setVisibility(View.VISIBLE);
                 this::requestLocationPermission);
         locationAction = action(R.string.wifi_enable_location, "wifi_location_settings", density,
                 () -> dismissThen(() -> launch(Settings.ACTION_LOCATION_SOURCE_SETTINGS)));
+        // Both 12sp Indonesian action labels can wrap at the popup's constrained inner width.
+        // Let measured text height determine the capsule height instead of clipping a second line.
+        permissionAction.setMaxLines(2);
+        locationAction.setMaxLines(2);
         networkRows = new LinearLayout(activity);
         networkRows.setOrientation(LinearLayout.VERTICAL);
         networkScroll = new ScrollView(activity);
@@ -203,7 +209,7 @@ scanState.setVisibility(View.VISIBLE);
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 24));
         androidSettings.setLayoutParams(settingsWidth);
         actions.addView(permissionAction, compactActionLayout(density, true));
-        actions.addView(locationAction, compactActionLayout(density, false));
+        actions.addView(locationAction, compactActionLayout(density, true));
         actions.addView(rescan);
         actions.addView(androidSettings);
         content.addView(actions);
@@ -448,7 +454,7 @@ scanState.setVisibility(View.VISIBLE);
         // Re-measure the permission-only state independently; the SSID state keeps its own viewport.
         content.requestLayout();
         if (dialog.isShowing()) content.post(this::applyAnchoredPopup);
-if (reason == WifiScanPolicy.BlockReason.PERMISSION) scanState.setText(R.string.wifi_scan_permission_required);
+        if (reason == WifiScanPolicy.BlockReason.PERMISSION) scanState.setText(R.string.wifi_scan_permission_required);
         else if (reason == WifiScanPolicy.BlockReason.LOCATION) scanState.setText(R.string.wifi_scan_location_required);
         else if (reason == WifiScanPolicy.BlockReason.WIFI_DISABLED) scanState.setText(R.string.wifi_scan_radio_off);
     }
