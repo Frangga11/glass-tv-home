@@ -152,7 +152,7 @@ public class QuickSettingsDialogTest {
     @Test
     public void fixedPanelUsesExactGeometryAndKeepsFiveDpAnchorClearance() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, productionDockTopDp(activity));
+        FrameLayout[] views = host(activity);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
@@ -197,7 +197,7 @@ public class QuickSettingsDialogTest {
     @Test
     public void fixedCapsuleGeometryIsPreserved() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, 420);
+        FrameLayout[] views = hostAtDp(activity, 420);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
@@ -238,7 +238,7 @@ public class QuickSettingsDialogTest {
     @Test
     public void wallpaperHeadingPaintedLeftEdgeMatchesNextPhotoCapsuleLeftEdge() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, 420);
+        FrameLayout[] views = hostAtDp(activity, 420);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
