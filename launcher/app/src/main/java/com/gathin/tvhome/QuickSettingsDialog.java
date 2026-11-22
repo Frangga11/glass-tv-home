@@ -129,7 +129,7 @@ final class QuickSettingsDialog {
         title.setText(R.string.quick_settings_title);
         title.setTextSize(15f);
         title.setTextColor(PANEL_TEXT_PRIMARY);
-        title.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x60000000);
+        title.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x55000000);
         title.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         Drawable headerIcon = activity.getDrawable(R.drawable.ic_settings);
         if (headerIcon != null) {
@@ -191,7 +191,7 @@ final class QuickSettingsDialog {
         wallpaperTitle.setText(R.string.quick_settings_wallpaper_title);
         wallpaperTitle.setTextSize(12f);
         wallpaperTitle.setTextColor(PANEL_TEXT_PRIMARY);
-        wallpaperTitle.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x60000000);
+        wallpaperTitle.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x55000000);
         wallpaperTitle.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         wallpaperTitle.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
         wallpaperTitle.setPaddingRelative(0, 0, 0, 0);
@@ -471,7 +471,7 @@ final class QuickSettingsDialog {
                 if (view instanceof TextView) {
                     TextView label = (TextView) view;
                     label.setTextColor(PANEL_TEXT_PRIMARY);
-                    label.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x60000000);
+                    label.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x55000000);
                 }
             });
         }
@@ -608,7 +608,7 @@ final class QuickSettingsDialog {
         tile.setTextSize(13f);
         tile.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.NORMAL);
         tile.setTextColor(PANEL_TEXT_PRIMARY);
-        tile.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x60000000);
+        tile.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x55000000);
         String displayTitle = stripDecorativePrefix(title);
         tile.setText(buildLabel(displayTitle, summary));
         tile.setContentDescription(summary == null || summary.isEmpty()
@@ -645,7 +645,7 @@ final class QuickSettingsDialog {
         link.setTextSize(12f);
         link.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         link.setTextColor(PANEL_TEXT_PRIMARY);
-        link.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x60000000);
+        link.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x55000000);
         link.setContentDescription(activity.getString(titleRes));
         TvFocusIndicator.applyRoundedTextFocus(link, density, 10f,
                 CAPSULE_IDLE_FILL, CAPSULE_FOCUS_FILL,
