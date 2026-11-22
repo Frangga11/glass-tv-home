@@ -22,9 +22,13 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("Backdrop.blur(captured, crop.width(), crop.height(), 0)", capture)
         self.assertIn("Build.VERSION_CODES.O", capture)
         self.assertIn("PixelCopy.SUCCESS", capture)
+        self.assertIn("panelCropInWindow(int hostWindowX", capture)
+        self.assertIn("AtomicBoolean active", capture)
+        self.assertIn("if (!active.get())", capture)
         self.assertIn("recycle(captured)", capture)
         self.assertIn("QuickSettingsBackdropCapture.capture(activity, captureRect, backdropWorker, callbackHandler", DIALOG)
         self.assertIn("quickSettingsGlass.clearCapturedWindowBackdrop()", DIALOG)
+        self.assertIn("backdropCaptureActive.set(false)", DIALOG)
         self.assertIn("}, wallDecoder, handler);", main)
         surface = drawable[drawable.index("void drawSurface("):drawable.index("void drawReflection(")]
         self.assertIn("canvas.drawBitmap(capturedWindowBackdrop, null, area, capturedBackdropPaint)", surface)
