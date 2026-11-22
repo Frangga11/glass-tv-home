@@ -546,4 +546,16 @@ public class QuickSettingsDialogTest {
         assertEquals(null, actions.lastAction);
         assertFalse(dialog.isShowing());
     }
+    @Test
+    public void quickSettingsBackdropCropUsesWindowLocalHostCoordinates() {
+        Rect crop = QuickSettingsBackdropCapture.panelCropInWindow(
+                18, 26, 40, 50, 490, 660);
+        assertEquals(58, crop.left);
+        assertEquals(76, crop.top);
+        assertEquals(548, crop.right);
+        assertEquals(736, crop.bottom);
+        assertEquals(490, crop.width());
+        assertEquals(660, crop.height());
+    }
+
 }
