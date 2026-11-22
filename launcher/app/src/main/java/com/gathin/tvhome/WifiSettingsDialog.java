@@ -164,7 +164,9 @@ scanState.setVisibility(View.VISIBLE);
         ScrollView networkScroll = new ScrollView(activity);
         networkScroll.setTag("wifi_network_list");
         networkScroll.setFillViewport(false);
-        networkScroll.setVerticalScrollBarEnabled(true);\n        networkScroll.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);\n        networkScroll.setPadding(0, 0, dp(density, 4), 0);
+        networkScroll.setVerticalScrollBarEnabled(true);
+        networkScroll.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+        networkScroll.setPadding(0, 0, dp(density, 4), 0);
         networkScroll.setScrollbarFadingEnabled(false);
         networkScroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
         networkScroll.addView(networkRows, new ScrollView.LayoutParams(
