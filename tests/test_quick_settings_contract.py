@@ -14,13 +14,13 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 
 class QuickSettingsContractTest(unittest.TestCase):
-    def test_focus_uses_clean_ink_and_no_heavy_text_shadow(self):
+    def test_focus_preserves_bright_white_text_with_subtle_shadow(self):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
         self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", DIALOG)
         self.assertIn("PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY", DIALOG)
-        self.assertIn("label.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT);", focus_block)
-        self.assertNotIn("0x60000000", focus_block)
+        self.assertIn("label.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x55000000);", focus_block)
+        self.assertNotIn("0x66000000", focus_block)
 
     def test_wallpaper_heading_and_capsule_share_the_same_left_layout_lane(self):
         self.assertIn("wallpaperHeader.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);", DIALOG)
@@ -102,8 +102,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("settingsIconCenterX(settingsAnchor, anchorAt[0], density)", DIALOG)
         self.assertIn("Gravity.TOP | Gravity.LEFT", DIALOG)
         self.assertNotIn("addDivider", DIALOG)
-        self.assertIn("PANEL_TEXT_PRIMARY = 0xFF1B2933", DIALOG)
-        self.assertIn("PANEL_TEXT_SECONDARY = 0xFF435663", DIALOG)
+        self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", DIALOG)
+        self.assertIn("PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY", DIALOG)
         self.assertIn("PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE", DIALOG)
         self.assertIn("PANEL_FALLBACK_BORDER = TvUiTokens.BORDER", DIALOG)
         self.assertIn("CAPSULE_IDLE_FILL = 0x662D3741", DIALOG)
