@@ -29,3 +29,8 @@
 - Pre-merge comparison of the parent cumulative line to `main`: 96 commits ahead, 1 behind; merge base `71f3a051a25fd66cabfd1740756cc36442dc92cc`.
 - Next gate before main: audit the cumulative diff file by file, reconcile the one-commit divergence on a dedicated branch, run exact-head CI, and verify the resulting APK.
 - Preserve dimensions, spacing, DPAD graph, focus ownership, Glider animation, Dock/app movement, and popup structure. RE-SKIN, NOT REWIRE.
+
+
+## Exact source ref clarification
+- Exact tested source is pinned separately at `baseline/pr-170-qa-exact-2026-11-22` → `2208afbc896f6b08d699156714e7d58dc964f721`.
+- `baseline/pr-170-2dp-qa-2026-11-22` now includes documentation-only commits after its initial creation; its current tip is not the tested APK source commit.
