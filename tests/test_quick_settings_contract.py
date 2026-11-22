@@ -14,12 +14,11 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 
 class QuickSettingsContractTest(unittest.TestCase):
-    def test_focus_keeps_dark_silver_text_and_soft_halo_on_bright_glass(self):
+    def test_focus_keeps_original_white_text_on_translucent_glass(self):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
-        self.assertNotIn("0xFF17232B", focus_block)
-        self.assertIn("focused ? 2.0f : 1.25f", focus_block)
-        self.assertIn("focused ? 0x55000000 : 0x33000000", focus_block)
+        self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", DIALOG)
+        self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
 
     def test_wallpaper_heading_and_capsule_share_the_same_left_layout_lane(self):
         self.assertIn("wallpaperHeader.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);", DIALOG)
