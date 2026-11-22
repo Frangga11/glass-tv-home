@@ -20,7 +20,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("pointerEdges.lineTo(center + h, h)", pointer)
         self.assertIn("float materialHeight = parent != null && parent.getHeight() > 0", pointer)
         self.assertIn("new RectF(density, density,", pointer)
-        self.assertIn("materialBounds, density, TvUiTokens.POPUP_SURFACE", pointer)
+        self.assertIn("materialBounds, density, TvUiTokens.POPUP_PANEL_FALLBACK", pointer)
         self.assertNotIn("new RectF(0f, 0f, w, h)", pointer)
         self.assertNotIn("TvUiTokens.GLASS_VEIL_COLOR", pointer)
 
