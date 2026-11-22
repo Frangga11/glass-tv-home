@@ -154,7 +154,12 @@ public class QuickSettingsDialogTest {
         int availableHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, fiveDp);
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
-        assertEquals(Math.round(330f * density), availableHeight);
+        assertEquals("hostHeightPx=" + views[0].getHeight()
+                + ", anchorTopPx=" + anchorAt[1] + ", anchorHeightPx=" + views[0].getChildAt(0).getHeight()
+                + ", dockTopPx=" + dockTop + ", panelTopPx=" + panelTop
+                + ", dockHeightPx=" + views[0].getChildAt(1).getHeight()
+                + ", density=" + density,
+                Math.round(330f * density), availableHeight);
         assertEquals(Math.round(330f * density), content.getMeasuredHeight());
         // The default-capacity production Dock leaves exactly 330dp: a 330dp panel
         // fits without reducing the approved 5dp clearances at either edge.
@@ -177,7 +182,9 @@ public class QuickSettingsDialogTest {
         FrameLayout[] views = host(activity, productionDockTopDp(activity) - 1);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
-        assertEquals(null, dialog);
+        assertEquals("dockTopDp=" + (productionDockTopDp(activity) - 1)
+                + ", dockHeightPx=" + views[0].getChildAt(1).getHeight()
+                + ", rootHeightPx=" + views[0].getHeight(), null, dialog);
     }
 
     @Test
