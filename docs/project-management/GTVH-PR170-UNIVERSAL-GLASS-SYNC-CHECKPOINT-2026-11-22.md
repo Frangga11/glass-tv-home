@@ -45,3 +45,15 @@ Date: 22 November 2026
 
 ## Current next gate
 Run/verify CI on the final integration branch HEAD after the documentation commits, then retrieve and verify the cumulative QA APK artifact (ZIP integrity, APK manifest, size and SHA-256). Physical-device QA remains a separate owner acceptance gate for the post-sync APK.
+
+
+## Post-merge validation result
+- Exact integration branch source tested: `4d43dcc35c76d389015dcec26abf61dab21dae2c`.
+- GitHub Actions run `44993626885`: **SUCCESS**.
+  - Launcher build and unit tests: SUCCESS.
+  - Lists, tools and docs: SUCCESS.
+- QA artifact ID: `14743495296`; ZIP size 1,454,550 bytes; ZIP SHA-256 `c54a7032718c7ffc8235658db9295c92cc1227009d57cc67912983518238f40c`.
+- Extracted `app-release.apk`: 1,653,162 bytes; SHA-256 `7131197a4a6d4e10989ccf516c48b1b6fb59ed2440852e70bb7670fe0da1fbce`.
+- APK ZIP integrity passed and `AndroidManifest.xml` plus `classes.dex` are present.
+- This is a QA artifact, not a release APK. No physical Mi TV Stick acceptance is claimed for this post-sync build; owner acceptance remains scoped to the earlier exact PR #170 APK/source SHA.
+- A documentation-only update follows this validation record; its exact resulting branch head must also pass CI before closeout.
