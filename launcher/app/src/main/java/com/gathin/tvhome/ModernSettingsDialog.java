@@ -219,11 +219,7 @@ public final class ModernSettingsDialog {
         root.setClipToPadding(false);
         root.setPadding((int) (12 * density), (int) (8 * density), (int) (12 * density), (int) (12 * density));
 
-        // Dark matte rounded container matching screenshot
-        GradientDrawable dialogBg = new GradientDrawable();
-        dialogBg.setColor(TvUiTokens.POPUP_PANEL_FALLBACK);
-        dialogBg.setCornerRadius(24 * density);
-        dialogBg.setStroke((int) (1.5f * density), TvUiTokens.POPUP_BORDER);
+        // Shared bright frosted-silver popup shell; all existing bounds remain unchanged.
         root.setBackground(UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,
                 TvUiTokens.POPUP_PANEL_FALLBACK, TvUiTokens.POPUP_BORDER));
         root.setClipToOutline(true);
@@ -238,7 +234,7 @@ public final class ModernSettingsDialog {
         leftCol.setClipChildren(false);
         leftCol.setClipToPadding(false);
 
-        // Subtle dark translucent background for left pane
+        // Soft translucent silver veil for the left pane
         GradientDrawable leftBg = new GradientDrawable();
         leftBg.setColor(TvUiTokens.POPUP_PANE_VEIL);
         leftCol.setBackground(leftBg);
