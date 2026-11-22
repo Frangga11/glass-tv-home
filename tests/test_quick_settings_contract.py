@@ -35,8 +35,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertNotIn("Backdrop.watch(content)", DIALOG)
         self.assertIn("panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx)", DIALOG)
         self.assertIn("availablePanelHeight(dockTop, top, bottomClearancePx)", DIALOG)
-        self.assertIn("int width = dp(density, 255);", DIALOG)
-        self.assertIn("private static final int PANEL_HEIGHT_DP = 320;", DIALOG)
+        self.assertIn("int width = dp(density, 245);", DIALOG)
+        self.assertIn("private static final int PANEL_HEIGHT_DP = 330;", DIALOG)
         self.assertIn("int panelHeight = fixedPanelHeight;", DIALOG)
         self.assertIn("if (naturalHeight > fixedPanelHeight || fixedPanelHeight > availableHeight)", DIALOG)
         self.assertNotIn("addVerticalFlexGap", DIALOG)
@@ -56,9 +56,9 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("dialog.setOnKeyListener", DIALOG)
         self.assertIn("KeyEvent.KEYCODE_BACK", DIALOG)
         self.assertIn("settingsActions.setOrientation(LinearLayout.VERTICAL)", DIALOG)
-        self.assertIn("int width = dp(density, 255);", DIALOG)
-        self.assertIn("private static final int HALF_TILE_WIDTH_DP = 115;", DIALOG)
-        self.assertIn("private static final int WIDE_TILE_WIDTH_DP = 235;", DIALOG)
+        self.assertIn("int width = dp(density, 245);", DIALOG)
+        self.assertIn("private static final int HALF_TILE_WIDTH_DP = 110;", DIALOG)
+        self.assertIn("private static final int WIDE_TILE_WIDTH_DP = 225;", DIALOG)
         self.assertIn("private static final int CAPSULE_GAP_DP = 5;", DIALOG)
         self.assertIn("private static final int PANEL_SIDE_INSET_DP = 10;", DIALOG)
         self.assertIn("addGridColumnGap(activity, grid, 0, density, tileHeightDp);", DIALOG)
@@ -67,17 +67,19 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("createLink(activity, R.string.quick_settings_manage_wallpaper, 20, density)", DIALOG)
         self.assertIn("dp(density, 64), dp(density, 20)", DIALOG)
         # Verify actual layout declarations rather than relying on a prose comment.
-        self.assertIn("wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 166)", DIALOG)
+        self.assertIn("wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 156)", DIALOG)
         self.assertIn("new LinearLayout.LayoutParams(dp(density, 5), 1)", DIALOG)
         self.assertIn("dp(density, 64), dp(density, 20)", DIALOG)
         self.assertIn("private static final int PANEL_SIDE_INSET_DP = 10;", DIALOG)
-        self.assertIn("private static final int WIDE_TILE_WIDTH_DP = 235;", DIALOG)
-        self.assertEqual(166 + 5 + 64, 235)
+        self.assertIn("private static final int WIDE_TILE_WIDTH_DP = 225;", DIALOG)
+        self.assertEqual(156 + 5 + 64, 225)
         self.assertIn("int tileHeightDp = TILE_HEIGHT_DP;", DIALOG)
         self.assertIn("static int panelTopInHost(", DIALOG)
         self.assertIn("static int availablePanelHeight(", DIALOG)
         self.assertIn("params.y = panelTop;", DIALOG)
-        self.assertIn("assertEquals(5, dockTop - (panelTop + content.getMeasuredHeight()));", (ROOT / "launcher/app/src/test/java/com/gathin/tvhome/QuickSettingsDialogTest.java").read_text(encoding="utf-8"))
+        test_source = (ROOT / "launcher/app/src/test/java/com/gathin/tvhome/QuickSettingsDialogTest.java").read_text(encoding="utf-8")
+        self.assertIn("assertEquals(Math.round(15.5f * density), dockTop - (panelTop + content.getMeasuredHeight()));", test_source)
+        self.assertIn("assertEquals(Math.round(330f * activity.getResources().getDisplayMetrics().density),", test_source)
         self.assertIn("lp.height = dp(density, tileHeightDp);", DIALOG)
         self.assertIn("params.x = finalPanelLeft;", DIALOG)
         self.assertIn("settingsIconCenterX(settingsAnchor, anchorAt[0], density)", DIALOG)
@@ -211,6 +213,20 @@ class QuickSettingsContractTest(unittest.TestCase):
         for resource in ("values/strings.xml", "values-id/strings.xml"):
             content = (RES / resource).read_text(encoding="utf-8")
             self.assertIn('name="wifi_open_android_settings">Pengaturan Wi-Fi &gt;', content)
+
+    def test_quick_settings_waits_for_safe_horizontal_dock_collapse(self):
+        opener = MAIN[MAIN.index("private void showQuickControlPopup(int initialFocus)"):
+                      MAIN.index("private void showQuickSettingsDialog(int initialFocus)")]
+        self.assertIn("if (!dockVertical && horizontalGridExpanded)", opener)
+        self.assertIn("pendingQuickSettingsOpen = () -> showQuickSettingsDialog(initialFocus);", opener)
+        self.assertIn("collapseHorizontalOverflowToDock(dockPosition);", opener)
+        collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse("):
+                        MAIN.index("private void revealHomeChromeAfterDockCollapse(")]
+        self.assertIn("Runnable deferredQuickSettings = pendingQuickSettingsOpen;", collapse)
+        self.assertIn("dockRecycler.post(deferredQuickSettings);", collapse)
+        abort = MAIN[MAIN.index("private void abortHorizontalDockCollapse("):
+                     MAIN.index("private int getHorizontalDockPitch(")]
+        self.assertIn("pendingQuickSettingsOpen = null;", abort)
 
     def test_two_column_focus_graph_has_explicit_dpad_edges(self):
         for setter in (

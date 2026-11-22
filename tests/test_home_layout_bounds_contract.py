@@ -332,8 +332,9 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         start = MAIN.index("View.OnKeyListener pillKeys")
         end = MAIN.index("if (locationPill != null) locationPill.setOnKeyListener", start)
         keys = MAIN[start:end]
-        for key in ("KEYCODE_DPAD_CENTER", "KEYCODE_ENTER", "KEYCODE_NUMPAD_ENTER",
-                    "KEYCODE_DPAD_UP", "KEYCODE_DPAD_DOWN", "KEYCODE_DPAD_LEFT",
+        for key in ("KEYCODE_DPAD_CENTER", "KEYCODE_ENTER", "KEYCODE_NUMPAD_ENTER"):
+            self.assertIn(key, keys)
+        for key in ("KEYCODE_DPAD_UP", "KEYCODE_DPAD_DOWN", "KEYCODE_DPAD_LEFT",
                     "KEYCODE_DPAD_RIGHT"):
             self.assertIn(key, keys)
         self.assertIn("v.performClick();", keys)

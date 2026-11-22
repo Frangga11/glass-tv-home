@@ -166,6 +166,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private android.animation.ValueAnimator horizontalDockTransitionAnimator;
     private int horizontalDockTransitionGeneration;
     private boolean horizontalDockCollapseInProgress;
+    /** Deferred Quick Settings launch after the expanded Dock frame has collapsed safely. */
+    private Runnable pendingQuickSettingsOpen;
     /** Grid rows inside the expanded viewport: one initially, then two beneath the raised Dock. */
     private int horizontalGridViewportRows = 1;
     private int cachedGridRowPitchPx;
@@ -4503,6 +4505,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // Dock already owned focus, so no new focus callback is guaranteed here.
                 // Restore the Home shelves as part of this UP completion, not on a later key.
                 if (!horizontalGridExpanded) revealHomeChromeAfterDockCollapse(dockPosition);
+                Runnable deferredQuickSettings = pendingQuickSettingsOpen;
+                pendingQuickSettingsOpen = null;
+                if (deferredQuickSettings != null) {
+                    // Run after the idle Dock layout has been committed and the Home chrome restored.
+                    dockRecycler.post(deferredQuickSettings);
+                }
             }
         });
         animator.start();
@@ -4528,6 +4536,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         android.util.Log.e("TvHome", "Horizontal Dock collapse aborted safely: " + reason);
         horizontalDockCollapseInProgress = false;
         pendingDockCollapseDirection = -1;
+        if (pendingQuickSettingsOpen != null) {
+            android.util.Log.e("TvHome.QuickSettings",
+                    "Deferred popup cancelled because the Dock could not complete its safe collapse");
+            pendingQuickSettingsOpen = null;
+        }
         if (horizontalGridExpanded) {
             if (dockRecycler != null) {
                 dockRecycler.setTranslationY(dockRaisedTranslationY());
@@ -5974,8 +5987,35 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (isFinishing() || isDestroyed()) return;
         if (openMenu != null) closeMenu(false);
         SoundEffects.playSelect();
+
+        // Quick Settings must not be measured against a Dock that is still raised for overflow.
+        // Reuse the established focus-safe collapse path; do not squeeze or overlap the popup.
+        if (!dockVertical && horizontalGridExpanded) {
+            pendingQuickSettingsOpen = () -> showQuickSettingsDialog(initialFocus);
+            if (!horizontalDockCollapseInProgress) {
+                int dockPosition = dockAdapter == null ? -1 : dockAdapter.positionOf(lastFocusedKey);
+                if (dockPosition < 0 && dockAdapter != null) {
+                    dockPosition = dockAdapter.positionOf(lastDockFocusedKey);
+                }
+                if (dockPosition < 0) dockPosition = 0;
+                collapseHorizontalOverflowToDock(dockPosition);
+            }
+            return;
+        }
+        showQuickSettingsDialog(initialFocus);
+    }
+
+    private void showQuickSettingsDialog(int initialFocus) {
+        if (isFinishing() || isDestroyed()) return;
         View anchor = findViewById(R.id.btnSettings);
-        if (anchor == null) return;
+        if (anchor == null) {
+            android.util.Log.e("TvHome.QuickSettings", "Cannot open popup: Settings navigation anchor is missing");
+            return;
+        }
+        if (root == null || dockRecycler == null) {
+            android.util.Log.e("TvHome.QuickSettings", "Cannot open popup: Home root or Dock host is missing");
+            return;
+        }
 
         QuickSettingsDialog.show(this, root, anchor, dockRecycler, new QuickSettingsDialog.Actions() {            @Override public String languageSummary() {
                 return AppLanguage.getLanguageBadge(MainActivity.this);

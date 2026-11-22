@@ -54,9 +54,9 @@ final class QuickSettingsDialog {
     private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE;
     private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
     private static final int TILE_HEIGHT_DP = 36;
-    private static final int PANEL_HEIGHT_DP = 320;
-    private static final int HALF_TILE_WIDTH_DP = 115;
-    private static final int WIDE_TILE_WIDTH_DP = 235;
+    private static final int PANEL_HEIGHT_DP = 330;
+    private static final int HALF_TILE_WIDTH_DP = 110;
+    private static final int WIDE_TILE_WIDTH_DP = 225;
     private static final int CAPSULE_GAP_DP = 5;
     private static final int PANEL_VERTICAL_INSET_DP = 10;
     private static final int PANEL_SIDE_INSET_DP = 10;
@@ -78,8 +78,12 @@ final class QuickSettingsDialog {
         int topClearancePx = dp(density, 5);
         int bottomClearancePx = dp(density, 5);
         int top = panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx);
-        int dockTop = dock.isShown() && dock.getHeight() > 0
-                ? dockAt[1] - hostAt[1] : hostHeight - dp(density, 28);
+        // The Dock can be bottom-anchored (horizontal carousel) or start-anchored
+        // (vertical rail). Its top edge is a valid popup boundary only in the former mode.
+        // A vertical rail spans the screen height, so use the Home bottom safe edge instead.
+        int dockTop = isBottomAnchoredDock(dock) && dock.isShown() && dock.getHeight() > 0
+                ? dockAt[1] - hostAt[1]
+                : hostHeight - DockGeometry.safeBottomInsetPx(density);
         int availableHeight = availablePanelHeight(dockTop, top, bottomClearancePx);
         if (availableHeight <= 0) {
             android.util.Log.e("TvHome.QuickSettings", "No vertical space remains between navigation and dock");
@@ -90,11 +94,11 @@ final class QuickSettingsDialog {
         // The panel must end 5dp above the dock; never overlap the dock or silently clip content.
         int tileHeightDp = TILE_HEIGHT_DP;
 
-        // The 255dp panel is positioned from the Settings-tab gear, so the popup header gear
+        // The 245dp panel is positioned from the Settings-tab gear, so the popup header gear
         // sits on the same vertical axis as the navigation gear instead of being screen-centered.
-        int width = dp(density, 255);
+        int width = dp(density, 245);
         if (hostWidth < width + dp(density, 24)) {
-            android.util.Log.e("TvHome.QuickSettings", "Host is too narrow for the fixed 255dp panel");
+            android.util.Log.e("TvHome.QuickSettings", "Host is too narrow for the fixed 245dp panel");
             return null;
         }
         int settingsGearCenter = settingsIconCenterX(settingsAnchor, anchorAt[0], density) - hostAt[0];
@@ -190,7 +194,7 @@ final class QuickSettingsDialog {
         wallpaperTitle.setPaddingRelative(0, 0, 0, 0);
         wallpaperTitle.setTranslationY(dp(density, 2));
         wallpaperTitle.setTag("quick_settings_wallpaper_title");
-        wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 166),
+        wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 156),
                 ViewGroup.LayoutParams.MATCH_PARENT));
         wallpaperHeader.addView(wallpaperTitle);
         View wallpaperHeaderGap = new View(activity);
@@ -276,8 +280,8 @@ final class QuickSettingsDialog {
             return null;
         }
 
-        // Fixed 320dp panel; content is measured independently and must fit without compression.
-        // The remaining 1dp is intentional fixed bottom breathing room, not a weighted spacer.
+        // Fixed 330dp panel; preserve all existing content geometry and add the approved 10dp below it.
+        // All existing section positions, dimensions, insets and gaps remain unchanged.
         int panelHeight = fixedPanelHeight;
         android.util.Log.i("TvHome.QuickSettings", "Fixed panel " + Math.round(width / density)
                 + "x" + Math.round(panelHeight / density) + "dp; side inset "
@@ -412,6 +416,17 @@ final class QuickSettingsDialog {
         glider.moveTo(left, top,
                 left + view.getWidth(), top + view.getHeight(),
                 density * cornerRadiusDp);
+    }
+
+    private static boolean isBottomAnchoredDock(View dock) {
+        ViewGroup.LayoutParams params = dock != null ? dock.getLayoutParams() : null;
+        if (params instanceof android.widget.FrameLayout.LayoutParams) {
+            int verticalGravity = ((android.widget.FrameLayout.LayoutParams) params).gravity
+                    & Gravity.VERTICAL_GRAVITY_MASK;
+            return verticalGravity == Gravity.BOTTOM;
+        }
+        // Preserve the historical bottom-Dock contract for non-FrameLayout callers.
+        return true;
     }
 
     static int panelTopInHost(int anchorScreenTop, int anchorHeight, int hostScreenTop,
@@ -620,7 +635,11 @@ final class QuickSettingsDialog {
         return anchorScreenX + groupStart + iconWidth / 2;
     }
 
-    private static int dp(float density, int value) {
+    private static int dp(float density, float value) {
         return Math.max(1, Math.round(density * value));
+    }
+
+    private static int dp(float density, int value) {
+        return dp(density, (float) value);
     }
 }
