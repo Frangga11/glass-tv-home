@@ -1424,3 +1424,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 
 - To keep the tested source SHA independently pinned after documentation commits were added to the working baseline branch, a dedicated exact-source ref was created: `baseline/pr-170-qa-exact-2026-11-22` → `2208afbc896f6b08d699156714e7d58dc964f721`.
 - `baseline/pr-170-2dp-qa-2026-11-22` now also contains documentation-only commits; do not treat its current tip as the exact tested source SHA. The immutable QA source is the dedicated `baseline/pr-170-qa-exact-2026-11-22` ref above.
+
+
+## Owner physical-device acceptance — PR #170 cumulative QA — 22 November 2026
+
+- Owner explicitly confirms that the PR #170 checkpoint APK was installed and tested on the target Mi TV Stick and **works well**.
+- This is owner-reported physical-device acceptance for the cumulative APK built from exact source commit `2208afbc896f6b08d699156714e7d58dc964f721`, including the PR #169 parent implementation plus PR #170 Glider/focus geometry changes.
+- Device gate for this tested cumulative candidate: **PASS (owner-confirmed)**.
+- CI evidence remains run `44981544358` on exact source commit `2208afbc...`; required CI jobs passed. APK size 1,653,150 bytes and SHA-256 `33724e5d3daba097178e943434c685d9feafeb502a8bf5d65284f62b9a5b6955`.
+- This acceptance applies to the tested APK/source snapshot only. It does not automatically approve later source changes or the unrelated PRs #168, #166, #165, #164, #162, #161, #158 or #62.
