@@ -99,6 +99,11 @@ public class WifiSettingsDialogTest {
         View permission = dialog.getWindow().getDecorView().findViewWithTag("wifi_permission");
         assertNotNull(permission);
         assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, permission.getLayoutParams().height);
+        View rescan = dialog.getWindow().getDecorView().findViewWithTag("wifi_rescan");
+        assertEquals(Math.round(24 * activity.getResources().getDisplayMetrics().density),
+                rescan.getLayoutParams().height);
+        assertEquals(Math.round(24 * activity.getResources().getDisplayMetrics().density),
+                dialog.getWindow().getDecorView().findViewWithTag("wifi_open_settings").getLayoutParams().height);
         View settings = dialog.getWindow().getDecorView().findViewWithTag("wifi_open_settings");
         assertNotNull(settings);
         assertEquals(permission.getParent(), settings.getParent());
