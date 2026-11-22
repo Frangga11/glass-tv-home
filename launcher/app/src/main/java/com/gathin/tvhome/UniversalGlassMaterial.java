@@ -85,16 +85,22 @@ final class UniversalGlassMaterial {
      * Smoked-silver idle capsules for Quick Settings. The neutral edge stays static so
      * the existing DPAD Glider remains the only moving focus indicator.
      */
-    static GradientDrawable quickSettingsControlIdle(Context context, float density, float radiusDp,
-                                                      int fallbackFill, int fallbackBorder) {
+    static Drawable quickSettingsControlIdle(Context context, float density, float radiusDp,
+                                               int fallbackFill, int fallbackBorder) {
         if (!isGlassEnabled(context)) {
             return solidSurface(density, radiusDp, fallbackFill, fallbackBorder);
         }
+        // Keep the existing slate RGB values, reduce their opacity, then add one fine
+        // top-edge reflection. The base remains visible through the shine: no colour swap.
         GradientDrawable glass = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{0x70343E48, 0x60303A44});
+                new int[]{0x55343E48, 0x45303A44});
         glass.setCornerRadius(radiusDp * density);
         glass.setStroke(Math.max(1, Math.round(density)), 0x889EABB8);
-        return glass;
+
+        GradientDrawable specular = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0x30FFFFFF, 0x00FFFFFF});
+        specular.setCornerRadius(radiusDp * density);
+        return new android.graphics.drawable.LayerDrawable(new Drawable[]{glass, specular});
     }
 
     /** Idle control surface from Universal Home GlassControls.surface(), with GTVH radius retained. */
