@@ -214,6 +214,20 @@ class QuickSettingsContractTest(unittest.TestCase):
             content = (RES / resource).read_text(encoding="utf-8")
             self.assertIn('name="wifi_open_android_settings">Pengaturan Wi-Fi &gt;', content)
 
+    def test_quick_settings_waits_for_safe_horizontal_dock_collapse(self):
+        opener = MAIN[MAIN.index("private void showQuickControlPopup(int initialFocus)"):
+                      MAIN.index("private void showQuickSettingsDialog(int initialFocus)")]
+        self.assertIn("if (!dockVertical && horizontalGridExpanded)", opener)
+        self.assertIn("pendingQuickSettingsOpen = () -> showQuickSettingsDialog(initialFocus);", opener)
+        self.assertIn("collapseHorizontalOverflowToDock(dockPosition);", opener)
+        collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse("):
+                        MAIN.index("private void revealHomeChromeAfterDockCollapse(")]
+        self.assertIn("Runnable deferredQuickSettings = pendingQuickSettingsOpen;", collapse)
+        self.assertIn("dockRecycler.post(deferredQuickSettings);", collapse)
+        abort = MAIN[MAIN.index("private void abortHorizontalDockCollapse("):
+                     MAIN.index("private int getHorizontalDockPitch(")]
+        self.assertIn("pendingQuickSettingsOpen = null;", abort)
+
     def test_two_column_focus_graph_has_explicit_dpad_edges(self):
         for setter in (
             "setNextFocusLeftId",
