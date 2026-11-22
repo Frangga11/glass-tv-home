@@ -52,3 +52,11 @@
 - Retargeted PR CI run `44993172112` passed both required jobs. Post-merge CI on the merge commit and final docs commit must still pass before declaring closeout complete.
 - This does not modify the immutable exact-source pin and does not merge to `main`. Physical device acceptance remains specific to the tested PR #170 APK; the synchronized build is a new QA candidate.
 - Preserve all PR #170 focus/capsule findings and locked geometry/DPAD/animation invariants for future work.
+
+
+## Post-sync QA candidate
+- PR #170 baseline synchronization merged as described above. QA candidate source before the final documentation update: `4d43dcc35c76d389015dcec26abf61dab21dae2c`.
+- Exact-head CI run `44993626885`: both required jobs SUCCESS.
+- QA artifact ID `14743495296`; archive size 1,454,550 bytes; archive SHA-256 `c54a7032718c7ffc8235658db9295c92cc1227009d57cc67912983518238f40c`.
+- Extracted APK size 1,653,162 bytes; SHA-256 `7131197a4a6d4e10989ccf516c48b1b6fb59ed2440852e70bb7670fe0da1fbce`. APK archive integrity and manifest presence verified.
+- This new APK is not represented as physically accepted. The previous owner-confirmed device acceptance is scoped to the exact PR #170 source snapshot only.
