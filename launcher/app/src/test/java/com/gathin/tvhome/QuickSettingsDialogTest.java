@@ -50,8 +50,8 @@ public class QuickSettingsDialogTest {
         return host(activity, productionDockTopDp(activity));
     }
 
-    /** Derive the baseline Dock top from the same geometry functions used by MainActivity. */
-    private int productionDockTopDp(Activity activity) {
+    /** Derive the baseline Dock dimensions from the same geometry functions used by MainActivity. */
+    private int[] productionDockMetricsPx(Activity activity) {
         float density = activity.getResources().getDisplayMetrics().density;
         int screenWidthPx = Math.round(960f * density);
         int screenHeightPx = Math.round(540f * density);
@@ -64,30 +64,46 @@ public class QuickSettingsDialogTest {
         int dockHeightPx = DockGeometry.horizontalDockHeightPx(dockTileHeightPx, density);
         int dockBottomMarginPx = DockGeometry.horizontalDockBottomMarginPx(dockTileHeightPx, density);
         int dockTopPx = screenHeightPx - dockHeightPx - dockBottomMarginPx;
-        return Math.round(dockTopPx / density);
+        return new int[]{screenWidthPx, screenHeightPx, dockHeightPx, dockBottomMarginPx, dockTopPx};
+    }
+
+    private int productionDockTopDp(Activity activity) {
+        float density = activity.getResources().getDisplayMetrics().density;
+        return Math.round(productionDockMetricsPx(activity)[4] / density);
     }
 
     private FrameLayout[] host(Activity activity, int dockTopDp) {
         float density = activity.getResources().getDisplayMetrics().density;
-        int screenWidth = Math.round(960f * density);
-        int screenHeight = Math.round(540f * density);
-        FrameLayout root = new FrameLayout(activity);
-        activity.setContentView(root);
-        // Model the Mi TV Stick's 1920x1080 physical screen at xhdpi (2x):
-        // the logical layout canvas is 960x540dp, represented here in physical pixels.
-        root.layout(0, 0, screenWidth, screenHeight);
-        View settings = new View(activity);
-        root.addView(settings, new FrameLayout.LayoutParams(
-                Math.round(320f * density), Math.round(30f * density),
-                Gravity.TOP | Gravity.CENTER_HORIZONTAL));
-        settings.layout(Math.round(320f * density), Math.round(29f * density),
-                Math.round(640f * density), Math.round(59f * density));
-        View dock = new View(activity);
-        root.addView(dock, new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, Math.round(60f * density), Gravity.BOTTOM));
+        int[] production = productionDockMetricsPx(activity);
+        int screenWidthPx = production[0];
+        int screenHeightPx = production[1];
+        int dockHeightPx = production[2];
         int dockTopPx = Math.round(dockTopDp * density);
-        dock.layout(0, dockTopPx, screenWidth, dockTopPx + Math.round(60f * density));
-        return new FrameLayout[]{root, (FrameLayout) settings.getParent(), (FrameLayout) dock.getParent()};
+        // Recompute the bottom margin for the requested top; production baseline uses
+        // the exact same value, while the 329dp negative fixture moves it down by 1dp.
+        int dockBottomMarginPx = screenHeightPx - dockTopPx - dockHeightPx;
+
+        FrameLayout root = new FrameLayout(activity);
+        View settings = new View(activity);
+        FrameLayout.LayoutParams settingsLp = new FrameLayout.LayoutParams(
+                Math.round(320f * density), Math.round(30f * density),
+                Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        settingsLp.topMargin = Math.round(29f * density);
+        root.addView(settings, settingsLp);
+
+        View dock = new View(activity);
+        FrameLayout.LayoutParams dockLp = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, dockHeightPx,
+                Gravity.BOTTOM | Gravity.START);
+        dockLp.bottomMargin = dockBottomMarginPx;
+        root.addView(dock, dockLp);
+
+        activity.setContentView(root);
+        // Model the Mi TV Stick's 1920x1080 physical screen at xhdpi (2x).
+        root.measure(View.MeasureSpec.makeMeasureSpec(screenWidthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(screenHeightPx, View.MeasureSpec.EXACTLY));
+        root.layout(0, 0, screenWidthPx, screenHeightPx);
+        return new FrameLayout[]{root, root, root};
     }
 
     private View find(AlertDialog dialog, String tag) {
