@@ -48,7 +48,12 @@ public class QuickSettingsDialogTest {
     }
 
     private FrameLayout[] host(Activity activity) {
-        return hostAtPx(activity, productionDockMetricsPx(activity)[4]);
+        return host(activity, DockPreferences.DEFAULT_CAPACITY);
+    }
+
+    private FrameLayout[] host(Activity activity, int capacity) {
+        int[] production = productionDockMetricsPx(activity, capacity);
+        return hostAtPx(activity, production[4], capacity);
     }
 
     private FrameLayout[] hostAtDp(Activity activity, int dockTopDp) {
@@ -64,6 +69,10 @@ public class QuickSettingsDialogTest {
 
     /** Derive the baseline Dock dimensions from the same geometry functions used by MainActivity. */
     private int[] productionDockMetricsPx(Activity activity) {
+        return productionDockMetricsPx(activity, DockPreferences.DEFAULT_CAPACITY);
+    }
+
+    private int[] productionDockMetricsPx(Activity activity, int capacity) {
         float density = activity.getResources().getDisplayMetrics().density;
         int screenWidthPx = Math.round(960f * density);
         int screenHeightPx = Math.round(540f * density);
@@ -71,7 +80,7 @@ public class QuickSettingsDialogTest {
         int viewportWidthPx = screenWidthPx - 2 * DockGeometry.safeHorizontalInsetPx(density);
         int innerWidthPx = DockGeometry.horizontalContentWidthPx(viewportWidthPx, density);
         int dockTileWidthPx = DockGeometry.horizontalDockTileWidthPx(
-                innerWidthPx, DockPreferences.DEFAULT_CAPACITY, density);
+                innerWidthPx, capacity, density);
         int dockTileHeightPx = DockGeometry.tileHeightPx(dockTileWidthPx);
         int dockHeightPx = DockGeometry.horizontalDockHeightPx(dockTileHeightPx, density);
         int dockBottomMarginPx = DockGeometry.horizontalDockBottomMarginPx(dockTileHeightPx, density);
@@ -111,12 +120,16 @@ public class QuickSettingsDialogTest {
     }
 
     private FrameLayout[] hostAtPx(Activity activity, int dockTopPx) {
+        return hostAtPx(activity, dockTopPx, DockPreferences.DEFAULT_CAPACITY);
+    }
+
+    private FrameLayout[] hostAtPx(Activity activity, int dockTopPx, int capacity) {
         android.util.DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
         assertEquals(2f, metrics.density, 0.01f);
         assertEquals(1920, metrics.widthPixels);
         assertEquals(1080, metrics.heightPixels);
         float density = metrics.density;
-        int[] production = productionDockMetricsPx(activity);
+        int[] production = productionDockMetricsPx(activity, capacity);
         int screenWidthPx = production[0];
         int screenHeightPx = production[1];
         int dockHeightPx = production[2];
@@ -215,6 +228,40 @@ public class QuickSettingsDialogTest {
                     find(dialog, tag).getMeasuredHeight());
         }
         dialog.dismiss();
+    }
+
+    @Test
+    public void popupOpensForEverySupportedDockCapacityWithoutCompressingCapsules() {
+        for (int capacity : new int[]{4, 5, 6}) {
+            Activity activity = newActivity();
+            FrameLayout[] views = host(activity, capacity);
+            View anchor = views[0].getChildAt(0);
+            View dock = views[0].getChildAt(1);
+
+            AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], anchor, dock,
+                    new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
+
+            assertNotNull("Quick Settings must open with Dock capacity " + capacity, dialog);
+            assertTrue("Quick Settings must be visible with Dock capacity " + capacity,
+                    dialog.isShowing());
+            View content = find(dialog, "quick_settings_root");
+            assertNotNull(content);
+            float density = activity.getResources().getDisplayMetrics().density;
+            int[] hostAt = new int[2], anchorAt = new int[2], dockAt = new int[2];
+            views[0].getLocationOnScreen(hostAt);
+            anchor.getLocationOnScreen(anchorAt);
+            dock.getLocationOnScreen(dockAt);
+            int top = QuickSettingsDialog.panelTopInHost(anchorAt[1], anchor.getHeight(),
+                    hostAt[1], Math.round(5f * density));
+            int available = QuickSettingsDialog.availablePanelHeight(
+                    dockAt[1] - hostAt[1], top, Math.round(5f * density));
+            assertEquals("Panel may use only the unused trailing space when needed",
+                    Math.min(Math.round(330f * density), available), content.getMeasuredHeight());
+            assertTrue("All action content must remain inside the measured panel",
+                    content.getMeasuredHeight() >= Math.round(320f * density));
+            dialog.dismiss();
+            activity.finish();
+        }
     }
 
     @Test
