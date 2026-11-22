@@ -13,9 +13,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.TypedValue;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -116,13 +116,10 @@ final class WifiSettingsDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(density, 14), 0, dp(density, 14), dp(density, 10));
-        // Match the owner-approved Quick Settings master material while preserving Wi-Fi's
-        // anchored geometry, pointer, network viewport, and independent scan lifecycle.
-        content.setBackground(new GlassDrawable(content,
-                TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false));
-        Backdrop.watch(content);
+        // Adopt Universal Home's glass material without changing the approved Wi-Fi geometry.
+        content.setBackground(UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,
+                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
         pointer = new View(activity) {
-            private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             @Override protected void onDraw(Canvas canvas) {
                 super.onDraw(canvas);
                 float w = getWidth(), h = getHeight();
@@ -132,22 +129,23 @@ final class WifiSettingsDialog {
                 triangle.lineTo(center, 0);
                 triangle.lineTo(center + h, h);
                 triangle.close();
-                // Keep the Wi-Fi pointer translucent so the live backdrop glass beneath it
-                // remains visible; an opaque popup token would make this the one non-glass patch.
-                paint.setColor(TvUiTokens.GLASS_VEIL_COLOR);
-                paint.setStyle(Paint.Style.FILL);
-                canvas.drawPath(triangle, paint);
-                paint.setColor(TvUiTokens.FOCUS_BORDER);
-                paint.setStyle(Paint.Style.STROKE);
-                paint.setStrokeWidth(Math.max(1f, density));
-                // Omit the pointer baseline so its diagonal edges visually continue the popup outline.
+                // Preserve the exact pointer geometry; render it with the Universal Glass layers.
                 Path pointerEdges = new Path();
                 pointerEdges.moveTo(center - h, h);
                 pointerEdges.lineTo(center, 0);
                 pointerEdges.lineTo(center + h, h);
-                canvas.drawPath(pointerEdges, paint);
+                // Use the popup's full material coordinate space, not the 12dp pointer height.
+                // This keeps the pointer's gradient and sweep continuous with the shell behind it.
+                View parent = getParent() instanceof View ? (View) getParent() : null;
+                float materialHeight = parent != null && parent.getHeight() > 0
+                        ? parent.getHeight() : h;
+                RectF materialBounds = new RectF(density, density,
+                        Math.max(density, w - density), Math.max(density, materialHeight - density));
+                UniversalGlassMaterial.drawPointer(activity, pointer, canvas, triangle, pointerEdges,
+                        materialBounds, density, TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
             }
         };
+        Backdrop.watch(pointer);
         content.addView(pointer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 12)));
         TextView title = text(R.string.wifi, popupTitleSizeSp(), true, density);
         title.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0, 0, 0);
@@ -164,11 +162,8 @@ final class WifiSettingsDialog {
         content.addView(header);
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
         status.setPadding(dp(density, 10), dp(density, 5), dp(density, 10), dp(density, 5));
-        GradientDrawable connectedSurface = new GradientDrawable();
-        connectedSurface.setColor(TvUiTokens.SURFACE_IDLE);
-        connectedSurface.setCornerRadius(dp(density, (int) TvUiTokens.CARD_RADIUS_DP));
-        connectedSurface.setStroke(dp(density, 1), TvUiTokens.BORDER);
-        status.setBackground(connectedSurface);
+        status.setBackground(UniversalGlassMaterial.controlIdle(activity, density, TvUiTokens.CARD_RADIUS_DP,
+                TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
         status.setVisibility(View.GONE);
 
         TextView networksHeading = text(R.string.wifi_available_networks, popupSectionSizeSp(), true, density);
@@ -287,7 +282,7 @@ final class WifiSettingsDialog {
         }
         pointer.setTag(pointerCenter);
         pointer.invalidate();
-        // The panel surface is painted by the same live GlassDrawable as the master popup.
+        // The panel surface uses Universal Home's layered material, with a transparent window.
         window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         window.setDimAmount(popupDimAmount());
@@ -628,6 +623,8 @@ final class WifiSettingsDialog {
                         dp(activity.getResources().getDisplayMetrics().density, 10), 0);
                 row.setLayoutParams(networkRowLayoutParams(activity.getResources().getDisplayMetrics().density));
                 row.setTextSize(TypedValue.COMPLEX_UNIT_PX, networkTextSizePx());
+            row.setShadowLayer(0.85f * activity.getResources().getDisplayMetrics().density, 0f,
+                    0.35f * activity.getResources().getDisplayMetrics().density, 0x60000000);
                 configureNetworkMarquee(row);
                 row.setCompoundDrawablePadding(dp(
                         activity.getResources().getDisplayMetrics().density, 6));
@@ -763,6 +760,9 @@ final class WifiSettingsDialog {
                 TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
                 TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
                 TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
+        // Keep TvFocusIndicator's focus routing/text states; use Universal GlassControls surfaces.
+        view.setBackground(UniversalGlassMaterial.controlStateBackground(activity, density,
+                TvUiTokens.ROW_RADIUS_DP, TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
         view.setOnClickListener(v -> {
             if (callback != null) callback.run();
         });
@@ -772,6 +772,7 @@ final class WifiSettingsDialog {
     private void styleText(TextView view, float size, boolean bold, float density) {
         view.setTextSize(size);
         view.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        view.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x60000000);
         view.setTypeface(activity.getResources().getFont(R.font.inter),
                 bold ? Typeface.BOLD : Typeface.NORMAL);
         view.setPadding(0, dp(density, 3), 0, dp(density, 3));

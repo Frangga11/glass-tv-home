@@ -953,9 +953,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Individual tabs below remain independent focus/click targets with transparent backgrounds.
         View navCapsule = findViewById(R.id.navPill);
         if (navCapsule != null) {
-            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, glider));
+            navCapsule.setBackground(UniversalGlassMaterial.homeCapsule(this, density, 20f,
+                    TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
             glider.addCompanion(navCapsule);
-            Backdrop.watch(navCapsule);
         }
         // One restrained glass surface unifies the prayer timetable and Ayat Pilihan.
         // Background-only treatment: keep shelf bounds, child layout, text, RTL and spacing unchanged.
@@ -977,12 +977,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 pill.setBackground(new GliderFocusDrawable(pill, glider));
             } else {
                 // Compose the focus layer after the capsule glass and before the view's content.
-                Drawable glassBackground = new GlassDrawable(pill, 20f * density, density, glider);
+                boolean silverCyanTarget = id == R.id.locationPill
+                        || id == R.id.weatherAirQuality || id == R.id.btnWifi
+                        || id == R.id.btnAssistant;
+                Drawable glassBackground = silverCyanTarget
+                        ? UniversalGlassMaterial.homeCapsule(this, density, 20f,
+                                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER)
+                        : UniversalGlassMaterial.surface(this, density, 20f,
+                                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
                 pill.setBackground(new android.graphics.drawable.LayerDrawable(
                         new Drawable[]{glassBackground, new GliderFocusDrawable(pill, glider)}));
             }
             glider.addCompanion(pill);
-            Backdrop.watch(pill);
             pill.setOnFocusChangeListener((v, has) -> {
                 if (has) {
                     // Any header focus supersedes a deferred Grid target.

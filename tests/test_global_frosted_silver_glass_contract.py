@@ -140,7 +140,6 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
             "bg_track_info_selector.xml": ["enabled", "pressed", "focused"],
             "header_nav_tab_bg.xml": ["enabled", "focused", "pressed", "selected"],
             "bg_recent_card_focus.xml": ["enabled", "pressed", "focused"],
-            "bg_tv_focus_outline.xml": ["enabled", "pressed", "focused"],
         }
         for filename, states in expected.items():
             root = ET.parse(RES / "drawable" / filename).getroot()
@@ -311,7 +310,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
     def test_changed_drawable_resources_are_valid_xml(self):
         names = [
             "bg_glass_dialog.xml", "glass_panel.xml", "bg_floating_dock.xml",
-            "bg_location_pill.xml", "bg_tv_focus_outline.xml",
+            "bg_location_pill.xml",
             "bg_app_pill.xml", "bg_app_pill_focused.xml", "bg_app_pill_unfocused.xml",
             "bg_recent_card_focus.xml",
             "selector_glass_dialog_button_bg.xml", "selector_glass_dialog_list_item_bg.xml",

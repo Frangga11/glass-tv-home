@@ -10,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * Draws the glass tray behind the independent Dock surface and adds orientation-aware spacing: the blurred wallpaper
- * behind it, an even veil and a light rim, with no brighter top.
+ * Draws the glass tray behind the independent Dock surface and adds orientation-aware spacing.
+ * The material is ported from Universal Home; tray bounds and focus composition remain GTVH-owned.
  */
 public class DockDecoration extends RecyclerView.ItemDecoration {
 
@@ -20,14 +20,13 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private boolean vertical;
     /** Non-visual scroll extent after the last horizontal carousel card. */
     private int horizontalTailInsetPx;
-    private final Paint band = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint trayShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint solidTrayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint solidTrayBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final GlassRim edge;
+    private final UniversalGlassDrawable universalGlass;
     private Glider glider;
     private final int[] at = new int[2], gliderAt = new int[2];
-    private final Backdrop.Fill blur = new Backdrop.Fill();
+
 
     private final RectF rect = new RectF();
     /** The tray as last drawn, in the grid's coordinates: where the focus shape shows on it. */
@@ -41,15 +40,15 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         this.dockSize = dockSize;
         this.density = density;
         this.vertical = vertical;
-        // Same glass as the top-bar pills (GlassDrawable): an even veil and a shining edge.
-        band.setColor(TvUiTokens.GLASS_VEIL_COLOR);
+        // Ported Universal Home surface material; focus remains owned by the existing Glider.
+        universalGlass = new UniversalGlassDrawable(density, 26f, true);
         trayShadowPaint.setColor(0x38000000);
         solidTrayPaint.setColor(TvUiTokens.DOCK_SURFACE);
         solidTrayBorder.setColor(TvUiTokens.BORDER);
         solidTrayBorder.setStyle(Paint.Style.STROKE);
         solidTrayBorder.setStrokeWidth(1.5f * density);
         trayShadowPaint.setMaskFilter(new android.graphics.BlurMaskFilter(14f * density, android.graphics.BlurMaskFilter.Blur.NORMAL));
-        edge = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF, 0.5f);
+
     }
 
     void update(int dockSize, boolean vertical) {
@@ -145,15 +144,9 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             }
             return;
         }
-        // Soft drop shadow under the glass dock tray
-        RectF trayShadow = new RectF(rect);
-        trayShadow.offset(0, 4f * density);
-        c.drawRoundRect(trayShadow, radius, radius, trayShadowPaint);
-
-        blur.draw(c, parent, rect, radius, 1f);
-        c.drawRoundRect(rect, radius, radius, band);
-        // The focus frame of a dock tile sits on the tray's glass and under the tiles; the rest of
-        // the shape, outside the tray, is the glider itself showing behind.
+        // Universal Home's DockGlassDrawable material, adapted to the existing tray bounds.
+        // Keep the current focus compositor between the glass surface and its reflections/rims.
+        universalGlass.drawSurface(c, rect);
         if (glider != null && glider.isShowing()) {
             parent.getLocationInWindow(at);
             glider.getLocationInWindow(gliderAt);
@@ -165,12 +158,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             glider.drawShape(c, gliderAt[0] - at[0], gliderAt[1] - at[1], parent);
             c.restore();
         }
-        // Drawn just inside the tray, as the pills draw theirs: a stroke centred on the boundary
-        // spreads over an extra pixel and reads thicker than the pills' edge.
-        float half = edge.paint.getStrokeWidth() / 2f;
-        rect.inset(half, half);
-        edge.fit(rect);
-        c.drawRoundRect(rect, radius - half, radius - half, edge.paint);
-        edge.drawWindowLight(c, rect, radius - half, 1f);
+        universalGlass.drawReflection(c, rect);
+        universalGlass.drawRim(c, rect);
     }
 }

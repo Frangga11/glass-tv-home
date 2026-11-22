@@ -1,4 +1,4 @@
-"""Source-level contracts for the shared popup and Dock glass material."""
+"""Regression contracts for popup-only translucent glass and protected UI behavior."""
 from pathlib import Path
 import unittest
 
@@ -7,41 +7,73 @@ JAVA = ROOT / "launcher/app/src/main/java/com/gathin/tvhome"
 
 
 class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
-    def test_wifi_popup_uses_live_shared_glass_backdrop(self):
-        wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
-        self.assertIn("new GlassDrawable(content", wifi)
-        self.assertIn("Backdrop.watch(content)", wifi)
-        self.assertIn("window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))", wifi)
+    def test_settings_shell_changes_material_only_and_keeps_white_text(self):
+        settings = (JAVA / "ModernSettingsDialog.java").read_text(encoding="utf-8")
+        tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
+        self.assertIn("UniversalGlassMaterial.panel(activity, root, density, 24f", settings)
+        self.assertIn("TvUiTokens.TEXT_PRIMARY", settings)
+        self.assertIn("static final int TEXT_PRIMARY = 0xFFFFFFFF", tokens)
 
-    def test_wifi_pointer_keeps_the_underlying_glass_visible(self):
+    def test_quick_settings_and_wifi_keep_original_white_typography(self):
+        quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
-        pointer = wifi[wifi.index("pointer = new View(activity)"):wifi.index("content.addView(pointer")]
-        self.assertIn("TvUiTokens.GLASS_VEIL_COLOR", pointer)
-        self.assertNotIn("paint.setColor(TvUiTokens.POPUP_SURFACE)", pointer)
+        self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", quick)
+        self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY)", quick)
+        self.assertIn("view.setTextColor(TvUiTokens.TEXT_PRIMARY)", wifi)
+        self.assertIn("TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY", wifi)
 
-    def test_dock_and_popup_share_the_backdrop_and_rim_primitives(self):
-        glass = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
+    def test_popup_material_is_translucent_dark_silver_glass_not_opaque_matte(self):
+        material = (JAVA / "UniversalGlassMaterial.java").read_text(encoding="utf-8")
+        drawable = (JAVA / "UniversalGlassDrawable.java").read_text(encoding="utf-8")
+        self.assertIn("PANEL_SHADE = 0x78151D25", material)
+        self.assertIn("new UniversalGlassDrawable(owner, density, radiusDp, false, true)", material)
+        for token in ("0x28FFFFFF", "0x14FFFFFF", "0x0AFFFFFF", "0x1E111A22",
+                      "0xDFFFFFFF", "0x55FFFFFF", "0x38FFFFFF"):
+            self.assertIn(token, drawable)
+        self.assertIn("silverCyanIdentity || brightSilverPopup", drawable)
+        self.assertIn("backdropFill.draw(canvas, owner, area, radius, 1f)", drawable)
+        self.assertIn("Backdrop.watch(owner)", material)
+        self.assertIn("Backdrop.watch(pointer)", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
+        self.assertIn("getBoolean(\"glass_effects_enabled\", true)", material)
+
+    def test_wifi_and_quick_settings_share_panel_material_without_layout_or_focus_rewire(self):
+        wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
+        quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
+        self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", wifi)
+        self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", quick)
+        self.assertIn("new GliderFocusDrawable(control, glider, cornerRadiusDp * density)", quick)
+        self.assertIn("QuickSettingsFocusGraph.connect(controls)", quick)
+        self.assertIn("QuickSettingsFocusGraph", quick)
+        self.assertIn("UniversalGlassMaterial.drawPointer(activity, pointer, canvas, triangle, pointerEdges", wifi)
+
+    def test_settings_sidebar_uses_one_bounded_focus_cursor_only(self):
+        settings = (JAVA / "ModernSettingsDialog.java").read_text(encoding="utf-8")
+        cursor = (JAVA / "SettingsFocusCursorDrawable.java").read_text(encoding="utf-8")
+        tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
+        self.assertIn("new SettingsFocusCursorDrawable(density, TvUiTokens.NAV_ROW_RADIUS_DP)", settings)
+        self.assertIn("new SettingsFocusCursorDrawable(density, TvUiTokens.CARD_RADIUS_DP)", settings)
+        selection_block = settings[settings.index("Runnable updateSidebarSelection"):settings.index("View[] activeSidebarView")]
+        self.assertNotIn("pcBg.setStroke", selection_block)
+        self.assertNotIn("rbg.setStroke", selection_block)
+        self.assertNotIn("SettingsNavFocusDrawable", settings)
+        self.assertNotIn("bg_tv_focus_outline", settings)
+        self.assertFalse((JAVA / "SettingsNavFocusDrawable.java").exists())
+        self.assertFalse((ROOT / "launcher/app/src/main/res/drawable/bg_tv_focus_outline.xml").exists())
+        self.assertIn("NAV_ROW_RADIUS_DP = 14f", tokens)
+        self.assertIn("NAV_ROW_HEIGHT_DP = 56f", tokens)
+        self.assertIn("NAV_ROW_BOTTOM_MARGIN_DP = 4f", tokens)
+        self.assertIn("new GlassRim(1f * density", cursor)
+        self.assertIn("silverCyanRim.paint.setStrokeWidth(1f * density)", cursor)
+        self.assertIn("b.left + halfStroke", cursor)
+        self.assertIn("radiusPx - halfStroke", cursor)
+        self.assertIn("innerShape.inset(1.35f * density", cursor)
+
+    def test_home_dock_and_capsule_material_remain_separate(self):
         dock = (JAVA / "DockDecoration.java").read_text(encoding="utf-8")
-        self.assertIn("new Backdrop.Fill()", glass)
-        self.assertIn("fill.draw(canvas, owner, rect, radius, glass)", glass)
-        self.assertIn("new Backdrop.Fill()", dock)
-        self.assertIn("blur.draw(c, parent, rect, radius, 1f)", dock)
-        self.assertIn("new GlassRim(", glass)
-        self.assertIn("new GlassRim(", dock)
-
-    def test_centered_modal_dialogs_use_the_same_live_glass_material(self):
-        style = (JAVA / "TvDialogStyle.java").read_text(encoding="utf-8")
-        self.assertIn("new GlassDrawable(decor", style)
-        self.assertIn("Backdrop.watch(decor)", style)
-        self.assertIn("window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))", style)
-
-    def test_glass_disabled_mode_keeps_an_opaque_structural_surface(self):
-        glass = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
-        self.assertIn('getBoolean("glass_effects_enabled", true)', glass)
-        self.assertIn("if (!glassEnabled)", glass)
-        self.assertIn("TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER", glass)
-        self.assertIn("solidSurface.setColor(fallbackSurfaceColor)", glass)
-        self.assertIn("canvas.drawRoundRect(rect, radius, radius, solidSurface)", glass)
+        drawable = (JAVA / "UniversalGlassDrawable.java").read_text(encoding="utf-8")
+        self.assertIn("new UniversalGlassDrawable(density, 26f, true)", dock)
+        self.assertIn("if (silverCyanIdentity)", drawable)
+        self.assertIn("0xA650DDF2", drawable)
 
 
 if __name__ == "__main__":

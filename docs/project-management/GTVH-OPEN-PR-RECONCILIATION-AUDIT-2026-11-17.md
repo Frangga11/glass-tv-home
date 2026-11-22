@@ -212,3 +212,37 @@ The current reconciliation pass is administratively complete for the reviewed qu
 - Latest verified pre-documentation main head: `91fd188c17dc2f4c20560506599bfba51bc28466`; exact-head CI run #2300 / `44165609627` passed both required jobs. QA artifact ID `14364708365` is a 1,442,432-byte ZIP (not APK size) and expires 24 November 2026.
 - No branch deletion, force update, or application-source change was performed in this documentation synchronization pass.
 - The new authoritative checkpoint is `GTVH-DOCUMENTATION-INTEGRATION-SYNC-CHECKPOINT-2026-11-18.md`. Exact-head CI for the documentation update is the final closeout gate; do not mark that post-update validation complete until the resulting run passes.
+
+
+## PR #170 integration and synchronized handover — 22 November 2026
+
+- PR #170 — **Fix Quick Settings Glider capsule corners and focus geometry** — was merged into its declared base branch `feat/popup-bright-frosted-silver-001`.
+- Exact PR #170 head verified before merge: `2208afbc896f6b08d699156714e7d58dc964f721`.
+- Merge commit: `e47c7686233b4dd998fc24b7875e5bc235baecad`.
+- The immutable QA reference remains `baseline/pr-170-2dp-qa-2026-11-22` at the tested source checkpoint. Verified APK size 1,653,150 bytes; SHA-256 `33724e5d3daba097178e943434c685d9feafeb502a8bf5d65284f62b9a5b6955`. CI run `44981544358` passed required jobs. Release-publisher workflow was SKIPPED.
+- PR #170 is now CLOSED / MERGED. PR #171 remains CLOSED / UNMERGED and is not to be reused. A fresh live search after the merge shows no open PR numbered above #170.
+- PR #169 and lower-numbered PRs remain separate open queue items/parent history; do not treat them as “newer than #170” or merge/close them without their own audit. PR #62 remains deferred.
+- This merge integrates #170 into its base branch only. It does **not** merge the cumulative branch into `main`.
+- Before a later merge to `main`, audit the cumulative difference against current main. The pre-merge comparison showed the parent line 96 commits ahead and 1 behind, with merge base `71f3a051a25fd66cabfd1740756cc36442dc92cc`; resolve and validate that divergence on a dedicated integration branch.
+- No new physical Mi TV Stick acceptance is claimed by this record. Preserve the RE-SKIN / NOT REWIRE boundary and all locked geometry, DPAD, focus ownership and Glider behavior.
+
+
+## Owner physical-device acceptance — PR #170 cumulative QA — 22 November 2026
+
+- Owner explicitly confirms that the PR #170 checkpoint APK was installed and tested on the target Mi TV Stick and **works well**.
+- This is owner-reported physical-device acceptance for the cumulative APK built from exact source commit `2208afbc896f6b08d699156714e7d58dc964f721`, including the PR #169 parent implementation plus PR #170 Glider/focus geometry changes.
+- Device gate for this tested cumulative candidate: **PASS (owner-confirmed)**.
+- CI evidence remains run `44981544358` on exact source commit `2208afbc...`; required CI jobs passed. APK size 1,653,150 bytes and SHA-256 `33724e5d3daba097178e943434c685d9feafeb502a8bf5d65284f62b9a5b6955`.
+- This acceptance applies to the tested APK/source snapshot only. It does not automatically approve later source changes or the unrelated PRs #168, #166, #165, #164, #162, #161, #158 or #62.
+
+
+
+## PR #162 — disposition after PR #170 baseline reconciliation — 22 November 2026
+
+- Owner clarified that PR #170, not `main`, is the governing baseline for the Universal Glass synchronization.
+- PR #162 was retargeted from `main` to `integration/pr170-universal-glass-sync-001`, created from immutable accepted PR #170 source SHA `2208afbc896f6b08d699156714e7d58dc964f721`.
+- After baseline reconciliation, the only remaining application-source delta was the Wi-Fi pointer backdrop adjustment in `UniversalGlassMaterial.java`; the broader Universal Glass material implementation was already present in the PR #170 cumulative ancestry.
+- PR #162 CI run `44993172112` passed both required jobs on exact head `b9866be19db1159f3a856199f8079c77bd50f7a4` after retargeting.
+- PR #162 is now CLOSED / MERGED into the dedicated PR #170 integration branch. Merge commit: `7df0a5bcf82b8fc67863abb886997e3b3df47de9`.
+- This is not a merge to `main`. Post-merge CI and final documentation CI remain required. The exact PR #170 QA source pin remains immutable; its physical-device acceptance does not automatically extend to the new synchronized APK.
+- PR #62 remains deferred and untouched; PR #171 remains closed/unmerged.
