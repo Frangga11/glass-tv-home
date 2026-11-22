@@ -89,7 +89,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
                       "0x22FFFFFF", "0x08FFFFFF", "0x30FFFFFF"):
             with self.subTest(token=token):
                 self.assertIn(token, glass)
-        self.assertIn("0xB31D1D1D", material)
+        self.assertIn("PANEL_SHADE = 0xC21D1D1D", material)
         self.assertIn('getBoolean("glass_effects_enabled", true)', material)
         self.assertIn("if (!isGlassEnabled(context))", material)
         self.assertIn("0x16FFFFFF", material)
