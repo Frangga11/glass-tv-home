@@ -65,11 +65,17 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
                 self.assertIn(token, main[main.index("for (int id : new int[]{R.id.locationPill"):
                                          main.index("if (prayerTimesView != null)", main.index("for (int id : new int[]{R.id.locationPill"))])
         self.assertIn("UniversalGlassMaterial.homeCapsule(this, density, 20f,", main)
+        self.assertIn("boolean silverCyanTarget = id == R.id.locationPill", main)
+        self.assertIn("|| id == R.id.weatherAirQuality || id == R.id.btnWifi", main)
+        self.assertIn("|| id == R.id.btnAssistant;", main)
+        self.assertIn(": UniversalGlassMaterial.surface(this, density, 20f,", main)
         self.assertIn("new Drawable[]{glassBackground, new GliderFocusDrawable(pill, glider)}", main)
-        self.assertIn("return surface(context, density, radiusDp, fallbackSurfaceColor, fallbackBorderColor)", material)
-        self.assertIn("return new UniversalGlassDrawable(density, radiusDp)", material)
+        self.assertIn("return new UniversalGlassDrawable(density, radiusDp, true)", material)
+        self.assertIn("new UniversalGlassDrawable(density, radiusDp)", material)
+        self.assertIn("if (silverCyanIdentity)", drawable)
         self.assertIn("0xA650DDF2", drawable)
         self.assertIn("windowLight.setAlpha(124)", drawable)
+        self.assertIn("canvas.drawRoundRect(area, radius, radius, windowLight)", drawable)
         self.assertNotIn("Backdrop.watch(navCapsule)", main)
 
     def test_wifi_actions_keep_existing_focus_state_contract_and_use_universal_idle_surface(self):
