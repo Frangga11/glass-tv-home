@@ -76,6 +76,19 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("radiusPx - halfStroke", cursor)
         self.assertIn("innerShape.inset(1.35f * density", cursor)
 
+    def test_quick_settings_focus_tuning_is_instance_scoped_and_keeps_glider_defaults(self):
+        glider = (JAVA / "Glider.java").read_text(encoding="utf-8")
+        quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
+        self.assertIn("private float shadowBlur, shadowDrop;", glider)
+        self.assertIn("private int shadowAlpha = 0x9A;", glider)
+        self.assertIn("shadowBlur = 22f * density;", glider)
+        self.assertIn("shadowDrop = 8f * density;", glider)
+        self.assertIn("void setPopupShadowStyle(float blurPx, float dropPx, int alpha)", glider)
+        self.assertIn("shadowPaint.setAlpha(Math.round(shadowAlpha * opacity * shadowMix));", glider)
+        self.assertIn("glider.setPopupShadowStyle(14f * density, 3f * density, 0x58)", quick)
+        self.assertIn("glider.setSingleGlassRim(true)", quick)
+        self.assertIn("glider.setCompanionOnly(true)", quick)
+
     def test_home_dock_and_capsule_material_remain_separate(self):
         dock = (JAVA / "DockDecoration.java").read_text(encoding="utf-8")
         drawable = (JAVA / "UniversalGlassDrawable.java").read_text(encoding="utf-8")
