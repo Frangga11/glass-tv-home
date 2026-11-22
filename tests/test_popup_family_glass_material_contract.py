@@ -54,7 +54,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
 
         # Beranda, Profil and Pengaturan sit on one shared navPill surface.
         self.assertIn("View navCapsule = findViewById(R.id.navPill)", main)
-        self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", main)
+        self.assertIn("UniversalGlassMaterial.homeCapsule(this, density, 20f,", main)
         self.assertIn("glider.addCompanion(navCapsule)", main)
 
         # Location/altitude, Weather/AQI, Wi-Fi and microphone receive the same
@@ -64,8 +64,9 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
             with self.subTest(token=token):
                 self.assertIn(token, main[main.index("for (int id : new int[]{R.id.locationPill"):
                                          main.index("if (prayerTimesView != null)", main.index("for (int id : new int[]{R.id.locationPill"))])
-        self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", main)
+        self.assertIn("UniversalGlassMaterial.homeCapsule(this, density, 20f,", main)
         self.assertIn("new Drawable[]{glassBackground, new GliderFocusDrawable(pill, glider)}", main)
+        self.assertIn("return surface(context, density, radiusDp, fallbackSurfaceColor, fallbackBorderColor)", material)
         self.assertIn("return new UniversalGlassDrawable(density, radiusDp)", material)
         self.assertIn("0xA650DDF2", drawable)
         self.assertIn("windowLight.setAlpha(124)", drawable)
