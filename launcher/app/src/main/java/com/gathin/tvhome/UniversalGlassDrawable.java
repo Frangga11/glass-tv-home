@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 /**
  * Universal Home's DockGlassDrawable material, ported under its MIT license.
@@ -25,6 +26,9 @@ final class UniversalGlassDrawable extends Drawable {
     private final Paint windowLight = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final boolean silverCyanIdentity;
     private final boolean brightSilverPopup;
+    private final View owner;
+    private final Backdrop.Fill backdropFill = new Backdrop.Fill();
+    private final Paint popupVeil = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF area = new RectF();
     private final RectF lastSourceBounds = new RectF();
     private final RectF innerArea = new RectF();
@@ -34,19 +38,26 @@ final class UniversalGlassDrawable extends Drawable {
     private boolean prepared;
 
     UniversalGlassDrawable(float density, float radiusDp) {
-        this(density, radiusDp, false, false);
+        this(null, density, radiusDp, false, false);
     }
 
     UniversalGlassDrawable(float density, float radiusDp, boolean silverCyanIdentity) {
-        this(density, radiusDp, silverCyanIdentity, false);
+        this(null, density, radiusDp, silverCyanIdentity, false);
     }
 
     UniversalGlassDrawable(float density, float radiusDp, boolean silverCyanIdentity,
                            boolean brightSilverPopup) {
+        this(null, density, radiusDp, silverCyanIdentity, brightSilverPopup);
+    }
+
+    UniversalGlassDrawable(View owner, float density, float radiusDp, boolean silverCyanIdentity,
+                           boolean brightSilverPopup) {
+        this.owner = owner;
         this.density = density;
         this.radiusDp = radiusDp;
         this.silverCyanIdentity = silverCyanIdentity;
         this.brightSilverPopup = brightSilverPopup;
+        popupVeil.setColor(0x68151D25);
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         inner.setStyle(Paint.Style.STROKE);
@@ -138,7 +149,12 @@ final class UniversalGlassDrawable extends Drawable {
 
     void drawSurface(Canvas canvas, RectF sourceBounds) {
         prepare(sourceBounds);
-        if (!area.isEmpty()) canvas.drawRoundRect(area, radius, radius, surface);
+        if (area.isEmpty()) return;
+        if (brightSilverPopup && owner != null) {
+            backdropFill.draw(canvas, owner, area, radius, 1f);
+            canvas.drawRoundRect(area, radius, radius, popupVeil);
+        }
+        canvas.drawRoundRect(area, radius, radius, surface);
     }
 
     void drawReflection(Canvas canvas, RectF sourceBounds) {
