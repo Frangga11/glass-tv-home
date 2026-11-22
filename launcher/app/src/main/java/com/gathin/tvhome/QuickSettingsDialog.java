@@ -2,7 +2,9 @@ package com.gathin.tvhome;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -15,6 +17,7 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Window;
@@ -24,6 +27,8 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.concurrent.Executor;
 
 /** Single-frame Quick Settings glass surface. Existing actions remain owned by their modules. */
 final class QuickSettingsDialog {
@@ -65,7 +70,8 @@ final class QuickSettingsDialog {
     private QuickSettingsDialog() { }
 
     static AlertDialog show(Activity activity, android.widget.FrameLayout host, View settingsAnchor,
-                            View dock, Actions actions, int initialFocus, Runnable onDismiss) {
+                            View dock, Actions actions, int initialFocus, Runnable onDismiss,
+                            Executor backdropWorker, Handler callbackHandler) {
         if (activity == null || host == null || settingsAnchor == null || dock == null || actions == null
                 || activity.isFinishing() || activity.isDestroyed()) return null;
 
@@ -119,8 +125,11 @@ final class QuickSettingsDialog {
                 dp(density, PANEL_SIDE_INSET_DP), dp(density, PANEL_VERTICAL_INSET_DP));
         content.setClipChildren(true);
         content.setClipToPadding(true);
-        content.setBackground(UniversalGlassMaterial.quickSettingsPanel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,
-                PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER));
+        Drawable panelBackground = UniversalGlassMaterial.quickSettingsPanel(activity, content, density,
+                TvUiTokens.POPUP_RADIUS_DP, PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER);
+        content.setBackground(panelBackground);
+        final UniversalGlassDrawable quickSettingsGlass = panelBackground instanceof UniversalGlassDrawable
+                ? (UniversalGlassDrawable) panelBackground : null;
 
         LinearLayout header = new LinearLayout(activity);
         header.setOrientation(LinearLayout.HORIZONTAL);
@@ -342,6 +351,7 @@ final class QuickSettingsDialog {
             return false;
         });
         dialog.setOnDismissListener(d -> {
+            if (quickSettingsGlass != null) quickSettingsGlass.clearCapturedWindowBackdrop();
             Object tag = dialog.getWindow() != null ? dialog.getWindow().getDecorView().getTag() : null;
             if (tag instanceof Glider) {
                 Glider glider = (Glider) tag;
@@ -428,6 +438,33 @@ final class QuickSettingsDialog {
                 }
             });
         });
+        // Capture the exact Activity pixels that will sit underneath the panel, before the
+        // Dialog window is attached. This includes Home labels/prayer text as well as wallpaper.
+        // A wallpaper-only blur cannot soften those separate foreground Views.
+        if (quickSettingsGlass != null && backdropWorker != null && callbackHandler != null) {
+            View activityDecor = activity.getWindow().getDecorView();
+            int[] decorAt = new int[2];
+            activityDecor.getLocationOnScreen(decorAt);
+            int captureLeft = hostAt[0] + finalPanelLeft - decorAt[0];
+            int captureTop = hostAt[1] + panelTop - decorAt[1];
+            Rect captureRect = new Rect(captureLeft, captureTop,
+                    captureLeft + panelWidth, captureTop + panelHeight);
+            QuickSettingsBackdropCapture.capture(activity, captureRect, backdropWorker, callbackHandler,
+                    new QuickSettingsBackdropCapture.Listener() {
+                        @Override public void onReady(Bitmap blurredPanel) {
+                            if (!dialog.isShowing() || activity.isFinishing() || activity.isDestroyed()) {
+                                if (!blurredPanel.isRecycled()) blurredPanel.recycle();
+                                return;
+                            }
+                            quickSettingsGlass.setCapturedWindowBackdrop(blurredPanel);
+                        }
+
+                        @Override public void onFailure(String reason) {
+                            android.util.Log.w("TvHome.QuickSettings",
+                                    "Using safe slate fallback; Activity backdrop capture unavailable: " + reason);
+                        }
+                    });
+        }
         dialog.show();
         return dialog;
     }
