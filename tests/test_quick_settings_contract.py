@@ -14,12 +14,12 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 
 class QuickSettingsContractTest(unittest.TestCase):
-    def test_focus_keeps_white_text_and_uses_dark_halo_on_glass(self):
+    def test_focus_keeps_dark_silver_text_and_soft_halo_on_bright_glass(self):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
         self.assertNotIn("0xFF17232B", focus_block)
         self.assertIn("focused ? 2.0f : 1.25f", focus_block)
-        self.assertIn("focused ? 0xF0000000 : 0xCC000000", focus_block)
+        self.assertIn("focused ? 0x55000000 : 0x33000000", focus_block)
 
     def test_wallpaper_heading_and_capsule_share_the_same_left_layout_lane(self):
         self.assertIn("wallpaperHeader.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);", DIALOG)
@@ -82,7 +82,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("settingsIconCenterX(settingsAnchor, anchorAt[0], density)", DIALOG)
         self.assertIn("Gravity.TOP | Gravity.LEFT", DIALOG)
         self.assertNotIn("addDivider", DIALOG)
-        self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", DIALOG)
+        self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.POPUP_TEXT_PRIMARY", DIALOG)
         self.assertIn("PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY", DIALOG)
         self.assertIn("PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE", DIALOG)
         self.assertIn("PANEL_FALLBACK_BORDER = TvUiTokens.BORDER", DIALOG)
