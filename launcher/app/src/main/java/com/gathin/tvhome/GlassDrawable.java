@@ -36,6 +36,8 @@ final class GlassDrawable extends Drawable {
     private final Glider highlight;
     /** Paints the focus shape over the glass (a menu), rather than fading the glass for it (a pill). */
     private final boolean paintsShape;
+    /** Limits specular window glint for darker, text-first navigation and popup surfaces. */
+    private final float windowLightStrength;
     /** How far the glass is shown, 0 to 1, for a panel fading in or out. */
     private float fade = 1f;
     private final int[] at = new int[2], highlightAt = new int[2];
@@ -65,11 +67,20 @@ final class GlassDrawable extends Drawable {
     GlassDrawable(View owner, float radius, float density, Glider highlight, float reach,
                   boolean paintsShape, int veilColor, int veilAlpha,
                   int fallbackSurfaceColor, int fallbackBorderColor) {
+        this(owner, radius, density, highlight, reach, paintsShape, veilColor, veilAlpha,
+                fallbackSurfaceColor, fallbackBorderColor, 1f);
+    }
+
+    /** Optional restrained specular highlight for text-first navigation and popup surfaces. */
+    GlassDrawable(View owner, float radius, float density, Glider highlight, float reach,
+                  boolean paintsShape, int veilColor, int veilAlpha,
+                  int fallbackSurfaceColor, int fallbackBorderColor, float windowLightStrength) {
         this.paintsShape = paintsShape;
         this.owner = owner;
         this.highlight = highlight;
         this.radius = radius;
         this.veilAlpha = Math.max(0, Math.min(255, veilAlpha));
+        this.windowLightStrength = Math.max(0f, Math.min(1f, windowLightStrength));
         veil.setColor(veilColor);
         solidSurface.setColor(fallbackSurfaceColor);
         solidBorder.setColor(fallbackBorderColor);
@@ -148,7 +159,7 @@ final class GlassDrawable extends Drawable {
             rim.fit(rect);
             rim.paint.setAlpha(Math.round(255 * glass));
             canvas.drawRoundRect(rect, radius - half, radius - half, rim.paint);
-            rim.drawWindowLight(canvas, rect, radius - half, glass);
+            rim.drawWindowLight(canvas, rect, radius - half, glass * windowLightStrength);
         }
         // The fill itself is the highlight view behind the pills, showing through as the glass clears;
         // painting it here as well would darken a focused pill twice over.
