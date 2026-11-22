@@ -353,6 +353,25 @@ final class QuickSettingsDialog {
                 params.dimAmount = 0f;
                 window.setAttributes(params);
                 window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+                // LayoutParams.y is relative to the Dialog window's gravity frame, while
+                // panelTop was calculated in the Activity host's coordinate space. Those
+                // origins can differ (system/content insets and Dialog decor). Measure the
+                // actual content position after the window is attached, then translate the
+                // window by the exact screen-space delta so the Dock clearance is real.
+                int[] contentAt = new int[2];
+                content.getLocationOnScreen(contentAt);
+                int desiredContentTopOnScreen = hostAt[1] + panelTop;
+                int windowYCorrection = desiredContentTopOnScreen - contentAt[1];
+                if (windowYCorrection != 0) {
+                    params = window.getAttributes();
+                    params.y += windowYCorrection;
+                    window.setAttributes(params);
+                }
+                android.util.Log.d("TvHome.QuickSettings", "Dialog position hostTop=" + hostAt[1]
+                        + " desiredContentTop=" + desiredContentTopOnScreen
+                        + " measuredContentTop=" + contentAt[1]
+                        + " windowYCorrection=" + windowYCorrection);
             }
             View target = controls[initialFocus >= 0 && initialFocus < controls.length
                     ? initialFocus : QuickSettingsFocusGraph.INPUT];
