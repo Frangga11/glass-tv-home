@@ -963,7 +963,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (navCapsule != null) {
             navCapsule.setBackground(UniversalGlassMaterial.homeCapsule(this, density, 20f,
                     TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
-            glider.addCompanion(navCapsule);
+            // The parent is only the unified idle glass surface; only the focused tab draws the Glider.
         }
         // One restrained glass surface unifies the prayer timetable and Ayat Pilihan.
         // Background-only treatment: keep shelf bounds, child layout, text, RTL and spacing unchanged.
