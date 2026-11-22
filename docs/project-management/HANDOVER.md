@@ -1418,3 +1418,9 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - This merge integrates #170 into its base branch only. It does **not** merge the cumulative branch into `main`.
 - Before a later merge to `main`, audit the cumulative difference against current main. The pre-merge comparison showed the parent line 96 commits ahead and 1 behind, with merge base `71f3a051a25fd66cabfd1740756cc36442dc92cc`; resolve and validate that divergence on a dedicated integration branch.
 - No new physical Mi TV Stick acceptance is claimed by this record. Preserve the RE-SKIN / NOT REWIRE boundary and all locked geometry, DPAD, focus ownership and Glider behavior.
+
+
+## QA source pin clarification — 22 November 2026
+
+- To keep the tested source SHA independently pinned after documentation commits were added to the working baseline branch, a dedicated exact-source ref was created: `baseline/pr-170-qa-exact-2026-11-22` → `2208afbc896f6b08d699156714e7d58dc964f721`.
+- `baseline/pr-170-2dp-qa-2026-11-22` now also contains documentation-only commits; do not treat its current tip as the exact tested source SHA. The immutable QA source is the dedicated `baseline/pr-170-qa-exact-2026-11-22` ref above.
