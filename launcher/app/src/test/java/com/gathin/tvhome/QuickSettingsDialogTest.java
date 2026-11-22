@@ -219,6 +219,9 @@ public class QuickSettingsDialogTest {
         content.getLocationOnScreen(contentAt);
         int actualPanelTop = contentAt[1] - hostAt[1];
         int actualBottomGap = dockTop - (actualPanelTop + content.getMeasuredHeight());
+        System.out.println("QUICK_SETTINGS_GAP_FIXED dockTop=" + dockTop + " panelTop=" + actualPanelTop
+                + " height=" + content.getMeasuredHeight() + " hostY=" + hostAt[1]
+                + " screenY=" + contentAt[1] + " gap=" + actualBottomGap + " expected=" + fiveDp);
         assertEquals("Popup lower edge must remain exactly 5dp above the Dock"
                 + " [dockTop=" + dockTop + ", contentTop=" + actualPanelTop
                 + ", contentHeight=" + content.getMeasuredHeight() + ", hostY=" + hostAt[1]
@@ -274,6 +277,11 @@ public class QuickSettingsDialogTest {
             int actualPanelTop = contentAt[1] - hostAt[1];
             int actualBottomGap = (dockAt[1] - hostAt[1])
                     - (actualPanelTop + content.getMeasuredHeight());
+            System.out.println("QUICK_SETTINGS_GAP_CAPACITY capacity=" + capacity
+                    + " dockTop=" + (dockAt[1] - hostAt[1]) + " panelTop=" + actualPanelTop
+                    + " height=" + content.getMeasuredHeight() + " hostY=" + hostAt[1]
+                    + " screenY=" + contentAt[1] + " gap=" + actualBottomGap
+                    + " expected=" + Math.round(5f * density));
             assertEquals("Every supported Dock capacity must preserve the exact 5dp lower gap"
                     + " [capacity=" + capacity + ", dockTop=" + (dockAt[1] - hostAt[1])
                     + ", contentTop=" + actualPanelTop + ", contentHeight=" + content.getMeasuredHeight()
