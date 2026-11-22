@@ -104,7 +104,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
                         "btnAssistant", "btnHome", "btnCandyBox", "btnSettings"):
             self.assertIn(f"R.id.{view_id}", header)
         self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", header)
-        self.assertIn("new GliderFocusDrawable(pill, homeCapsuleGlider, 20f * density)", header)
+        self.assertIn("new GliderFocusDrawable(pill, glider, 20f * density)", header)
         self.assertIn("new android.graphics.drawable.LayerDrawable(", header)
 
     def test_deferred_grid_focus_is_cancelled_by_newer_focus_destinations(self):
@@ -212,7 +212,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIsNotNone(nav)
         self.assertEqual(nav.get(ANDROID + "background"), "@drawable/header_glass_pill_bg")
         self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", MAIN)
-        self.assertIn("new GliderFocusDrawable(pill, homeCapsuleGlider, 20f * density)", MAIN)
+        self.assertIn("new GliderFocusDrawable(pill, glider, 20f * density)", MAIN)
         self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
 
