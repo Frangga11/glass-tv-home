@@ -212,7 +212,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIsNotNone(nav)
         self.assertEqual(nav.get(ANDROID + "background"), "@drawable/header_glass_pill_bg")
         self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", MAIN)
-        self.assertIn("new GliderFocusDrawable(pill, glider)", MAIN)
+        self.assertIn("new GliderFocusDrawable(pill, glider, 20f * density)", MAIN)
         self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
 
