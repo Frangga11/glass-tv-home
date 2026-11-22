@@ -82,8 +82,8 @@ final class UniversalGlassMaterial {
     }
 
     /**
-     * Slightly brighter idle capsules for the clean Quick Settings panel. The border is
-     * deliberately neutral so the DPAD Glider remains the only moving focus indicator.
+     * Smoked-silver idle capsules for Quick Settings. The neutral edge stays static so
+     * the existing DPAD Glider remains the only moving focus indicator.
      */
     static GradientDrawable quickSettingsControlIdle(Context context, float density, float radiusDp,
                                                       int fallbackFill, int fallbackBorder) {
@@ -91,9 +91,9 @@ final class UniversalGlassMaterial {
             return solidSurface(density, radiusDp, fallbackFill, fallbackBorder);
         }
         GradientDrawable glass = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{0x34FFFFFF, 0x1CFFFFFF});
+                new int[]{0x70343E48, 0x60303A44});
         glass.setCornerRadius(radiusDp * density);
-        glass.setStroke(Math.max(1, Math.round(density)), 0x66899AA6);
+        glass.setStroke(Math.max(1, Math.round(density)), 0x889EABB8);
         return glass;
     }
 
