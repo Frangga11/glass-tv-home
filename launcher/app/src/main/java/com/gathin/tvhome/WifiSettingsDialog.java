@@ -623,6 +623,8 @@ final class WifiSettingsDialog {
                         dp(activity.getResources().getDisplayMetrics().density, 10), 0);
                 row.setLayoutParams(networkRowLayoutParams(activity.getResources().getDisplayMetrics().density));
                 row.setTextSize(TypedValue.COMPLEX_UNIT_PX, networkTextSizePx());
+            row.setShadowLayer(0.85f * activity.getResources().getDisplayMetrics().density, 0f,
+                    0.35f * activity.getResources().getDisplayMetrics().density, 0x60000000);
                 configureNetworkMarquee(row);
                 row.setCompoundDrawablePadding(dp(
                         activity.getResources().getDisplayMetrics().density, 6));
@@ -770,6 +772,7 @@ final class WifiSettingsDialog {
     private void styleText(TextView view, float size, boolean bold, float density) {
         view.setTextSize(size);
         view.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        view.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x60000000);
         view.setTypeface(activity.getResources().getFont(R.font.inter),
                 bold ? Typeface.BOLD : Typeface.NORMAL);
         view.setPadding(0, dp(density, 3), 0, dp(density, 3));
