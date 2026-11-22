@@ -17,7 +17,6 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.os.Handler;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Window;
@@ -73,12 +72,12 @@ final class QuickSettingsDialog {
     /** Compatibility overload for deterministic UI tests and non-capturing callers. */
     static AlertDialog show(Activity activity, android.widget.FrameLayout host, View settingsAnchor,
                             View dock, Actions actions, int initialFocus, Runnable onDismiss) {
-        return show(activity, host, settingsAnchor, dock, actions, initialFocus, onDismiss, null, null);
+        return show(activity, host, settingsAnchor, dock, actions, initialFocus, onDismiss, null);
     }
 
     static AlertDialog show(Activity activity, android.widget.FrameLayout host, View settingsAnchor,
                             View dock, Actions actions, int initialFocus, Runnable onDismiss,
-                            Executor backdropWorker, Handler callbackHandler) {
+                            Executor backdropWorker) {
         if (activity == null || host == null || settingsAnchor == null || dock == null || actions == null
                 || activity.isFinishing() || activity.isDestroyed()) return null;
 
@@ -450,12 +449,12 @@ final class QuickSettingsDialog {
         // Capture the exact Activity pixels that will sit underneath the panel, before the
         // Dialog window is attached. This includes Home labels/prayer text as well as wallpaper.
         // A wallpaper-only blur cannot soften those separate foreground Views.
-        if (quickSettingsGlass != null && backdropWorker != null && callbackHandler != null) {
+        if (quickSettingsGlass != null && backdropWorker != null) {
             int[] hostWindowAt = new int[2];
             host.getLocationInWindow(hostWindowAt);
             Rect captureRect = QuickSettingsBackdropCapture.panelCropInWindow(
                     hostWindowAt[0], hostWindowAt[1], finalPanelLeft, panelTop, panelWidth, panelHeight);
-            QuickSettingsBackdropCapture.capture(activity, captureRect, backdropWorker, callbackHandler,
+            QuickSettingsBackdropCapture.capture(activity, captureRect, backdropWorker,
                     backdropCaptureActive, new QuickSettingsBackdropCapture.Listener() {
                         @Override public void onReady(Bitmap blurredPanel) {
                             if (!dialog.isShowing() || activity.isFinishing() || activity.isDestroyed()) {
