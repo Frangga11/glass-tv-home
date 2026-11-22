@@ -15,7 +15,7 @@ class BrightPopupGlassPaletteContractTest(unittest.TestCase):
         self.assertIn("0xFF526675", palette)
         self.assertIn("0xFFDDF5F8", palette)
         self.assertIn("0xFF42BCD2", palette)
-        self.assertIn("private static final", palette)
+        self.assertIn("private PopupGlassTokens()", palette)
         self.assertIn("static final int POPUP", global_tokens) if "static final int POPUP" in global_tokens else self.assertIn("POPUP_SURFACE", global_tokens)
 
     def test_settings_popup_uses_bright_panel_and_capsule_tokens(self):
