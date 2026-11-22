@@ -18,8 +18,9 @@ class QuickSettingsContractTest(unittest.TestCase):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
         self.assertNotIn("0xFF17232B", focus_block)
-        self.assertIn("focused ? 2.0f : 1.25f", focus_block)
-        self.assertIn("focused ? 0xF0000000 : 0xCC000000", focus_block)
+        self.assertIn("focused ? 1.05f : 0.8f", focus_block)
+        self.assertIn("focused ? 0x78000000 : 0x60000000", focus_block)
+        self.assertIn("0.4f * density", focus_block)
 
     def test_wallpaper_heading_and_capsule_share_the_same_left_layout_lane(self):
         self.assertIn("wallpaperHeader.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);", DIALOG)
