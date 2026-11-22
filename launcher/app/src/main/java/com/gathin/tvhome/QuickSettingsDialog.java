@@ -352,12 +352,22 @@ final class QuickSettingsDialog {
         dialog.setOnShowListener(d -> {
             Window window = dialog.getWindow();
             if (window != null) {
-                // AlertDialog.Builder.setView() replaces the supplied root LayoutParams
-                // with MATCH_PARENT. Its internal AlertDialogLayout then wraps the custom
-                // content at its natural 319dp height, leaving 11dp unused despite the
-                // measured 330dp panel/window. Restore the approved exact dimensions after
-                // AlertController installs the view, before the first completed layout.
+                // AlertDialog.Builder.setView() places the supplied root inside an
+                // internal custom-panel FrameLayout whose height is WRAP_CONTENT. That
+                // wrapper remeasures the 330dp panel to its 319dp natural content height.
+                // Give the custom-panel wrapper the same exact measured height as the panel;
+                // this preserves the approved vertical insets and every capsule dimension.
                 content.setLayoutParams(new ViewGroup.LayoutParams(panelWidth, panelHeight));
+                android.view.ViewParent contentParent = content.getParent();
+                if (contentParent instanceof View) {
+                    View wrapper = (View) contentParent;
+                    ViewGroup.LayoutParams wrapperParams = wrapper.getLayoutParams();
+                    if (wrapperParams != null) {
+                        wrapperParams.width = panelWidth;
+                        wrapperParams.height = panelHeight;
+                        wrapper.setLayoutParams(wrapperParams);
+                    }
+                }
                 content.requestLayout();
                 window.setGravity(Gravity.TOP | Gravity.LEFT);
                 window.setLayout(panelWidth, panelHeight);
