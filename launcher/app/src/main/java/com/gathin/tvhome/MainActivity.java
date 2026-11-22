@@ -801,11 +801,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     }
                     return keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
                 });
-                ayahOpenHint.setBackground(TvFocusIndicator.createRoundedStateBackground(
-                        density, 6f, 0x223F4A55, TvUiTokens.FOCUS_HALO,
-                        0x223F4A55, TvUiTokens.FOCUS_BORDER));
+                // The Home Glider is the sole focus cursor; remove the legacy halo/outline layer.
+                ayahOpenHint.setBackground(new GliderFocusDrawable(ayahOpenHint, glider, 6f * density));
+                glider.addCompanion(ayahOpenHint);
                 ayahOpenHint.setOnFocusChangeListener((v, hasFocus) -> {
-                    if (hasFocus) SoundEffects.playNav();
+                    if (hasFocus) {
+                        SoundEffects.playNav();
+                        moveHomeCapsuleCursor(v);
+                    }
                 });
             }
 
@@ -902,11 +905,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 return false;
             });
-            prayerHeaderView.setBackground(TvFocusIndicator.createRoundedStateBackground(
-                    density, 8f, 0x00000000, TvUiTokens.FOCUS_HALO,
-                    0x00000000, TvUiTokens.FOCUS_BORDER));
+            // One shared Home Glider replaces the legacy prayer-header halo and border.
+            prayerHeaderView.setBackground(new GliderFocusDrawable(prayerHeaderView, glider, 8f * density));
+            glider.addCompanion(prayerHeaderView);
             prayerHeaderView.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) SoundEffects.playNav();
+                if (hasFocus) {
+                    SoundEffects.playNav();
+                    moveHomeCapsuleCursor(v);
+                }
             });
         }
         View prayerTableView = findViewById(R.id.prayerTable);
@@ -974,7 +980,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (navigationTab) {
                 // Paint the same moving Glider inside each tab's own drawing pass:
                 // above the shared capsule surface, but below the tab's icon and label.
-                pill.setBackground(new GliderFocusDrawable(pill, glider));
+                pill.setBackground(new GliderFocusDrawable(pill, glider, 20f * density));
             } else {
                 // Compose the focus layer after the capsule glass and before the view's content.
                 boolean silverCyanTarget = id == R.id.locationPill
@@ -986,7 +992,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                         : UniversalGlassMaterial.surface(this, density, 20f,
                                 TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
                 pill.setBackground(new android.graphics.drawable.LayerDrawable(
-                        new Drawable[]{glassBackground, new GliderFocusDrawable(pill, glider)}));
+                        new Drawable[]{glassBackground, new GliderFocusDrawable(pill, glider, 20f * density)}));
             }
             glider.addCompanion(pill);
             pill.setOnFocusChangeListener((v, has) -> {
@@ -2844,15 +2850,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void moveTopHighlight(View pill) {
         if (resuming) return;
         SoundEffects.playNav();
-        pill.getLocationInWindow(pillAt);
-        glider.getLocationInWindow(rootAt);
-        float l = pillAt[0] - rootAt[0], t = pillAt[1] - rootAt[1];
-        // The pills do not scroll with the grid, so the shape stops following the grid's scroll.
-        glassShown = false;
-        // Up to the top menu it is dark at once, and travels that way.
+        // The top row remains part of the established Home/Dock Glider state machine.
         gliderOnPill = true;
+        glassShown = false;
+        moveHomeCapsuleCursor(pill);
+    }
+
+    /** Moves the one Home focus cursor to a measured capsule without creating a second focus layer. */
+    private void moveHomeCapsuleCursor(View capsule) {
+        if (capsule == null || glider == null || !capsule.isShown()
+                || capsule.getWidth() <= 0 || capsule.getHeight() <= 0) return;
+        capsule.getLocationInWindow(pillAt);
+        glider.getLocationInWindow(rootAt);
+        float left = pillAt[0] - rootAt[0], top = pillAt[1] - rootAt[1];
         glider.setStyle(Glider.DARK);
-        glider.moveTo(l, t, l + pill.getWidth(), t + pill.getHeight(), Math.min(20f * density, pill.getHeight() / 2f));
+        glider.moveTo(left, top, left + capsule.getWidth(), top + capsule.getHeight(),
+                Math.min(20f * density, capsule.getHeight() / 2f));
     }
 
     /** The shelf's two lines. An empty description takes no room, so the title keeps its place. */
