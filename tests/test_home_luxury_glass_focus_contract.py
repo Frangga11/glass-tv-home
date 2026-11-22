@@ -22,6 +22,19 @@ class HomeLuxuryGlassFocusContractTest(unittest.TestCase):
         self.assertIn("0xD9FFFFFF", source)
         self.assertIn("0x8067E8F9", source)
 
+    def test_navigation_focus_uses_a_dark_text_first_surface(self):
+        tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
+        glider = (JAVA / "Glider.java").read_text(encoding="utf-8")
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        self.assertIn("NAV_FOCUS_SURFACE = 0xD92A3540", tokens)
+        self.assertIn("static final int NAVIGATION_DARK = 2", glider)
+        self.assertIn("style == DARK || style == NAVIGATION_DARK", glider)
+        self.assertIn("style == NAVIGATION_DARK", glider)
+        self.assertIn("TvUiTokens.NAV_FOCUS_SURFACE : TvUiTokens.FOCUS_HALO", glider)
+        self.assertIn("glider.setStyle(Glider.NAVIGATION_DARK)", main)
+        # The original shared DARK treatment remains intact for non-navigation consumers.
+        self.assertIn("TvUiTokens.FOCUS_HALO", glider)
+
     def test_header_icon_tint_is_consistent_and_focus_aware(self):
         tint = ET.parse(RES / "color/header_icon_tint.xml").getroot()
         items = tint.findall("item")
