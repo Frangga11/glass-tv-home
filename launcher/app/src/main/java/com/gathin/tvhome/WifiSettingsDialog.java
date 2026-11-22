@@ -114,13 +114,14 @@ final class WifiSettingsDialog {
         content.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(dp(density, 10), dp(density, 4), dp(density, 10), dp(density, 8));
+        content.setPadding(dp(density, 14), dp(density, 5), dp(density, 14), dp(density, 14));
         // Adopt Universal Home's glass material without changing the approved Wi-Fi geometry.
         content.setBackground(UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,
                 TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
         TextView title = text(R.string.wifi, popupTitleSizeSp(), true, density);
         title.setCompoundDrawablesRelative(sizedDrawable(R.drawable.ic_wifi, 16), null, null, null);
         title.setCompoundDrawablePadding(dp(density, 6));
+        title.setTranslationY(dp(density, 5));
         LinearLayout header = new LinearLayout(activity);
         header.setTag("wifi_popup_header");
         header.setOrientation(LinearLayout.HORIZONTAL);
@@ -129,7 +130,9 @@ final class WifiSettingsDialog {
         wifiToggle = action("ON", "wifi_toggle", density, () -> dismissThen(openSystemWifiSettings));
         wifiToggle.setMinHeight(dp(density, 25));
         wifiToggle.setGravity(Gravity.CENTER);
-        header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 45), dp(density, 25)));
+        wifiToggle.setTextSize(14f);
+        wifiToggle.setTranslationY(dp(density, 5));
+        header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 44), dp(density, 23)));
         content.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 28)));
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
         status.setPadding(dp(density, 10), dp(density, 5), dp(density, 10), dp(density, 5));
@@ -139,12 +142,12 @@ final class WifiSettingsDialog {
 
         TextView networksHeading = text(R.string.wifi_available_networks, popupSectionSizeSp(), true, density);
         networksHeading.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
-        networksHeading.setPadding(0, dp(density, 5), 0, dp(density, 1));
+        networksHeading.setPadding(0, dp(density, 5), 0, 0);
         content.addView(networksHeading);
         scanState = text(R.string.wifi_scan_idle, popupMetaSizeSp(), false, density);
         scanState.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
         scanState.setPadding(0, 0, 0, dp(density, 2));
-        scanState.setMinHeight(dp(density, 16));
+        
         content.addView(scanState);
 
         permissionAction = action(R.string.wifi_grant_location_permission, "wifi_permission", density,
@@ -267,7 +270,7 @@ final class WifiSettingsDialog {
         window.setAttributes(params);
     }
 
-    static int popupWidthDp() { return 200; }
+    static int popupWidthDp() { return 190; }
 
     static float popupTextSizeSp() { return 12f; }
     static float networkTextSizeSp() { return 12f; }
@@ -716,7 +719,7 @@ final class WifiSettingsDialog {
         view.setFocusableInTouchMode(true);
         view.setClickable(true);
         if (view.getGravity() == 0) view.setGravity(Gravity.CENTER_VERTICAL);
-        view.setMinHeight(dp(density, 28));
+        view.setMinHeight(dp(density, 34));
         view.setPadding(dp(density, 10), dp(density, 3), dp(density, 10), dp(density, 3));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
