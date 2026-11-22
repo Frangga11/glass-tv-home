@@ -79,7 +79,8 @@ final class Glider extends View {
     private Bitmap shadow;
     private int shadowW, shadowH;
     private final Paint shadowPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
-    private final float shadowBlur, shadowDrop;
+    private float shadowBlur, shadowDrop;
+    private int shadowAlpha = 0x9A;
     /** How far the shadow is shown: it comes in as the glider turns to glass, and goes with the dark. */
     private float shadowMix;
     private ValueAnimator shadowFade;
@@ -305,6 +306,20 @@ final class Glider extends View {
         changed();
     }
 
+    /**
+     * Tunes only this Glider instance's shadow. Quick Settings uses a lighter, tighter cursor;
+     * all Home, Dock, and move-mode Gliders retain their established defaults.
+     */
+    void setPopupShadowStyle(float blurPx, float dropPx, int alpha) {
+        shadowBlur = Math.max(1f, blurPx);
+        shadowDrop = Math.max(0f, dropPx);
+        shadowAlpha = Math.max(0, Math.min(255, alpha));
+        shadow = null;
+        shadowW = 0;
+        shadowH = 0;
+        changed();
+    }
+
     /** Switches look at once; there is no blend between the two. The shadow eases in with the glass. */
     void setFocusStrokeWidth(float widthPx) {
         focusStroke.setStrokeWidth(Math.max(1f, widthPx));
@@ -432,7 +447,7 @@ final class Glider extends View {
             // Changing size mid-glide: stretch the shadow it has rather than blur a new one every
             // frame; the right one is made once the shape comes to rest.
             shadowPaint.setColor(0xFF000000);
-            shadowPaint.setAlpha(Math.round(0x9A * opacity * shadowMix));
+            shadowPaint.setAlpha(Math.round(shadowAlpha * opacity * shadowMix));
             area.set(shape.left - pad, shape.top - pad + shadowDrop, shape.right + pad, shape.bottom + pad + shadowDrop);
             canvas.drawBitmap(shadow, null, area, shadowPaint);
             return;
@@ -447,7 +462,7 @@ final class Glider extends View {
             shadowH = h;
         }
         shadowPaint.setColor(0xFF000000);
-        shadowPaint.setAlpha(Math.round(0x9A * opacity * shadowMix));
+        shadowPaint.setAlpha(Math.round(shadowAlpha * opacity * shadowMix));
         canvas.drawBitmap(shadow, shape.left - pad, shape.top - pad + shadowDrop, shadowPaint);
     }
 
