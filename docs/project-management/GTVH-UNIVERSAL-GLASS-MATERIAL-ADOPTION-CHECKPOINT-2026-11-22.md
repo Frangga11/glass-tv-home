@@ -96,3 +96,11 @@ The original planning section above records the earlier PR #162 proposal against
 - Post-merge CI and final documentation CI are still required. No independent Mi TV Stick acceptance is claimed for the post-sync APK.
 - The PR #170 findings are binding for all glass/focus work: clip the moving Glider to the actual rounded capsule silhouette, align the rim to measured capsule bounds, use one rim only, and seed the initial focused capsule explicitly. Do not change capsule measurements, layout, spacing, DPAD graph, focus ownership, dock/app movement, or animation.
 - PR #162 is no longer open. PR #62 remains deferred and untouched. No merge to `main` or release publication occurred in this workstream.
+
+
+## PR #170 baseline sync QA — 22 November 2026
+- Post-sync candidate source: `4d43dcc35c76d389015dcec26abf61dab21dae2c`.
+- Exact-head CI run `44993626885`: both required jobs SUCCESS.
+- QA artifact ID `14743495296`; archive size 1,454,550 bytes; SHA-256 `c54a7032718c7ffc8235658db9295c92cc1227009d57cc67912983518238f40c`.
+- Extracted APK: 1,653,162 bytes; SHA-256 `7131197a4a6d4e10989ccf516c48b1b6fb59ed2440852e70bb7670fe0da1fbce`. Archive integrity and manifest presence verified.
+- This candidate has not yet received separate physical Mi TV Stick acceptance. The earlier PR #170 acceptance is not generalized to this new SHA.
