@@ -66,7 +66,7 @@ final class UniversalGlassDrawable extends Drawable {
         this.cleanQuickSettings = cleanQuickSettings;
         // Keep the popup recognizably silver-glass, not a white translucent wash.
         // A cool slate veil preserves contrast for the locked bright-white typography.
-        popupVeil.setColor(cleanQuickSettings ? 0x48343E48 : 0x68151D25);
+        popupVeil.setColor(cleanQuickSettings ? 0x70151D25 : 0x68151D25);
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         inner.setStyle(Paint.Style.STROKE);
@@ -91,10 +91,10 @@ final class UniversalGlassDrawable extends Drawable {
         }
         radius = Math.min(radiusDp * density, area.height() / 2f);
         if (cleanQuickSettings) {
-            // Restrained silver highlights over a cool slate base. Keep wallpaper detail
-            // visible without washing out the established bright-white text treatment.
+            // Deeper neutral-silver glass: retain controlled highlights without a pale wash.
+            // The darker veil carries panel density; the gradient only supplies glass sheen.
             surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
-                    new int[]{0x38FFFFFF, 0x24FFFFFF, 0x18FFFFFF, 0x10343E48},
+                    new int[]{0x28FFFFFF, 0x18FFFFFF, 0x0CFFFFFF, 0x28151D25},
                     new float[]{0f, 0.22f, 0.68f, 1f}, Shader.TileMode.CLAMP));
         } else if (brightSilverPopup) {
             surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
