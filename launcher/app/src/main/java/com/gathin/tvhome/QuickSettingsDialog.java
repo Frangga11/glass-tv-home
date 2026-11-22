@@ -79,14 +79,14 @@ final class QuickSettingsDialog {
         int bottomClearancePx = dp(density, 5);
         // This is the minimum allowed top boundary. When the fixed-height panel leaves
         // unused vertical space, that space is absorbed above the popup, not below it.
-        int minimumTop = panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx);
+        int top = panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx);
         // The Dock can be bottom-anchored (horizontal carousel) or start-anchored
         // (vertical rail). Its top edge is a valid popup boundary only in the former mode.
         // A vertical rail spans the screen height, so use the Home bottom safe edge instead.
         int dockTop = isBottomAnchoredDock(dock) && dock.isShown() && dock.getHeight() > 0
                 ? dockAt[1] - hostAt[1]
                 : hostHeight - DockGeometry.safeBottomInsetPx(density);
-        int availableHeight = availablePanelHeight(dockTop, minimumTop, bottomClearancePx);
+        int availableHeight = availablePanelHeight(dockTop, top, bottomClearancePx);
         if (availableHeight <= 0) {
             android.util.Log.e("TvHome.QuickSettings", "No vertical space remains between navigation and dock");
             return null;
@@ -281,8 +281,8 @@ final class QuickSettingsDialog {
         // Anchor the panel to the Dock with an exact 5dp lower clearance. Any unused
         // space left by the 330dp design height moves the whole panel down, increasing
         // the distance from the Settings capsule to the popup's lower edge.
-        int top = panelTopForBottomClearance(dockTop, panelHeight, bottomClearancePx);
-        if (top < minimumTop) {
+        int positionedTop = panelTopForBottomClearance(dockTop, panelHeight, bottomClearancePx);
+        if (positionedTop < top) {
             android.util.Log.e("TvHome.QuickSettings",
                     "Computed popup top would overlap the Settings navigation clearance");
             return null;
@@ -304,9 +304,9 @@ final class QuickSettingsDialog {
                 + CAPSULE_GAP_DP + "dp; vertical inset " + PANEL_VERTICAL_INSET_DP
                 + "dp; Dock clearance " + Math.round(bottomClearancePx / density)
                 + "dp; Settings-to-popup clearance "
-                + Math.round((top - minimumTop) / density) + "dp surplus.");
+                + Math.round((positionedTop - top) / density) + "dp surplus.");
         final int panelWidth = width;
-        final int panelTop = top;
+        final int panelTop = positionedTop;
         final int finalPanelLeft = panelLeft;
         content.setLayoutParams(new ViewGroup.LayoutParams(panelWidth, panelHeight));
         content.measure(View.MeasureSpec.makeMeasureSpec(panelWidth, View.MeasureSpec.EXACTLY),
