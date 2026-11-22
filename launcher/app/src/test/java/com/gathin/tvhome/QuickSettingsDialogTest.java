@@ -22,7 +22,7 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 34)
+@Config(sdk = 34, qualifiers = "xhdpi")
 public class QuickSettingsDialogTest {
     private static final class RecordingActions implements QuickSettingsDialog.Actions {
         String lastAction;
@@ -50,18 +50,26 @@ public class QuickSettingsDialogTest {
         return host(activity, 409);
     }
 
-    private FrameLayout[] host(Activity activity, int dockTop) {
+    private FrameLayout[] host(Activity activity, int dockTopDp) {
+        float density = activity.getResources().getDisplayMetrics().density;
+        int screenWidth = Math.round(960f * density);
+        int screenHeight = Math.round(540f * density);
         FrameLayout root = new FrameLayout(activity);
         activity.setContentView(root);
-        // A 1920x1080 screen at 2x density is a 960x540dp layout canvas.
-        root.layout(0, 0, 960, 540);
+        // Model the Mi TV Stick's 1920x1080 physical screen at xhdpi (2x):
+        // the logical layout canvas is 960x540dp, represented here in physical pixels.
+        root.layout(0, 0, screenWidth, screenHeight);
         View settings = new View(activity);
-        root.addView(settings, new FrameLayout.LayoutParams(320, 30, Gravity.TOP | Gravity.CENTER_HORIZONTAL));
-        settings.layout(320, 29, 640, 59);
+        root.addView(settings, new FrameLayout.LayoutParams(
+                Math.round(320f * density), Math.round(30f * density),
+                Gravity.TOP | Gravity.CENTER_HORIZONTAL));
+        settings.layout(Math.round(320f * density), Math.round(29f * density),
+                Math.round(640f * density), Math.round(59f * density));
         View dock = new View(activity);
         root.addView(dock, new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, 60, Gravity.BOTTOM));
-        dock.layout(0, dockTop, 960, dockTop + 60);
+                FrameLayout.LayoutParams.MATCH_PARENT, Math.round(60f * density), Gravity.BOTTOM));
+        int dockTopPx = Math.round(dockTopDp * density);
+        dock.layout(0, dockTopPx, screenWidth, dockTopPx + Math.round(60f * density));
         return new FrameLayout[]{root, (FrameLayout) settings.getParent(), (FrameLayout) dock.getParent()};
     }
 
@@ -101,16 +109,19 @@ public class QuickSettingsDialogTest {
         views[0].getLocationOnScreen(hostAt);
         views[0].getChildAt(0).getLocationOnScreen(anchorAt);
         views[0].getChildAt(1).getLocationOnScreen(dockAt);
+        float density = activity.getResources().getDisplayMetrics().density;
+        int fiveDp = Math.round(5f * density);
         int panelTop = QuickSettingsDialog.panelTopInHost(anchorAt[1],
-                views[0].getChildAt(0).getHeight(), hostAt[1], 5);
+                views[0].getChildAt(0).getHeight(), hostAt[1], fiveDp);
         int dockTop = dockAt[1] - hostAt[1];
-        int availableHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, 5);
+        int availableHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, fiveDp);
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
-        assertEquals(340, availableHeight);
-        assertEquals(Math.round(330f * activity.getResources().getDisplayMetrics().density),
-                content.getMeasuredHeight());
-        assertEquals(5, dockTop - (panelTop + content.getMeasuredHeight()));
+        assertEquals(Math.round(340f * density), availableHeight);
+        assertEquals(Math.round(330f * density), content.getMeasuredHeight());
+        // 330dp panel in 340dp available space leaves 15dp to the Dock:
+        // the required 5dp clearance plus 10dp of intentional spare room.
+        assertEquals(Math.round(15f * density), dockTop - (panelTop + content.getMeasuredHeight()));
         for (String tag : new String[] {
                 "quick_settings_gap_header_grid",
                 "quick_settings_gap_grid_wallpaper",
@@ -139,7 +150,8 @@ public class QuickSettingsDialogTest {
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
-        assertEquals(330, find(dialog, "quick_settings_root").getMeasuredHeight());
+        assertEquals(Math.round(330f * activity.getResources().getDisplayMetrics().density),
+                find(dialog, "quick_settings_root").getMeasuredHeight());
         assertEquals(Math.round(245f * activity.getResources().getDisplayMetrics().density),
                 find(dialog, "quick_settings_root").getMeasuredWidth());
         float density = activity.getResources().getDisplayMetrics().density;
