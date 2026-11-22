@@ -2852,6 +2852,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 || id == R.id.btnCandyBox || id == R.id.btnSettings;
     }
 
+    /**
+     * Sends the shared Home/Dock Glider to a Home shelf action. This is not a second cursor:
+     * the existing Glider keeps its current bounds and spring state, then animates to this target.
+     */
+    private void moveHomeCapsuleCursor(View capsule) {
+        if (capsule == null || glider == null || !capsule.isShown()
+                || capsule.getWidth() <= 0 || capsule.getHeight() <= 0) return;
+        capsule.getLocationInWindow(pillAt);
+        glider.getLocationInWindow(rootAt);
+        float l = pillAt[0] - rootAt[0], t = pillAt[1] - rootAt[1];
+        glassShown = false;
+        gliderOnPill = true;
+        glider.setStyle(Glider.DARK);
+        glider.moveTo(l, t, l + capsule.getWidth(), t + capsule.getHeight(),
+                Math.min(20f * density, capsule.getHeight() / 2f));
+    }
+
     /** Sends the focus shape onto a pill: from a tile it glides up and narrows into the pill. */
     private void moveTopHighlight(View pill) {
         if (resuming) return;
