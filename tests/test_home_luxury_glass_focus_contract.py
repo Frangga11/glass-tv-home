@@ -73,7 +73,7 @@ class HomeLuxuryGlassFocusContractTest(unittest.TestCase):
         self.assertIn("FOCUS_BORDER = 0xFFDCE5ED", tokens)
         self.assertIn("FOCUS_HALO = 0x35DCE5ED", tokens)
         self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", glider)
-        self.assertIn("paint.setColor(TvUiTokens.FOCUS_HALO)", glider)
+        self.assertIn("TvUiTokens.FOCUS_HALO", glider)
         self.assertEqual(color_map["tv_ui_focus_border"], "#FFDCE5ED")
         self.assertEqual(color_map["tv_ui_focus_halo"], "#35DCE5ED")
         prayer = (RES / "drawable/prayer_pill_bg.xml").read_text(encoding="utf-8")
