@@ -1447,3 +1447,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - This integration branch is intentionally separate from `main`; no merge to `main` or release publication is claimed. The PR #170 physical-device acceptance remains scoped to its exact tested APK/source SHA; the post-sync build is a new candidate.
 - PR #62 remains deferred and untouched. PR #171 remains closed/unmerged.
 - Detailed record: `GTVH-PR170-UNIVERSAL-GLASS-SYNC-CHECKPOINT-2026-11-22.md`.
+
+
+## Post-sync QA artifact — 22 November 2026
+
+- Finalized PR #170-baseline sync candidate before this record: `4d43dcc35c76d389015dcec26abf61dab21dae2c`.
+- Exact-head CI run `44993626885`: **SUCCESS**; Launcher build and unit tests SUCCESS; Lists, tools and docs SUCCESS.
+- QA artifact ID `14743495296`, archive `glass-tv-home-cumulative-integration-127-4d43dcc35c76d389015dcec26abf61dab21dae2c`, archive size 1,454,550 bytes, archive SHA-256 `c54a7032718c7ffc8235658db9295c92cc1227009d57cc67912983518238f40c`.
+- Extracted APK: 1,653,162 bytes; SHA-256 `7131197a4a6d4e10989ccf516c48b1b6fb59ed2440852e70bb7670fe0da1fbce`. ZIP integrity passed; `AndroidManifest.xml` and `classes.dex` are present.
+- This is a QA APK, not a release publication. No physical Mi TV Stick test of this post-sync APK is claimed. The owner-confirmed device acceptance remains specific to PR #170 source SHA `2208afbc...`.
+- The final documentation commit below is subject to its own exact-head CI run; do not reuse the previous run to certify a later SHA.
