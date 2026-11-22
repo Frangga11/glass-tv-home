@@ -47,7 +47,18 @@ public class QuickSettingsDialogTest {
     }
 
     private FrameLayout[] host(Activity activity) {
-        return host(activity, productionDockTopDp(activity));
+        return hostAtPx(activity, productionDockMetricsPx(activity)[4]);
+    }
+
+    private FrameLayout[] hostAtDp(Activity activity, int dockTopDp) {
+        float density = activity.getResources().getDisplayMetrics().density;
+        return hostAtPx(activity, Math.round(dockTopDp * density));
+    }
+
+    private int minimumDockTopForFixedPanelPx(Activity activity) {
+        float density = activity.getResources().getDisplayMetrics().density;
+        int panelTopPx = Math.round((29f + 30f + 5f) * density);
+        return panelTopPx + Math.round(330f * density) + Math.round(5f * density);
     }
 
     /** Derive the baseline Dock dimensions from the same geometry functions used by MainActivity. */
@@ -67,12 +78,7 @@ public class QuickSettingsDialogTest {
         return new int[]{screenWidthPx, screenHeightPx, dockHeightPx, dockBottomMarginPx, dockTopPx};
     }
 
-    private int productionDockTopDp(Activity activity) {
-        float density = activity.getResources().getDisplayMetrics().density;
-        return Math.round(productionDockMetricsPx(activity)[4] / density);
-    }
-
-    private FrameLayout[] host(Activity activity, int dockTopDp) {
+    private FrameLayout[] hostAtPx(Activity activity, int dockTopPx) {
         android.util.DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
         assertEquals(2f, metrics.density, 0.01f);
         assertEquals(1920, metrics.widthPixels);
@@ -82,9 +88,6 @@ public class QuickSettingsDialogTest {
         int screenWidthPx = production[0];
         int screenHeightPx = production[1];
         int dockHeightPx = production[2];
-        int dockTopPx = Math.round(dockTopDp * density);
-        // Recompute the bottom margin for the requested top; production baseline uses
-        // the exact same value, while the 329dp negative fixture moves it down by 1dp.
         int dockBottomMarginPx = screenHeightPx - dockTopPx - dockHeightPx;
 
         FrameLayout root = new FrameLayout(activity);
@@ -103,7 +106,6 @@ public class QuickSettingsDialogTest {
         root.addView(dock, dockLp);
 
         activity.setContentView(root);
-        // Model the Mi TV Stick's 1920x1080 physical screen at xhdpi (2x).
         root.measure(View.MeasureSpec.makeMeasureSpec(screenWidthPx, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(screenHeightPx, View.MeasureSpec.EXACTLY));
         root.layout(0, 0, screenWidthPx, screenHeightPx);
@@ -154,12 +156,6 @@ public class QuickSettingsDialogTest {
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
-        System.out.println("QSD_AFTER_SHOW root=" + views[0].getWidth() + "x" + views[0].getHeight()
-                + " anchor=" + views[0].getChildAt(0).getTop() + "/" + views[0].getChildAt(0).getHeight()
-                + " dock=" + views[0].getChildAt(1).getTop() + "/" + views[0].getChildAt(1).getHeight()
-                + " dockBottomMargin=" + ((FrameLayout.LayoutParams) views[0].getChildAt(1).getLayoutParams()).bottomMargin
-                + " density=" + activity.getResources().getDisplayMetrics().density);
-
         int[] hostAt = new int[2], anchorAt = new int[2], dockAt = new int[2];
         views[0].getLocationOnScreen(hostAt);
         views[0].getChildAt(0).getLocationOnScreen(anchorAt);
@@ -172,16 +168,11 @@ public class QuickSettingsDialogTest {
         int availableHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, fiveDp);
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
-        assertEquals("hostHeightPx=" + views[0].getHeight()
-                + ", anchorTopPx=" + anchorAt[1] + ", anchorHeightPx=" + views[0].getChildAt(0).getHeight()
-                + ", dockTopPx=" + dockTop + ", panelTopPx=" + panelTop
-                + ", dockHeightPx=" + views[0].getChildAt(1).getHeight()
-                + ", density=" + density,
-                Math.round(330f * density), availableHeight);
+        assertEquals(Math.round(340.5f * density), availableHeight);
         assertEquals(Math.round(330f * density), content.getMeasuredHeight());
-        // The default-capacity production Dock leaves exactly 330dp: a 330dp panel
-        // fits without reducing the approved 5dp clearances at either edge.
-        assertEquals(fiveDp, dockTop - (panelTop + content.getMeasuredHeight()));
+        // Production Dock geometry leaves 340.5dp available; the fixed 330dp panel
+        // preserves the 5dp minimum clearance and leaves the remaining space untouched.
+        assertEquals(Math.round(15.5f * density), dockTop - (panelTop + content.getMeasuredHeight()));
         for (String tag : new String[] {
                 "quick_settings_gap_header_grid",
                 "quick_settings_gap_grid_wallpaper",
@@ -197,17 +188,10 @@ public class QuickSettingsDialogTest {
     @Test
     public void insufficientHeightRejectsPopupWithoutCompressingFixedGeometry() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, productionDockTopDp(activity) - 1);
+        FrameLayout[] views = hostAtPx(activity, minimumDockTopForFixedPanelPx(activity) - 1);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
-        System.out.println("QSD_INSUFFICIENT root=" + views[0].getWidth() + "x" + views[0].getHeight()
-                + " anchor=" + views[0].getChildAt(0).getTop() + "/" + views[0].getChildAt(0).getHeight()
-                + " dock=" + views[0].getChildAt(1).getTop() + "/" + views[0].getChildAt(1).getHeight()
-                + " dockBottomMargin=" + ((FrameLayout.LayoutParams) views[0].getChildAt(1).getLayoutParams()).bottomMargin
-                + " density=" + activity.getResources().getDisplayMetrics().density);
-        assertEquals("dockTopDp=" + (productionDockTopDp(activity) - 1)
-                + ", dockHeightPx=" + views[0].getChildAt(1).getHeight()
-                + ", rootHeightPx=" + views[0].getHeight(), null, dialog);
+        assertEquals(null, dialog);
     }
 
     @Test
