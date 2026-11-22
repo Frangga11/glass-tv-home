@@ -220,7 +220,7 @@ public final class ModernSettingsDialog {
         root.setPadding((int) (12 * density), (int) (8 * density), (int) (12 * density), (int) (12 * density));
 
         // Glass-only shell update. Existing geometry and all original white typography stay intact.
-        root.setBackground(UniversalGlassMaterial.panel(activity, density, 24f,
+        root.setBackground(UniversalGlassMaterial.panel(activity, root, density, 24f,
                 TvUiTokens.SHELL, TvUiTokens.BORDER));
         root.setClipToOutline(true);
 
