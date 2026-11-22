@@ -32,24 +32,6 @@ final class TvUiTokens {
     static final int FOCUS_HALO = 0x35DCE5ED; // soft frosted-silver cursor veil
     static final int GLASS_VEIL_COLOR = 0x88343E48;
 
-    // Bright neutral-silver palette reserved for the popup family.
-    static final int POPUP_PANEL_FALLBACK = 0xFFE8ECEF;
-    static final int POPUP_CARD_SURFACE = 0xFFE9EDF0;
-    static final int POPUP_CARD_SELECTED = 0xFFD9E0E5;
-    static final int POPUP_CONTROL_IDLE = 0xFFDDE3E7;
-    static final int POPUP_CONTROL_FOCUSED = 0xFFC9D3DA;
-    static final int POPUP_INPUT_SURFACE = 0xFFF4F6F7;
-    static final int POPUP_PANE_VEIL = 0x55FFFFFF;
-    static final int POPUP_BORDER = 0xFF9BA8B1;
-    static final int POPUP_BORDER_ACTIVE = 0xFF788994;
-    static final int POPUP_FOCUS_BORDER = 0xFF657984;
-    static final int POPUP_TEXT_PRIMARY = 0xFF293740;
-    static final int POPUP_TEXT_SECONDARY = 0xFF52616B;
-    static final int POPUP_TEXT_MUTED = 0xFF687680;
-    static final int POPUP_ACCENT = 0xFF536A78;
-    static final int POPUP_DISABLED_SURFACE = 0x88DDE3E7;
-    static final int POPUP_DISABLED_BORDER = 0x889BA8B1;
-
     // Persistent selected/active state is silver, never the same treatment as DPAD focus.
     static final int NAV_PROFILE_SELECTED = 0xFF46535F;
     static final int NAV_PROFILE_IDLE = 0xFF2B3540;
