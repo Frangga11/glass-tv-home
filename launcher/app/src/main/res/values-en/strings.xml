@@ -700,7 +700,6 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wifi_available_networks">Nearby networks</string>
     <string name="wifi_scan_idle">Network lists are available only when Android permits scanning.</string>
     <string name="wifi_scan_loading">Scanning for networks…</string>
-    <string name="wifi_scan_updated"></string>
     <string name="wifi_scan_limited">Android limited the scan. Showing last results if available.</string>
     <string name="wifi_scan_timeout">The scan did not return results. Try again later.</string>
     <string name="wifi_scan_unavailable">Network scanning is unavailable on this device.</string>
