@@ -953,7 +953,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Individual tabs below remain independent focus/click targets with transparent backgrounds.
         View navCapsule = findViewById(R.id.navPill);
         if (navCapsule != null) {
-            navCapsule.setBackground(UniversalGlassMaterial.surface(this, density, 20f,
+            navCapsule.setBackground(UniversalGlassMaterial.navigationSurface(this, density, 20f,
                     TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
             glider.addCompanion(navCapsule);
         }
@@ -972,6 +972,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             boolean navigationTab = id == R.id.btnHome || id == R.id.btnCandyBox
                     || id == R.id.btnSettings;
             if (navigationTab) {
+                // A restrained label shadow protects white text on bright wallpaper; no fill or
+                // geometry is added to the moving silver focus surface.
+                if (pill instanceof TextView) {
+                    ((TextView) pill).setShadowLayer(1.0f * density, 0f, 0.5f * density, 0xA6000000);
+                }
                 // Paint the same moving Glider inside each tab's own drawing pass:
                 // above the shared capsule surface, but below the tab's icon and label.
                 pill.setBackground(new GliderFocusDrawable(pill, glider));
