@@ -201,6 +201,7 @@ public class QuickSettingsDialogTest {
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
         int[] hostAt = new int[2], anchorAt = new int[2], dockAt = new int[2];
         views[0].getLocationOnScreen(hostAt);
         views[0].getChildAt(0).getLocationOnScreen(anchorAt);
@@ -218,7 +219,7 @@ public class QuickSettingsDialogTest {
         int[] contentAt = new int[2];
         content.getLocationOnScreen(contentAt);
         int actualPanelTop = contentAt[1] - hostAt[1];
-        int actualBottomGap = dockTop - (actualPanelTop + content.getMeasuredHeight());
+        int actualBottomGap = dockAt[1] - (contentAt[1] + content.getMeasuredHeight());
         System.out.println("QUICK_SETTINGS_GAP_FIXED dockTop=" + dockTop + " panelTop=" + actualPanelTop
                 + " height=" + content.getMeasuredHeight() + " hostY=" + hostAt[1]
                 + " screenY=" + contentAt[1] + " gap=" + actualBottomGap + " expected=" + fiveDp);
@@ -257,6 +258,7 @@ public class QuickSettingsDialogTest {
             assertNotNull("Quick Settings must open with Dock capacity " + capacity, dialog);
             assertTrue("Quick Settings must be visible with Dock capacity " + capacity,
                     dialog.isShowing());
+            Shadows.shadowOf(Looper.getMainLooper()).idle();
             View content = find(dialog, "quick_settings_root");
             assertNotNull(content);
             float density = activity.getResources().getDisplayMetrics().density;
@@ -275,8 +277,7 @@ public class QuickSettingsDialogTest {
             int[] contentAt = new int[2];
             content.getLocationOnScreen(contentAt);
             int actualPanelTop = contentAt[1] - hostAt[1];
-            int actualBottomGap = (dockAt[1] - hostAt[1])
-                    - (actualPanelTop + content.getMeasuredHeight());
+            int actualBottomGap = dockAt[1] - (contentAt[1] + content.getMeasuredHeight());
             System.out.println("QUICK_SETTINGS_GAP_CAPACITY capacity=" + capacity
                     + " dockTop=" + (dockAt[1] - hostAt[1]) + " panelTop=" + actualPanelTop
                     + " height=" + content.getMeasuredHeight() + " hostY=" + hostAt[1]
