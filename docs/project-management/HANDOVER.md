@@ -1389,3 +1389,71 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **New official starting point for all future work:** branch from `main` at `d17db23f2fdac3641dee860033e88aad1b8190de`. Do not continue from the old PR #156 feature branch as the baseline.
 - PR #62 remains OPEN / DRAFT / UNMERGED and deferred; do not alter, merge, or reuse its code without a separate audit and explicit approval. PR #153 and #154 remain closed unmerged; PR #155 remains merged.
 - Post-merge checkpoint: `GTVH-MAIN-INTEGRATION-CHECKPOINT-2026-11-22.md`.
+
+
+## Universal Glass Material Adoption — 22 November 2026
+
+- New focused workstream: PR #162 — [Adopt Universal Home glass material across Dock, home capsules and popups](https://github.com/Frangga11/glass-tv-home/pull/162).
+- Branch: `feat/universal-glass-material-adoption-001`; base `main` @ `71f3a051a25fd66cabfd1740756cc36442dc92cc`.
+- Upstream source: `Frangga11/tv-home-universal` @ `1c57fa905bfa76a0b0e8e8593d5efd7d1d97d33e`.
+- Latest implementation head: `fa42949b721bddad2cec32cab9879753eac53cd0`.
+- Ported Universal Home's `DockGlassDrawable` gradients/sweep/rims, `GlassMenu` dark panel foundation, and `GlassControls` control surfaces. Applied to the Dock tray, Home header capsules, shared navigation capsule, Quick Settings, and Wi-Fi popup/pointer/controls.
+- The existing GTVH Glider, GliderFocusDrawable, DockBreathingBorderView, DPAD, horizontal/vertical dock behavior, popup geometry, typography, spacing, and actions remain protected. The existing `glass_effects_enabled` preference and opaque fallbacks are retained.
+- The non-target Islamic Shelf and other GlassDrawable/Backdrop surfaces remain unchanged. No layout XML or focus/DPAD implementation files were changed.
+- MIT attribution is recorded in `THIRD_PARTY_NOTICES.md`.
+- Exact source-head CI #2528 / run `44961689958`: **both required jobs SUCCESS**. QA artifact ID `14729423171`, archive 1,451,733 bytes, SHA-256 `2aba5ce62acb765f7e5f349894a6c556a5da958b12612d60f7e83607adb22695`; expires 28 November 2026. Release publisher #890 was SKIPPED.
+- Physical Mi TV Stick visual acceptance for the new material remains pending. No device installation, release publication, or merge is claimed.
+- PR #162 remains OPEN / DRAFT / UNMERGED pending owner visual acceptance and explicit merge approval. PR #161 remains separate/unmerged. PR #62 remains deferred and untouched.
+- Detailed continuation record: `GTVH-UNIVERSAL-GLASS-MATERIAL-ADOPTION-CHECKPOINT-2026-11-22.md`.
+
+
+## PR #170 integration and synchronized handover — 22 November 2026
+
+- PR #170 — **Fix Quick Settings Glider capsule corners and focus geometry** — was merged into its declared base branch `feat/popup-bright-frosted-silver-001`.
+- Exact PR #170 head verified before merge: `2208afbc896f6b08d699156714e7d58dc964f721`.
+- Merge commit: `e47c7686233b4dd998fc24b7875e5bc235baecad`.
+- The immutable QA reference remains `baseline/pr-170-2dp-qa-2026-11-22` at the tested source checkpoint. Verified APK size 1,653,150 bytes; SHA-256 `33724e5d3daba097178e943434c685d9feafeb502a8bf5d65284f62b9a5b6955`. CI run `44981544358` passed required jobs. Release-publisher workflow was SKIPPED.
+- PR #170 is now CLOSED / MERGED. PR #171 remains CLOSED / UNMERGED and is not to be reused. A fresh live search after the merge shows no open PR numbered above #170.
+- PR #169 and lower-numbered PRs remain separate open queue items/parent history; do not treat them as “newer than #170” or merge/close them without their own audit. PR #62 remains deferred.
+- This merge integrates #170 into its base branch only. It does **not** merge the cumulative branch into `main`.
+- Before a later merge to `main`, audit the cumulative difference against current main. The pre-merge comparison showed the parent line 96 commits ahead and 1 behind, with merge base `71f3a051a25fd66cabfd1740756cc36442dc92cc`; resolve and validate that divergence on a dedicated integration branch.
+- No new physical Mi TV Stick acceptance is claimed by this record. Preserve the RE-SKIN / NOT REWIRE boundary and all locked geometry, DPAD, focus ownership and Glider behavior.
+
+
+## QA source pin clarification — 22 November 2026
+
+- To keep the tested source SHA independently pinned after documentation commits were added to the working baseline branch, a dedicated exact-source ref was created: `baseline/pr-170-qa-exact-2026-11-22` → `2208afbc896f6b08d699156714e7d58dc964f721`.
+- `baseline/pr-170-2dp-qa-2026-11-22` now also contains documentation-only commits; do not treat its current tip as the exact tested source SHA. The immutable QA source is the dedicated `baseline/pr-170-qa-exact-2026-11-22` ref above.
+
+
+## Owner physical-device acceptance — PR #170 cumulative QA — 22 November 2026
+
+- Owner explicitly confirms that the PR #170 checkpoint APK was installed and tested on the target Mi TV Stick and **works well**.
+- This is owner-reported physical-device acceptance for the cumulative APK built from exact source commit `2208afbc896f6b08d699156714e7d58dc964f721`, including the PR #169 parent implementation plus PR #170 Glider/focus geometry changes.
+- Device gate for this tested cumulative candidate: **PASS (owner-confirmed)**.
+- CI evidence remains run `44981544358` on exact source commit `2208afbc...`; required CI jobs passed. APK size 1,653,150 bytes and SHA-256 `33724e5d3daba097178e943434c685d9feafeb502a8bf5d65284f62b9a5b6955`.
+- This acceptance applies to the tested APK/source snapshot only. It does not automatically approve later source changes or the unrelated PRs #168, #166, #165, #164, #162, #161, #158 or #62.
+
+
+## PR #170 baseline integration — Universal Glass synchronization — 22 November 2026
+
+- Owner clarified that PR #170 is the governing baseline for this workstream; `main` is not the integration base for this delivery.
+- Immutable accepted source: `2208afbc896f6b08d699156714e7d58dc964f721` (`baseline/pr-170-qa-exact-2026-11-22`). The exact QA pin was not moved or modified.
+- Created `integration/pr170-universal-glass-sync-001` directly from that exact source SHA.
+- PR #162 was retargeted from `main` to this dedicated integration branch. The reconciled diff against PR #170 was limited to the Universal Glass Wi-Fi pointer backdrop adjustment in `UniversalGlassMaterial.java` plus documentation reconciliation; the broader Universal Glass material adoption was already present in the PR #170 cumulative ancestry and was not duplicated.
+- PR #162 was merged successfully on the exact head `b9866be19db1159f3a856199f8079c77bd50f7a4`. Merge commit / integration branch HEAD: `7df0a5bcf82b8fc67863abb886997e3b3df47de9`.
+- PR #162 CI on the retargeted PR head, run `44993172112`: both required jobs passed — Launcher build and unit tests; Lists, tools and docs. This is pre-merge exact-head evidence. Post-merge CI on the merge commit and documentation checkpoint remains the closeout gate.
+- PR #170 findings are mandatory invariants for all follow-on work: rounded capsule clipping, Glider bounds aligned to measured capsule bounds, one glass rim without stacked focus outline, and explicit initial focus seeding. Preserve sizes, spacing, layout, DPAD graph, focus ownership, dock/app behavior, and animations.
+- This integration branch is intentionally separate from `main`; no merge to `main` or release publication is claimed. The PR #170 physical-device acceptance remains scoped to its exact tested APK/source SHA; the post-sync build is a new candidate.
+- PR #62 remains deferred and untouched. PR #171 remains closed/unmerged.
+- Detailed record: `GTVH-PR170-UNIVERSAL-GLASS-SYNC-CHECKPOINT-2026-11-22.md`.
+
+
+## Post-sync QA artifact — 22 November 2026
+
+- Finalized PR #170-baseline sync candidate before this record: `4d43dcc35c76d389015dcec26abf61dab21dae2c`.
+- Exact-head CI run `44993626885`: **SUCCESS**; Launcher build and unit tests SUCCESS; Lists, tools and docs SUCCESS.
+- QA artifact ID `14743495296`, archive `glass-tv-home-cumulative-integration-127-4d43dcc35c76d389015dcec26abf61dab21dae2c`, archive size 1,454,550 bytes, archive SHA-256 `c54a7032718c7ffc8235658db9295c92cc1227009d57cc67912983518238f40c`.
+- Extracted APK: 1,653,162 bytes; SHA-256 `7131197a4a6d4e10989ccf516c48b1b6fb59ed2440852e70bb7670fe0da1fbce`. ZIP integrity passed; `AndroidManifest.xml` and `classes.dex` are present.
+- This is a QA APK, not a release publication. No physical Mi TV Stick test of this post-sync APK is claimed. The owner-confirmed device acceptance remains specific to PR #170 source SHA `2208afbc...`.
+- The final documentation commit below is subject to its own exact-head CI run; do not reuse the previous run to certify a later SHA.
