@@ -384,8 +384,7 @@ final class QuickSettingsDialog {
                         density * cornerRadiusDp);
                 if (view instanceof TextView) {
                     TextView label = (TextView) view;
-                    // Preserve the approved white typography in every focus state. A dark,
-                    // tight shadow/halo separates white glyphs from the moving silver glass.
+                    // Keep dark silver typography legible over bright glass with only a soft shadow.
                     label.setTextColor(PANEL_TEXT_PRIMARY);
                     label.setShadowLayer((focused ? 2.0f : 1.25f) * density, 0f,
                             0.5f * density, focused ? 0x55000000 : 0x33000000);
