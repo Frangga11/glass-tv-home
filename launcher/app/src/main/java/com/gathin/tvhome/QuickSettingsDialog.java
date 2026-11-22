@@ -331,6 +331,8 @@ final class QuickSettingsDialog {
                 params.y = panelTop;
                 params.dimAmount = popupDimAmount();
                 window.setAttributes(params);
+                // Re-apply through the Window API after geometry attributes are committed.
+                window.setDimAmount(popupDimAmount());
             }
             View target = controls[initialFocus >= 0 && initialFocus < controls.length
                     ? initialFocus : QuickSettingsFocusGraph.INPUT];
