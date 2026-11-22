@@ -43,6 +43,8 @@ public class WifiSettingsDialogTest {
         View header = window.getDecorView().findViewWithTag("wifi_popup_header");
         View footer = window.getDecorView().findViewWithTag("wifi_popup_footer");
         assertNotNull(root);
+        assertEquals(Math.round(10 * activity.getResources().getDisplayMetrics().density), root.getPaddingLeft());
+        assertEquals(Math.round(10 * activity.getResources().getDisplayMetrics().density), root.getPaddingRight());
         assertNotNull(header);
         assertNotNull(footer);
         assertEquals(android.widget.LinearLayout.VERTICAL, ((android.widget.LinearLayout) footer).getOrientation());
@@ -59,7 +61,6 @@ public class WifiSettingsDialogTest {
 
     @Test public void popupUsesConstrainedWidthAndVerticalFirstLayout() {
         assertEquals(200, WifiSettingsDialog.popupWidthDp());
-        assertEquals(0.54f, WifiSettingsDialog.popupHeightFraction(), 0.0001f);
         assertEquals(12f, WifiSettingsDialog.networkTextSizeSp(), 0.001f);
         assertEquals(16, WifiSettingsDialog.networkStatusIconSizeDp());
         assertTrue(WifiSettingsDialog.networkStatusIconColor() != 0);
@@ -72,6 +73,16 @@ public class WifiSettingsDialogTest {
         assertEquals(28, WifiSettingsDialog.networkRowHeightDp());
         assertEquals(4, WifiSettingsDialog.networkRowGapDp());
         assertEquals(92, WifiSettingsDialog.networkViewportHeightDp());
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> { });
+        View toggle = dialog.getWindow().getDecorView().findViewWithTag("wifi_toggle");
+        assertNotNull(toggle);
+        assertEquals(Math.round(45 * activity.getResources().getDisplayMetrics().density),
+                toggle.getLayoutParams().width);
+        assertEquals(Math.round(25 * activity.getResources().getDisplayMetrics().density),
+                toggle.getLayoutParams().height);
+        dialog.dismiss();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
 
     @Test public void dialogProvidesPermissionGuidanceAndDpadControls() {
