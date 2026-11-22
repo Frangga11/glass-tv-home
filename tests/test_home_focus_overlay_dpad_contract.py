@@ -64,7 +64,7 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
 
     def test_ayah_prayer_and_grid_form_one_vertical_path(self):
         ayah_start = MAIN.index("ayahOpenHint.setOnKeyListener")
-        ayah_end = MAIN.index("ayahOpenHint.setBackground", ayah_start)
+        ayah_end = MAIN.index("ayahOpenHint.setForeground", ayah_start)
         ayah = MAIN[ayah_start:ayah_end]
         self.assertIn("KEYCODE_DPAD_UP", ayah)
         self.assertIn("btnAssistant.requestFocus()", ayah)
