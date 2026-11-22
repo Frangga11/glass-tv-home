@@ -47,7 +47,9 @@ No changes intended to:
 
 ## Validation status
 - Source edits are committed on the work branch.
-- Automated exact-head CI and release/QA artifact validation for the new Activity-window capture path: pending.
+- Automated exact-head CI: SUCCESS for implementation commit `96937be5ceecb0c315a9e4167b20bc0db693d994` (run `45050141061`); `Lists, tools & docs` and `Launcher build and unit tests` both passed.
+- QA artifact `glass-tv-home-cumulative-integration-127-9980006524573a9fbb5ab5a1dd164dfbaac42128`; embedded `app-release.apk` extracted and ZIP integrity verified. APK size: 1,656,514 bytes. SHA-256: `cd9cc5914f3e0eb202f91018917b8d9fc33939973f65d618799426ef6d39b3f0`.
+- The checkpoint-only update does not alter implementation source; its exact-head CI must also pass before this PR is considered fully validated.
 - Physical Mi TV Stick visual acceptance: pending; no device acceptance is claimed.
 - Do not merge PR #177 or this follow-up as part of this workstream without explicit owner approval.
 
