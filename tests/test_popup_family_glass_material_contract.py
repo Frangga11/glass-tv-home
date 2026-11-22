@@ -26,7 +26,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         material = (JAVA / "UniversalGlassMaterial.java").read_text(encoding="utf-8")
         drawable = (JAVA / "UniversalGlassDrawable.java").read_text(encoding="utf-8")
         self.assertIn("PANEL_SHADE = 0x78151D25", material)
-        self.assertIn("new UniversalGlassDrawable(density, radiusDp, false, true)", material)
+        self.assertIn("new UniversalGlassDrawable(owner, density, radiusDp, false, true)", material)
         for token in ("0x28FFFFFF", "0x14FFFFFF", "0x0AFFFFFF", "0x1E111A22",
                       "0xDFFFFFFF", "0x55FFFFFF", "0x38FFFFFF"):
             self.assertIn(token, drawable)
@@ -40,7 +40,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
         quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
         self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", wifi)
-        self.assertIn("UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,", quick)
+        self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", quick)
         self.assertIn("new GliderFocusDrawable(control, glider)", quick)
         self.assertIn("QuickSettingsFocusGraph.connect(controls)", quick)
         self.assertIn("QuickSettingsFocusGraph", quick)
