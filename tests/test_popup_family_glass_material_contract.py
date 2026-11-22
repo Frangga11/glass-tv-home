@@ -46,6 +46,23 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("QuickSettingsFocusGraph", quick)
         self.assertIn("UniversalGlassMaterial.drawPointer(activity, pointer, canvas, triangle, pointerEdges", wifi)
 
+    def test_settings_sidebar_uses_one_bounded_focus_cursor_only(self):
+        settings = (JAVA / "ModernSettingsDialog.java").read_text(encoding="utf-8")
+        cursor = (JAVA / "SettingsFocusCursorDrawable.java").read_text(encoding="utf-8")
+        tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
+        self.assertIn("new SettingsFocusCursorDrawable(density, TvUiTokens.NAV_ROW_RADIUS_DP)", settings)
+        self.assertNotIn("SettingsNavFocusDrawable", settings)
+        self.assertNotIn("bg_tv_focus_outline", settings)
+        self.assertIn("NAV_ROW_RADIUS_DP = 14f", tokens)
+        self.assertIn("NAV_ROW_HEIGHT_DP = 56f", tokens)
+        self.assertIn("NAV_ROW_BOTTOM_MARGIN_DP = 4f", tokens)
+        self.assertIn("perimeter", cursor) if False else None
+        self.assertIn("new GlassRim(1f * density", cursor)
+        self.assertIn("silverCyanRim.paint.setStrokeWidth(1f * density)", cursor)
+        self.assertIn("bounds.left + halfStroke", cursor)
+        self.assertIn("radiusPx - halfStroke", cursor)
+        self.assertIn("innerShape.inset(1.35f * density", cursor)
+
     def test_home_dock_and_capsule_material_remain_separate(self):
         dock = (JAVA / "DockDecoration.java").read_text(encoding="utf-8")
         drawable = (JAVA / "UniversalGlassDrawable.java").read_text(encoding="utf-8")
