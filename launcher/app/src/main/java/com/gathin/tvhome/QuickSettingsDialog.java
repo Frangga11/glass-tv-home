@@ -452,8 +452,13 @@ final class QuickSettingsDialog {
         if (quickSettingsGlass != null && backdropWorker != null) {
             int[] hostWindowAt = new int[2];
             host.getLocationInWindow(hostWindowAt);
+            // Match UniversalGlassDrawable's 1dp optical inset so the sampled bitmap maps
+            // one-to-one to the actual drawable area instead of being stretched at the rim.
+            int opticalInsetPx = dp(density, 1);
             Rect captureRect = QuickSettingsBackdropCapture.panelCropInWindow(
-                    hostWindowAt[0], hostWindowAt[1], finalPanelLeft, panelTop, panelWidth, panelHeight);
+                    hostWindowAt[0], hostWindowAt[1],
+                    finalPanelLeft + opticalInsetPx, panelTop + opticalInsetPx,
+                    panelWidth - 2 * opticalInsetPx, panelHeight - 2 * opticalInsetPx);
             QuickSettingsBackdropCapture.capture(activity, captureRect, backdropWorker,
                     backdropCaptureActive, new QuickSettingsBackdropCapture.Listener() {
                         @Override public void onReady(Bitmap blurredPanel) {
