@@ -35,7 +35,8 @@ public class WifiSettingsDialogTest {
         assertNotNull(networkList);
         assertTrue(networkList instanceof android.widget.ScrollView);
         assertTrue(((android.widget.ScrollView) networkList).isVerticalScrollBarEnabled());
-        assertEquals(WifiSettingsDialog.networkViewportHeightDp() * 2,
+        assertEquals(Math.round(WifiSettingsDialog.networkViewportHeightDp()
+                        * activity.getResources().getDisplayMetrics().density),
                 networkList.getLayoutParams().height);
         assertEquals(0f, ((android.widget.LinearLayout.LayoutParams) networkList.getLayoutParams()).weight, 0.001f);
         View root = window.getDecorView().findViewWithTag("wifi_popup_root");
@@ -60,7 +61,7 @@ public class WifiSettingsDialogTest {
         assertEquals(200, WifiSettingsDialog.popupWidthDp());
         assertEquals(0.54f, WifiSettingsDialog.popupHeightFraction(), 0.0001f);
         assertEquals(12f, WifiSettingsDialog.networkTextSizeSp(), 0.001f);
-        assertEquals(18, WifiSettingsDialog.networkStatusIconSizeDp());
+        assertEquals(16, WifiSettingsDialog.networkStatusIconSizeDp());
         assertTrue(WifiSettingsDialog.networkStatusIconColor() != 0);
         assertEquals(14f, WifiSettingsDialog.popupTitleSizeSp(), 0.001f);
         assertEquals(12f, WifiSettingsDialog.popupSectionSizeSp(), 0.001f);
