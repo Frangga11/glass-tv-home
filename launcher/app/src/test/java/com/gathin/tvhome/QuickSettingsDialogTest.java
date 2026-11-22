@@ -219,7 +219,10 @@ public class QuickSettingsDialogTest {
         content.getLocationOnScreen(contentAt);
         int actualPanelTop = contentAt[1] - hostAt[1];
         int actualBottomGap = dockTop - (actualPanelTop + content.getMeasuredHeight());
-        assertEquals("Popup lower edge must remain exactly 5dp above the Dock", fiveDp, actualBottomGap);
+        assertEquals("Popup lower edge must remain exactly 5dp above the Dock"
+                + " [dockTop=" + dockTop + ", contentTop=" + actualPanelTop
+                + ", contentHeight=" + content.getMeasuredHeight() + ", hostY=" + hostAt[1]
+                + ", contentScreenY=" + contentAt[1] + "]", fiveDp, actualBottomGap);
         assertEquals("The 10.5dp surplus must move the popup down from its minimum top",
                 Math.round(10.5f * density), actualPanelTop - panelTop);
         assertEquals("Popup top must be derived from Dock top, measured panel height and exact clearance",
@@ -271,7 +274,10 @@ public class QuickSettingsDialogTest {
             int actualPanelTop = contentAt[1] - hostAt[1];
             int actualBottomGap = (dockAt[1] - hostAt[1])
                     - (actualPanelTop + content.getMeasuredHeight());
-            assertEquals("Every supported Dock capacity must preserve the exact 5dp lower gap",
+            assertEquals("Every supported Dock capacity must preserve the exact 5dp lower gap"
+                    + " [capacity=" + capacity + ", dockTop=" + (dockAt[1] - hostAt[1])
+                    + ", contentTop=" + actualPanelTop + ", contentHeight=" + content.getMeasuredHeight()
+                    + ", hostY=" + hostAt[1] + ", contentScreenY=" + contentAt[1] + "]",
                     Math.round(5f * density), actualBottomGap);
             assertTrue("Popup must never overlap the Settings capsule clearance",
                     actualPanelTop >= top);
