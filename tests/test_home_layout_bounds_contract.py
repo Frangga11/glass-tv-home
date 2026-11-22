@@ -103,7 +103,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         for view_id in ("locationPill", "weatherAirQuality", "btnInputs", "btnWifi",
                         "btnAssistant", "btnHome", "btnCandyBox", "btnSettings"):
             self.assertIn(f"R.id.{view_id}", header)
-        self.assertIn("new GlassDrawable(pill", header)
+        self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", header)
         self.assertIn("new GliderFocusDrawable(pill, glider)", header)
         self.assertIn("new android.graphics.drawable.LayerDrawable(", header)
 
@@ -211,7 +211,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
                     if node.get(ANDROID + "id") == "@+id/navPill"), None)
         self.assertIsNotNone(nav)
         self.assertEqual(nav.get(ANDROID + "background"), "@drawable/header_glass_pill_bg")
-        self.assertIn("navCapsule.setBackground(new GlassDrawable(navCapsule", MAIN)
+        self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", MAIN)
         self.assertIn("new GliderFocusDrawable(pill, glider)", MAIN)
         self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
