@@ -8,20 +8,23 @@
 - PR disposition: intended as a separate draft follow-up to PR #177; no merge or release authorization.
 
 ## Owner design intent
-The Quick Settings popup should feel fresh, clean, bright and premium:
-- substantial smoked-silver glass with controlled silver highlights, not a pale white wash or an opaque slab;
-- wallpaper remains visible through the material, but does not overpower the panel;
+The Quick Settings popup should feel clean, clear and premium, like polished glass:
+- retain the existing cool slate-silver hue and bright-white typography;
+- show the wallpaper naturally through a restrained backdrop blur and transparent silver tint;
+- use a precise upper specular highlight, fine silver rim and subtle inner reflection to create a clean glass sheen;
+- keep capsule colours in the existing slate family; improve translucency and add a narrow top reflection rather than recolouring controls;
 - clean typography with strong readability;
 - restrained silver/cyan focus cursor that is easy to identify without visual excess.
 
 ## Root-cause observations
-The first clean-glass pass overcorrected the material toward a pale white veil and light idle capsules. On the TV, the wallpaper bled through too strongly and the panel lost its silver density. The corrective pass restores a stronger neutral-slate veil and smoked-silver capsule fills while preserving the white typography.
+The first passes alternated between an overexposed white veil and an excessively dark smoked layer. The TV captures showed that neither produced the requested clean polished-glass effect. The final material pass retains the established slate-silver RGB identity, reduces the dark veil, restores a layered silver highlight, and treats each capsule as translucent glass with a restrained top-edge reflection.
 
 ## Scoped implementation
 - Added UniversalGlassMaterial.quickSettingsPanel(...), a Quick Settings-only surface recipe. Existing generic popup material remains unchanged for Wi-Fi and other dialogs.
 - Added quickSettingsControlIdle(...) for a slightly brighter idle capsule with a quiet neutral edge.
-- Tuned the dedicated Quick Settings surface mode to use a deeper neutral-slate veil (0x70151D25) and restrained silver highlight gradient (0x28FFFFFF, 0x18FFFFFF, 0x0CFFFFFF, 0x28151D25); existing backdrop blur, rim and window-light path are retained.
-- Restored substantial smoked-silver idle capsules (0x70343E48 to 0x60303A44) with a neutral silver edge.
+- Tuned the dedicated Quick Settings surface mode to use a lower-opacity neutral-slate veil (0x42151D25) and a clean silver highlight gradient (0x3CFFFFFF, 0x24FFFFFF, 0x12FFFFFF, 0x20343E48).
+- Added a controlled reflective sweep (0x4AFFFFFF to transparent), a fine polished silver rim, and a subtle inner edge reflection.
+- Preserved the capsule slate RGB values (0x343E48 / 0x303A44), reduced opacity to 0x55 / 0x45, and added a soft upper specular overlay (0x30FFFFFF).
 - Quick Settings primary and secondary text use the established bright-white tokens (TvUiTokens.TEXT_PRIMARY / TEXT_SECONDARY); only a restrained shadow is retained for readability.
 - The glass-disabled fallback retains the existing dark-silver structural surface and matching capsule fills so bright-white typography remains readable when glass effects are turned off.
 - Quick Settings Glider keeps the same spring animation, target bounds, companion clipping, single-rim ownership, DPAD graph and focus transitions. Its popup-only rim is reduced to 1.25dp and its instance shadow is tuned to 14dp blur, 3dp drop and alpha 0x58.
@@ -36,7 +39,7 @@ No changes intended to:
 - DPAD focus graph, action routing, popup lifecycle, dock geometry, Home UI, Wi-Fi popup, Modern Settings, or Prayer popup.
 
 ## Regression coverage
-- Quick Settings contract updated for locked bright-white typography, denser smoked-silver panel and capsules, and reduced focus treatment.
+- Quick Settings contract updated for locked bright-white typography, slate RGB preservation, translucent glass alpha, controlled gloss and isolated focus treatment.
 - Popup-family contract verifies generic Wi-Fi panel material remains unchanged.
 - Added a contract proving popup-only Glider shadow tuning does not change shared defaults.
 
@@ -48,7 +51,7 @@ No changes intended to:
 
 ## Device acceptance checklist
 1. Inspect the popup on both bright and dark wallpapers at 1920x1080 / 320dpi.
-2. Confirm the panel reads as clean substantial smoked-silver glass rather than pale white wash or opaque matte.
+2. Confirm the panel reads as clean clear polished glass with retained slate-silver colour, visible wallpaper detail and controlled highlights.
 3. Confirm title, capsule labels and summaries remain legible at normal TV viewing distance.
 4. Navigate every row with DPAD and verify the cursor is obvious, restrained, correctly clipped and smoothly animated.
 5. Verify all dimensions, spacing, popup position and exact Dock clearance remain unchanged.
