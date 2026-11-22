@@ -40,6 +40,19 @@ final class UniversalGlassMaterial {
         return new UniversalGlassDrawable(density, radiusDp, true);
     }
 
+    /**
+     * Clean, brighter frosted-silver shell dedicated to Quick Settings. Other popups keep
+     * the established darker Universal panel material until separately accepted.
+     */
+    static Drawable quickSettingsPanel(Context context, View owner, float density, float radiusDp,
+                                       int fallbackSurfaceColor, int fallbackBorderColor) {
+        if (!isGlassEnabled(context)) {
+            return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
+        }
+        if (owner != null) Backdrop.watch(owner);
+        return new UniversalGlassDrawable(owner, density, radiusDp, false, true, true);
+    }
+
     /** A single neutral Universal Home surface, or GTVH's opaque fallback. */
     static Drawable surface(Context context, float density, float radiusDp,
                             int fallbackSurfaceColor, int fallbackBorderColor) {
@@ -66,6 +79,22 @@ final class UniversalGlassMaterial {
         solid.setColor(fillColor);
         solid.setStroke(Math.max(1, Math.round(1.25f * density)), borderColor);
         return solid;
+    }
+
+    /**
+     * Slightly brighter idle capsules for the clean Quick Settings panel. The border is
+     * deliberately neutral so the DPAD Glider remains the only moving focus indicator.
+     */
+    static GradientDrawable quickSettingsControlIdle(Context context, float density, float radiusDp,
+                                                      int fallbackFill, int fallbackBorder) {
+        if (!isGlassEnabled(context)) {
+            return solidSurface(density, radiusDp, fallbackFill, fallbackBorder);
+        }
+        GradientDrawable glass = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0x34FFFFFF, 0x1CFFFFFF});
+        glass.setCornerRadius(radiusDp * density);
+        glass.setStroke(Math.max(1, Math.round(density)), 0x66899AA6);
+        return glass;
     }
 
     /** Idle control surface from Universal Home GlassControls.surface(), with GTVH radius retained. */
