@@ -450,7 +450,7 @@ public final class ModernSettingsDialog {
             }
         };
 
-        profileCard.setForeground(activity.getDrawable(R.drawable.bg_tv_focus_outline));
+        profileCard.setForeground(new SettingsFocusCursorDrawable(density, TvUiTokens.CARD_RADIUS_DP));
 
         profileCard.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
