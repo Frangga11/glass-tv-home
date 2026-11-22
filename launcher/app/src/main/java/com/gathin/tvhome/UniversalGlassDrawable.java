@@ -66,7 +66,9 @@ final class UniversalGlassDrawable extends Drawable {
         this.cleanQuickSettings = cleanQuickSettings;
         // Keep the popup recognizably silver-glass, not a white translucent wash.
         // A cool slate veil preserves contrast for the locked bright-white typography.
-        popupVeil.setColor(cleanQuickSettings ? 0x42151D25 : 0x68151D25);
+        // Quick Settings uses a clear optical surface, not a blurred/fogged backdrop.
+        // The low-alpha slate tint preserves the existing hue without whitening the panel.
+        popupVeil.setColor(cleanQuickSettings ? 0x24343E48 : 0x68151D25);
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         inner.setStyle(Paint.Style.STROKE);
@@ -91,11 +93,11 @@ final class UniversalGlassDrawable extends Drawable {
         }
         radius = Math.min(radiusDp * density, area.height() / 2f);
         if (cleanQuickSettings) {
-            // Clear silver glass: a restrained slate veil carries the existing colour while
-            // the brighter upper gradient restores depth, clarity and a clean reflective face.
+            // Clear optical glass: almost no milky fill. The slate tint is supplied by the
+            // dedicated veil; this gradient contributes only a restrained upper silver sheen.
             surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
-                    new int[]{0x3CFFFFFF, 0x24FFFFFF, 0x12FFFFFF, 0x20343E48},
-                    new float[]{0f, 0.22f, 0.68f, 1f}, Shader.TileMode.CLAMP));
+                    new int[]{0x18FFFFFF, 0x0CFFFFFF, 0x04343E48, 0x18343E48},
+                    new float[]{0f, 0.12f, 0.62f, 1f}, Shader.TileMode.CLAMP));
         } else if (brightSilverPopup) {
             surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
                     new int[]{0x28FFFFFF, 0x14FFFFFF, 0x0AFFFFFF, 0x1E111A22},
@@ -151,7 +153,7 @@ final class UniversalGlassDrawable extends Drawable {
         }
         reflection.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
                 cleanQuickSettings
-                        ? new int[]{0x4AFFFFFF, 0x1FFFFFFF, 0x00FFFFFF}
+                        ? new int[]{0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF}
                         : brightSilverPopup
                         ? new int[]{0x38FFFFFF, 0x14FFFFFF, 0x00FFFFFF}
                         : new int[]{0x22FFFFFF, 0x08FFFFFF, 0x00FFFFFF},
@@ -178,7 +180,11 @@ final class UniversalGlassDrawable extends Drawable {
         prepare(sourceBounds);
         if (area.isEmpty()) return;
         if (brightSilverPopup && owner != null) {
-            backdropFill.draw(canvas, owner, area, radius, 1f);
+            // Generic popups retain their established blurred backdrop. Quick Settings is
+            // intentionally clear: drawing Backdrop.Fill here creates the fog seen on TV.
+            if (!cleanQuickSettings) {
+                backdropFill.draw(canvas, owner, area, radius, 1f);
+            }
             canvas.drawRoundRect(area, radius, radius, popupVeil);
         }
         canvas.drawRoundRect(area, radius, radius, surface);
@@ -187,6 +193,7 @@ final class UniversalGlassDrawable extends Drawable {
     void drawReflection(Canvas canvas, RectF sourceBounds) {
         prepare(sourceBounds);
         if (area.isEmpty()) return;
+        if (cleanQuickSettings) return; // No broad white wash across the clear glass face.
         int saved = canvas.save();
         canvas.clipPath(clip);
         canvas.drawPath(sweep, reflection);
