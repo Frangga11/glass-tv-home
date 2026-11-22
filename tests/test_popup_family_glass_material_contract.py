@@ -94,7 +94,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("glider.addCompanion(navCapsule)", main)
         self.assertNotIn("homeCapsuleGlider", main)
         self.assertNotIn("private void ensureHomeCapsuleGlider()", main)
-        self.assertIn("private boolean isHomeCapsuleCursorTarget(View view)", main)
+        self.assertNotIn("private boolean isHomeCapsuleCursorTarget(View view)", main)
 
     def test_home_dock_and_capsule_material_remain_separate(self):
         dock = (JAVA / "DockDecoration.java").read_text(encoding="utf-8")
