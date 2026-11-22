@@ -989,6 +989,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     // Any header focus supersedes a deferred Grid target.
                     gridFocusRequestGeneration++;
                     SoundEffects.playNav();
+                    // Keep each tab's measured segment geometry stable inside the unified capsule.
                 }
             });
         }
