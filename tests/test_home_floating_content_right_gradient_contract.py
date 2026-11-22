@@ -76,10 +76,10 @@ class HomeFloatingContentRightGradientContractTest(unittest.TestCase):
         self.assertIn("@+id/prayerTable", ids)
         self.assertIn("@+id/prayerHeader", ids)
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
-        focus_start = main.index("prayerHeaderView.setBackground(TvFocusIndicator.createRoundedStateBackground(")
+        focus_start = main.index("prayerHeaderView.setBackground(new GliderFocusDrawable(prayerHeaderView, glider, 8f * density))")
         focus_end = main.index("prayerHeaderView.setOnFocusChangeListener(", focus_start)
         focus = main[focus_start:focus_end]
-        self.assertIn("0x00000000, TvUiTokens.FOCUS_BORDER", focus)
+        self.assertIn("GliderFocusDrawable(prayerHeaderView, glider, 8f * density)", focus)
         self.assertIn("@+id/islamicShelf", ids)
         hint = next(node for node in root.iter() if node.get(ANDROID + "id") == "@+id/ayahOpenHint")
         self.assertEqual(hint.get(ANDROID + "textSize"), "9sp")
