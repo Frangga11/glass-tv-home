@@ -10,7 +10,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
     def test_settings_shell_changes_material_only_and_keeps_white_text(self):
         settings = (JAVA / "ModernSettingsDialog.java").read_text(encoding="utf-8")
         tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
-        self.assertIn("UniversalGlassMaterial.panel(activity, density, 24f", settings)
+        self.assertIn("UniversalGlassMaterial.panel(activity, root, density, 24f", settings)
         self.assertIn("TvUiTokens.TEXT_PRIMARY", settings)
         self.assertIn("static final int TEXT_PRIMARY = 0xFFFFFFFF", tokens)
 
@@ -31,17 +31,20 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
                       "0xDFFFFFFF", "0x55FFFFFF", "0x38FFFFFF"):
             self.assertIn(token, drawable)
         self.assertIn("silverCyanIdentity || brightSilverPopup", drawable)
+        self.assertIn("backdropFill.draw(canvas, owner, area, radius, 1f)", drawable)
+        self.assertIn("Backdrop.watch(owner)", material)
+        self.assertIn("Backdrop.watch(pointer)", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
         self.assertIn("getBoolean(\"glass_effects_enabled\", true)", material)
 
     def test_wifi_and_quick_settings_share_panel_material_without_layout_or_focus_rewire(self):
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
         quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
-        self.assertIn("UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,", wifi)
+        self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", wifi)
         self.assertIn("UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,", quick)
         self.assertIn("new GliderFocusDrawable(control, glider)", quick)
         self.assertIn("QuickSettingsFocusGraph.connect(controls)", quick)
         self.assertIn("QuickSettingsFocusGraph", quick)
-        self.assertIn("UniversalGlassMaterial.drawPointer(activity, canvas, triangle, pointerEdges", wifi)
+        self.assertIn("UniversalGlassMaterial.drawPointer(activity, pointer, canvas, triangle, pointerEdges", wifi)
 
     def test_home_dock_and_capsule_material_remain_separate(self):
         dock = (JAVA / "DockDecoration.java").read_text(encoding="utf-8")
