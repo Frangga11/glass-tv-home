@@ -272,17 +272,21 @@ final class QuickSettingsDialog {
 
         int naturalHeight = measureNaturalHeight(content, width);
         int fixedPanelHeight = dp(density, PANEL_HEIGHT_DP);
-        if (naturalHeight > fixedPanelHeight || fixedPanelHeight > availableHeight) {
-            android.util.Log.e("TvHome.QuickSettings", "Quick Settings cannot fit with fixed geometry: "
+        // Keep every capsule, row, inset and section gap at its approved size. The 330dp
+        // panel includes optional trailing breathing room; on a larger four-column Dock,
+        // use only the available height when that trailing space is reduced. Never scale
+        // or compress the actual content to make the dialog fit.
+        int panelHeight = Math.min(fixedPanelHeight, availableHeight);
+        if (naturalHeight > panelHeight) {
+            android.util.Log.e("TvHome.QuickSettings", "Quick Settings content cannot fit without compression: "
                     + Math.round(naturalHeight / density) + "dp content, "
-                    + PANEL_HEIGHT_DP + "dp panel, "
+                    + Math.round(panelHeight / density) + "dp panel, "
                     + Math.round(availableHeight / density) + "dp available");
             return null;
         }
 
-        // Fixed 330dp panel; preserve all existing content geometry and add the approved 10dp below it.
-        // All existing section positions, dimensions, insets and gaps remain unchanged.
-        int panelHeight = fixedPanelHeight;
+        // Preserve the full 330dp design panel whenever clearance permits. Only its
+        // unused trailing breathing room contracts for supported Dock capacities.
         android.util.Log.i("TvHome.QuickSettings", "Fixed panel " + Math.round(width / density)
                 + "x" + Math.round(panelHeight / density) + "dp; side inset "
                 + PANEL_SIDE_INSET_DP + "dp; capsule width " + WIDE_TILE_WIDTH_DP
