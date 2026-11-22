@@ -115,7 +115,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("pressed.setColor(TvUiTokens.POPUP_CARD_SELECTED)", material)
         self.assertIn("focused.setColor(TvUiTokens.POPUP_CONTROL_FOCUSED)", material)
         self.assertIn("new UniversalGlassDrawable(density, radiusDp, false, true)", material)
-        self.assertIn("TvUiTokens.POPUP_TEXT_PRIMARY", (JAVA / "TvUiTokens.java").read_text(encoding="utf-8"))
+        self.assertIn("static final int POPUP_TEXT_PRIMARY = 0xFF293740", (JAVA / "TvUiTokens.java").read_text(encoding="utf-8"))
         self.assertIn("TvUiTokens.POPUP_TEXT_PRIMARY", (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8"))
         self.assertIn("TvUiTokens.POPUP_TEXT_PRIMARY", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
         settings = (JAVA / "ModernSettingsDialog.java").read_text(encoding="utf-8")
