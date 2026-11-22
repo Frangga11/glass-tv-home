@@ -168,6 +168,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean horizontalDockCollapseInProgress;
     /** Deferred Quick Settings launch after the expanded Dock frame has collapsed safely. */
     private Runnable pendingQuickSettingsOpen;
+    /** Activity-owned Quick Settings window; keeps one modal instance and closes it with its host. */
+    private AlertDialog quickSettingsDialog;
     /** Grid rows inside the expanded viewport: one initially, then two beneath the raised Dock. */
     private int horizontalGridViewportRows = 1;
     private int cachedGridRowPitchPx;
@@ -2163,6 +2165,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     @Override
     protected void onDestroy() {
+        if (quickSettingsDialog != null) {
+            quickSettingsDialog.dismiss();
+            quickSettingsDialog = null;
+        }
         super.onDestroy();
         WifiSettingsDialog.onHostDestroyed();
         ModernSettingsDialog.onHostDestroyed(this);
@@ -5985,8 +5991,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void showQuickControlPopup(int initialFocus) {
         if (isFinishing() || isDestroyed()) return;
+        if (quickSettingsDialog != null && quickSettingsDialog.isShowing()) return;
         if (openMenu != null) closeMenu(false);
         SoundEffects.playSelect();
+        android.util.Log.i("TvHome.QuickSettings", "Settings activation: gridExpanded="
+                + horizontalGridExpanded + ", collapseInProgress=" + horizontalDockCollapseInProgress
+                + ", dockMode=" + DockPreferences.load(this).orientation
+                + ", capacity=" + DockPreferences.load(this).capacity);
 
         // Quick Settings must not be measured against a Dock that is still raised for overflow.
         // Reuse the established focus-safe collapse path; do not squeeze or overlap the popup.
@@ -6017,7 +6028,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
 
-        QuickSettingsDialog.show(this, root, anchor, dockRecycler, new QuickSettingsDialog.Actions() {            @Override public String languageSummary() {
+        final AlertDialog[] dialogRef = new AlertDialog[1];
+        dialogRef[0] = QuickSettingsDialog.show(this, root, anchor, dockRecycler, new QuickSettingsDialog.Actions() {            @Override public String languageSummary() {
                 return AppLanguage.getLanguageBadge(MainActivity.this);
             }
             @Override public String powerTitle() {
@@ -6060,10 +6072,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 openSystemSettings(systemIntent(Settings.ACTION_SETTINGS));
             }
         }, initialFocus, () -> {
+            if (quickSettingsDialog == dialogRef[0]) quickSettingsDialog = null;
             if (!isFinishing() && !isDestroyed() && anchor.isAttachedToWindow()) {
                 anchor.requestFocus();
             }
         });
+        quickSettingsDialog = dialogRef[0];
+        if (quickSettingsDialog == null) {
+            android.util.Log.e("TvHome.QuickSettings",
+                    "Dialog creation returned null; inspect the preceding geometry/content rejection log");
+        } else {
+            android.util.Log.i("TvHome.QuickSettings",
+                    "Dialog created; isShowing=" + quickSettingsDialog.isShowing()
+                            + ", window=" + quickSettingsDialog.getWindow());
+        }
     }
 
     public void showSettingsPopup() {
