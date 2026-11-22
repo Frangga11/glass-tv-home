@@ -61,7 +61,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("NAV_ROW_BOTTOM_MARGIN_DP = 4f", tokens)
         self.assertIn("new GlassRim(1f * density", cursor)
         self.assertIn("silverCyanRim.paint.setStrokeWidth(1f * density)", cursor)
-        self.assertIn("bounds.left + halfStroke", cursor)
+        self.assertIn("b.left + halfStroke", cursor)
         self.assertIn("radiusPx - halfStroke", cursor)
         self.assertIn("innerShape.inset(1.35f * density", cursor)
 
