@@ -327,9 +327,10 @@ final class QuickSettingsDialog {
                 WindowManager.LayoutParams params = window.getAttributes();
                 params.x = finalPanelLeft;
                 params.y = panelTop;
-                params.dimAmount = 0f;
+                // A restrained backdrop dim separates Home typography without obscuring wallpaper.
+                window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                params.dimAmount = 0.08f;
                 window.setAttributes(params);
-                window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             }
             View target = controls[initialFocus >= 0 && initialFocus < controls.length
                     ? initialFocus : QuickSettingsFocusGraph.INPUT];
