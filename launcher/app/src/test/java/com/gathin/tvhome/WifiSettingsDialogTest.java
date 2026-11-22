@@ -35,8 +35,9 @@ public class WifiSettingsDialogTest {
         assertNotNull(networkList);
         assertTrue(networkList instanceof android.widget.ScrollView);
         assertTrue(((android.widget.ScrollView) networkList).isVerticalScrollBarEnabled());
-        assertEquals(0, networkList.getLayoutParams().height);
-        assertEquals(1f, ((android.widget.LinearLayout.LayoutParams) networkList.getLayoutParams()).weight, 0.001f);
+        assertEquals(WifiSettingsDialog.networkViewportHeightDp() * 2,
+                networkList.getLayoutParams().height);
+        assertEquals(0f, ((android.widget.LinearLayout.LayoutParams) networkList.getLayoutParams()).weight, 0.001f);
         View root = window.getDecorView().findViewWithTag("wifi_popup_root");
         View header = window.getDecorView().findViewWithTag("wifi_popup_header");
         View footer = window.getDecorView().findViewWithTag("wifi_popup_footer");
@@ -56,19 +57,20 @@ public class WifiSettingsDialogTest {
     }
 
     @Test public void popupUsesConstrainedWidthAndVerticalFirstLayout() {
-        assertEquals(0.225f, WifiSettingsDialog.popupWidthFraction(), 0.0001f);
-        assertEquals(0.69f, WifiSettingsDialog.popupHeightFraction(), 0.0001f);
-        assertEquals(25f, WifiSettingsDialog.networkTextSizePx(), 0.001f);
-        assertEquals(22, WifiSettingsDialog.networkStatusIconSizeDp());
+        assertEquals(200, WifiSettingsDialog.popupWidthDp());
+        assertEquals(0.54f, WifiSettingsDialog.popupHeightFraction(), 0.0001f);
+        assertEquals(12f, WifiSettingsDialog.networkTextSizeSp(), 0.001f);
+        assertEquals(18, WifiSettingsDialog.networkStatusIconSizeDp());
         assertTrue(WifiSettingsDialog.networkStatusIconColor() != 0);
-        assertEquals(17f, WifiSettingsDialog.popupTitleSizeSp(), 0.001f);
-        assertEquals(13f, WifiSettingsDialog.popupSectionSizeSp(), 0.001f);
-        assertEquals(11f, WifiSettingsDialog.popupMetaSizeSp(), 0.001f);
-        assertEquals(13f, WifiSettingsDialog.popupFooterSizeSp(), 0.001f);
-        assertEquals(4, WifiSettingsDialog.visibleNetworkRowCount());
-        assertEquals(35, WifiSettingsDialog.networkRowHeightDp());
-        assertEquals(35, WifiSettingsDialog.popupHeightReductionDp());
+        assertEquals(14f, WifiSettingsDialog.popupTitleSizeSp(), 0.001f);
+        assertEquals(12f, WifiSettingsDialog.popupSectionSizeSp(), 0.001f);
+        assertEquals(10f, WifiSettingsDialog.popupMetaSizeSp(), 0.001f);
+        assertEquals(12f, WifiSettingsDialog.popupFooterSizeSp(), 0.001f);
+        assertEquals(14f, WifiSettingsDialog.permissionTextSizeSp(), 0.001f);
+        assertEquals(3, WifiSettingsDialog.visibleNetworkRowCount());
+        assertEquals(28, WifiSettingsDialog.networkRowHeightDp());
         assertEquals(4, WifiSettingsDialog.networkRowGapDp());
+        assertEquals(92, WifiSettingsDialog.networkViewportHeightDp());
     }
 
     @Test public void dialogProvidesPermissionGuidanceAndDpadControls() {
