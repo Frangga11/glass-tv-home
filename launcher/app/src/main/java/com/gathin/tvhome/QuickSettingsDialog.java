@@ -70,6 +70,12 @@ final class QuickSettingsDialog {
 
     private QuickSettingsDialog() { }
 
+    /** Compatibility overload for deterministic UI tests and non-capturing callers. */
+    static AlertDialog show(Activity activity, android.widget.FrameLayout host, View settingsAnchor,
+                            View dock, Actions actions, int initialFocus, Runnable onDismiss) {
+        return show(activity, host, settingsAnchor, dock, actions, initialFocus, onDismiss, null, null);
+    }
+
     static AlertDialog show(Activity activity, android.widget.FrameLayout host, View settingsAnchor,
                             View dock, Actions actions, int initialFocus, Runnable onDismiss,
                             Executor backdropWorker, Handler callbackHandler) {
