@@ -833,6 +833,7 @@ scanState.setVisibility(View.VISIBLE);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 26));
         params.topMargin = 0;
+        params.bottomMargin = dp(density, 4);
         return params;
     }
 
