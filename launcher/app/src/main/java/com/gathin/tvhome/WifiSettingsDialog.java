@@ -118,7 +118,7 @@ final class WifiSettingsDialog {
         content.setBackground(UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,
                 TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
         TextView title = text(R.string.wifi, popupTitleSizeSp(), true, density);
-        title.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0, 0, 0);
+        title.setCompoundDrawablesRelative(sizedDrawable(R.drawable.ic_wifi, 16), null, null, null);
         title.setCompoundDrawablePadding(dp(density, 6));
         LinearLayout header = new LinearLayout(activity);
         header.setTag("wifi_popup_header");
@@ -179,7 +179,7 @@ final class WifiSettingsDialog {
         androidSettings.setGravity(Gravity.CENTER);
         androidSettings.setTextSize(popupFooterSizeSp());
         androidSettings.setMinHeight(dp(density, 28));
-        androidSettings.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_settings, 0, 0, 0);
+        androidSettings.setCompoundDrawablesRelative(sizedDrawable(R.drawable.ic_settings, 16), null, null, null);
         androidSettings.setCompoundDrawablePadding(dp(density, 6));
         close = action(R.string.close_label, "wifi_close", density, () -> dismissThen(null));
         LinearLayout actions = new LinearLayout(activity);
@@ -273,7 +273,7 @@ final class WifiSettingsDialog {
 
     static float popupTextSizeSp() { return 12f; }
     static float networkTextSizeSp() { return 12f; }
-    static int networkStatusIconSizeDp() { return 18; }
+    static int networkStatusIconSizeDp() { return 16; }
     static int networkStatusIconColor() { return Color.rgb(80, 255, 145); }
 
     static float popupTitleSizeSp() { return 14f; }
