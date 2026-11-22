@@ -34,3 +34,10 @@
 ## Exact source ref clarification
 - Exact tested source is pinned separately at `baseline/pr-170-qa-exact-2026-11-22` → `2208afbc896f6b08d699156714e7d58dc964f721`.
 - `baseline/pr-170-2dp-qa-2026-11-22` now includes documentation-only commits after its initial creation; its current tip is not the tested APK source commit.
+
+
+## Physical Mi TV Stick acceptance — owner-confirmed
+- Owner confirms the APK from exact source commit `2208afbc896f6b08d699156714e7d58dc964f721` was tested on the target Mi TV Stick and works well.
+- Device gate for this cumulative candidate: **PASS**.
+- Scope includes PR #169's parent popup material implementation and PR #170's Quick Settings Glider/focus geometry correction.
+- This is owner-reported acceptance, not an independently executed device test by the assistant. It does not extend to later source changes or unrelated PRs.
