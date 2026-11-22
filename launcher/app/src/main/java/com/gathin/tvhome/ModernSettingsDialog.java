@@ -522,7 +522,7 @@ public final class ModernSettingsDialog {
             lbl.setTypeface(outfit, Typeface.NORMAL);
             row.addView(lbl);
 
-            row.setForeground(new SettingsNavFocusDrawable(density, TvUiTokens.NAV_ROW_RADIUS_DP));
+            row.setForeground(new SettingsFocusCursorDrawable(density, TvUiTokens.NAV_ROW_RADIUS_DP));
             row.setOnFocusChangeListener((v, hasFocus) -> {
                 if (hasFocus) {
                     activeSidebarView[0] = row;
