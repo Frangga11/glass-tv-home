@@ -29,7 +29,7 @@ class QuickSettingsContractTest(unittest.TestCase):
 
     def test_dialog_is_single_frame_glass_and_anchored_to_capsule_and_dock(self):
         self.assertNotIn("ScrollView", DIALOG)
-        self.assertIn("UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,", DIALOG)
+        self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", DIALOG)
         self.assertIn("PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER", DIALOG)
         self.assertNotIn("Backdrop.watch(content)", DIALOG)
         self.assertIn("panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx)", DIALOG)
