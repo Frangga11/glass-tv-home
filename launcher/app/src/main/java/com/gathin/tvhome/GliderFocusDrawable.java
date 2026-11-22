@@ -2,6 +2,9 @@ package com.gathin.tvhome;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -18,12 +21,20 @@ import androidx.annotation.NonNull;
 final class GliderFocusDrawable extends Drawable {
     private final View owner;
     private final Glider glider;
+    private final float cornerRadiusPx;
+    private final Path roundedClip = new Path();
+    private final RectF clipBounds = new RectF();
     private final int[] ownerAt = new int[2];
     private final int[] gliderAt = new int[2];
 
     GliderFocusDrawable(@NonNull View owner, @NonNull Glider glider) {
+        this(owner, glider, 0f);
+    }
+
+    GliderFocusDrawable(@NonNull View owner, @NonNull Glider glider, float cornerRadiusPx) {
         this.owner = owner;
         this.glider = glider;
+        this.cornerRadiusPx = Math.max(0f, cornerRadiusPx);
     }
 
     @Override
@@ -32,7 +43,17 @@ final class GliderFocusDrawable extends Drawable {
         owner.getLocationInWindow(ownerAt);
         glider.getLocationInWindow(gliderAt);
         canvas.save();
-        canvas.clipRect(getBounds());
+        Rect bounds = getBounds();
+        if (cornerRadiusPx > 0f) {
+            clipBounds.set(bounds);
+            roundedClip.reset();
+            roundedClip.addRoundRect(clipBounds, cornerRadiusPx, cornerRadiusPx, Path.Direction.CW);
+            // The Glider glass/shadow must be clipped to the capsule silhouette, not its
+            // rectangular view bounds; rectangular clipping leaves dark corner wedges.
+            canvas.clipPath(roundedClip);
+        } else {
+            canvas.clipRect(bounds);
+        }
         glider.drawShape(canvas, gliderAt[0] - ownerAt[0], gliderAt[1] - ownerAt[1], owner);
         canvas.restore();
     }
