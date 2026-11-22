@@ -248,6 +248,7 @@ final class WifiSettingsDialog {
         });
         dialog.setOnShowListener(d -> {
             applyAnchoredPopup();
+            installFocusCursor();
             refreshStatus();
             updatePrerequisites();
             registerScanReceiver();
@@ -551,6 +552,12 @@ final class WifiSettingsDialog {
             String tag = (String) focused.getTag();
             if (tag.startsWith("wifi_network:")) focusedSsid = tag.substring("wifi_network:".length());
         }
+        // Remove detached rows from the one cursor before rebuilding scan results.
+        for (int i = 0; i < networkRows.getChildCount(); i++) {
+            View oldRow = networkRows.getChildAt(i);
+            if (focusGlider != null) focusGlider.removeCompanion(oldRow);
+            focusCursorTargets.remove(oldRow);
+        }
         networkRows.removeAllViews();
         refreshStatus();
         List<ScanResult> results = Collections.emptyList();
@@ -702,7 +709,10 @@ final class WifiSettingsDialog {
     private boolean isWifiFocusTarget(View view) {
         if (view == null) return false;
         for (View candidate : focusOrder) if (candidate == view) return true;
-        return view == wifiToggle || view == permissionAction || view == locationAction
+        // The connected row is a live network child even when it is not in the explicit
+        // DPAD traversal list. Include it without altering the established focus order.
+        return view.getParent() == networkRows
+                || view == wifiToggle || view == permissionAction || view == locationAction
                 || view == rescan || view == androidSettings;
     }
 
