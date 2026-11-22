@@ -17,8 +17,8 @@ class QuickSettingsContractTest(unittest.TestCase):
     def test_focus_uses_clean_ink_and_no_heavy_text_shadow(self):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
-        self.assertIn("PANEL_TEXT_PRIMARY = 0xFF1B2933", DIALOG)
-        self.assertIn("PANEL_TEXT_SECONDARY = 0xFF435663", DIALOG)
+        self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", DIALOG)
+        self.assertIn("PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY", DIALOG)
         self.assertIn("label.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT);", focus_block)
         self.assertNotIn("0x60000000", focus_block)
 
@@ -104,10 +104,10 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertNotIn("addDivider", DIALOG)
         self.assertIn("PANEL_TEXT_PRIMARY = 0xFF1B2933", DIALOG)
         self.assertIn("PANEL_TEXT_SECONDARY = 0xFF435663", DIALOG)
-        self.assertIn("PANEL_FALLBACK_SURFACE = 0xFFE3EBF0", DIALOG)
-        self.assertIn("PANEL_FALLBACK_BORDER = 0xFF8A9BA8", DIALOG)
-        self.assertIn("CAPSULE_IDLE_FILL = 0xFFF0F4F7", DIALOG)
-        self.assertIn("CAPSULE_IDLE_BORDER = 0xFF8FA0AC", DIALOG)
+        self.assertIn("PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE", DIALOG)
+        self.assertIn("PANEL_FALLBACK_BORDER = TvUiTokens.BORDER", DIALOG)
+        self.assertIn("CAPSULE_IDLE_FILL = 0x662D3741", DIALOG)
+        self.assertIn("CAPSULE_IDLE_BORDER = 0x559EABB8", DIALOG)
         self.assertNotIn("0xB3FFFFFF", DIALOG)
         self.assertNotIn("0xEAF8FC", DIALOG)
         self.assertNotIn("gridLp.topMargin", DIALOG)
