@@ -108,7 +108,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("0xCFEFF2F4", material)
         self.assertIn("0xA8DCE2E6", material)
         self.assertIn("0xF0FFFFFF", material)
-        self.assertIn("0x657984", material)
+        self.assertIn("0xFF657984", material)
         self.assertIn("TvUiTokens.POPUP_DISABLED_SURFACE", material)
         self.assertIn("TvUiTokens.POPUP_DISABLED_BORDER", material)
         self.assertIn("if (glassEnabled)", material)
