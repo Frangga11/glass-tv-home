@@ -9,15 +9,16 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.view.View;
 
 /**
  * Universal Home's GlassMenu / GlassControls material recipes, adapted to existing GTVH bounds.
  * The existing glass_effects_enabled preference and opaque fallbacks remain authoritative.
  */
 final class UniversalGlassMaterial {
-    private static final int PANEL_SHADE = 0xB31D1D1D;
+    private static final Backdrop.Fill POINTER_BACKDROP = new Backdrop.Fill();
+    private static final int PANEL_SHADE = 0x78151D25;
 
     private UniversalGlassMaterial() { }
 
@@ -26,7 +27,20 @@ final class UniversalGlassMaterial {
                 .getBoolean("glass_effects_enabled", true);
     }
 
-    /** A single Universal Home DockGlassDrawable surface, or GTVH's opaque fallback. */
+    /**
+     * Shared Home header capsule material: Silver-Cyan rim and restrained Window Light
+     * are supplied by UniversalGlassDrawable; existing Glider focus remains a separate overlay.
+     * Used only for the navigation capsule and the selected Home information/action pills.
+     */
+    static Drawable homeCapsule(Context context, float density, float radiusDp,
+                                int fallbackSurfaceColor, int fallbackBorderColor) {
+        if (!isGlassEnabled(context)) {
+            return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
+        }
+        return new UniversalGlassDrawable(density, radiusDp, true);
+    }
+
+    /** A single neutral Universal Home surface, or GTVH's opaque fallback. */
     static Drawable surface(Context context, float density, float radiusDp,
                             int fallbackSurfaceColor, int fallbackBorderColor) {
         if (!isGlassEnabled(context)) {
@@ -36,17 +50,13 @@ final class UniversalGlassMaterial {
     }
 
     /** The same dark shade + DockGlassDrawable layer order used by Universal Home GlassMenu. */
-    static Drawable panel(Context context, float density, float radiusDp,
+    static Drawable panel(Context context, View owner, float density, float radiusDp,
                           int fallbackSurfaceColor, int fallbackBorderColor) {
         if (!isGlassEnabled(context)) {
             return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
         }
-        GradientDrawable shade = new GradientDrawable();
-        shade.setCornerRadius(radiusDp * density);
-        shade.setColor(PANEL_SHADE);
-        return new LayerDrawable(new Drawable[]{
-                shade, new UniversalGlassDrawable(density, radiusDp)
-        });
+        if (owner != null) Backdrop.watch(owner);
+        return new UniversalGlassDrawable(owner, density, radiusDp, false, true);
     }
 
     private static GradientDrawable solidSurface(float density, float radiusDp,
@@ -119,7 +129,7 @@ final class UniversalGlassMaterial {
     }
 
     /** Render the Wi-Fi pointer with the same material as its shell, retaining a solid fallback. */
-    static void drawPointer(Context context, Canvas canvas, Path triangle, Path edges,
+    static void drawPointer(Context context, View owner, Canvas canvas, Path triangle, Path edges,
                             RectF bounds, float density, int fallbackFill, int fallbackBorder) {
         if (!isGlassEnabled(context)) {
             Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -133,22 +143,26 @@ final class UniversalGlassMaterial {
             return;
         }
 
+        int saved = canvas.save();
+        canvas.clipPath(triangle);
+        if (owner != null) {
+            POINTER_BACKDROP.draw(canvas, owner,
+                    new RectF(0f, 0f, owner.getWidth(), owner.getHeight()),
+                    Math.min(owner.getHeight() / 2f, 12f * density), 1f);
+        }
         Paint shade = new Paint(Paint.ANTI_ALIAS_FLAG);
         shade.setColor(PANEL_SHADE);
         canvas.drawPath(triangle, shade);
 
-        int saved = canvas.save();
-        canvas.clipPath(triangle);
-
         Paint surface = new Paint(Paint.ANTI_ALIAS_FLAG);
         surface.setShader(new LinearGradient(0f, bounds.top, 0f, bounds.bottom,
-                new int[]{0x36FFFFFF, 0x16FFFFFF, 0x0DFFFFFF, 0x30232323},
+                new int[]{0x28FFFFFF, 0x14FFFFFF, 0x0AFFFFFF, 0x1E111A22},
                 new float[]{0f, 0.18f, 0.6f, 1f}, Shader.TileMode.CLAMP));
         canvas.drawRect(bounds, surface);
 
         Paint reflection = new Paint(Paint.ANTI_ALIAS_FLAG);
         reflection.setShader(new LinearGradient(bounds.left, bounds.top, bounds.right, bounds.bottom,
-                new int[]{0x22FFFFFF, 0x08FFFFFF, 0x00FFFFFF},
+                new int[]{0x38FFFFFF, 0x14FFFFFF, 0x00FFFFFF},
                 new float[]{0f, 0.35f, 1f}, Shader.TileMode.CLAMP));
         Path sweep = new Path();
         sweep.moveTo(bounds.left, bounds.top);
@@ -164,7 +178,7 @@ final class UniversalGlassMaterial {
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         rim.setShader(new LinearGradient(bounds.left, bounds.top, bounds.right, bounds.bottom,
-                new int[]{0xA6FFFFFF, 0x38FFFFFF, 0x14FFFFFF, 0x66FFFFFF},
+                new int[]{0xDFFFFFFF, 0x55FFFFFF, 0x20FFFFFF, 0x99FFFFFF},
                 new float[]{0f, 0.3f, 0.65f, 1f}, Shader.TileMode.CLAMP));
         canvas.drawPath(edges, rim);
     }

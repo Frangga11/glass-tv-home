@@ -51,21 +51,22 @@ public class TvFocusIndicatorRobolectricTest {
     }
 
     @Test
-    public void sharedFocusOutlineUsesStatefulForegroundWithoutReplacingBackground() {
+    public void settingsCursorUsesOneStatefulForegroundWithoutReplacingBackground() {
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
         android.view.View view = new android.view.View(activity);
         Drawable background = new GradientDrawable();
         view.setBackground(background);
-        Drawable outline = activity.getDrawable(R.drawable.bg_tv_focus_outline);
-        assertNotNull(outline);
-        assertTrue(outline instanceof StateListDrawable);
 
-        outline.setState(new int[]{android.R.attr.state_enabled, android.R.attr.state_focused});
-        assertTrue(((StateListDrawable) outline).getCurrent() instanceof GradientDrawable);
-        Drawable focused = ((StateListDrawable) outline).getCurrent();
-        outline.setState(new int[]{android.R.attr.state_enabled});
-        assertNotSame(focused, ((StateListDrawable) outline).getCurrent());
-        view.setForeground(outline);
+        SettingsFocusCursorDrawable cursor = new SettingsFocusCursorDrawable(1f, 12f);
+        assertNotNull(cursor);
+        assertTrue(cursor.isStateful());
+        cursor.setBounds(0, 0, 120, 48);
+        cursor.setState(new int[]{android.R.attr.state_focused});
+        view.setForeground(cursor);
+        assertTrue(view.getForeground() == cursor);
         assertTrue(view.getBackground() == background);
+
+        cursor.setState(new int[]{});
+        assertTrue(view.getForeground() == cursor);
     }
 }
