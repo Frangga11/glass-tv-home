@@ -33,10 +33,13 @@ final class UniversalGlassMaterial {
      */
     static Drawable homeCapsule(Context context, float density, float radiusDp,
                                 int fallbackSurfaceColor, int fallbackBorderColor) {
-        return surface(context, density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
+        if (!isGlassEnabled(context)) {
+            return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
+        }
+        return new UniversalGlassDrawable(density, radiusDp, true);
     }
 
-    /** A single Universal Home DockGlassDrawable surface, or GTVH's opaque fallback. */
+    /** A single neutral Universal Home surface, or GTVH's opaque fallback. */
     static Drawable surface(Context context, float density, float radiusDp,
                             int fallbackSurfaceColor, int fallbackBorderColor) {
         if (!isGlassEnabled(context)) {
