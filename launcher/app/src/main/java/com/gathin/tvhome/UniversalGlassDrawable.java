@@ -33,8 +33,13 @@ final class UniversalGlassDrawable extends Drawable {
     private boolean prepared;
 
     UniversalGlassDrawable(float density, float radiusDp) {
+        this(density, radiusDp, false);
+    }
+
+    UniversalGlassDrawable(float density, float radiusDp, boolean silverCyanIdentity) {
         this.density = density;
         this.radiusDp = radiusDp;
+        this.silverCyanIdentity = silverCyanIdentity;
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         inner.setStyle(Paint.Style.STROKE);
@@ -129,7 +134,9 @@ final class UniversalGlassDrawable extends Drawable {
         canvas.drawRoundRect(innerArea,
                 Math.max(0f, radius - density * 2f),
                 Math.max(0f, radius - density * 2f), inner);
-        canvas.drawRoundRect(area, radius, radius, windowLight);
+        if (silverCyanIdentity) {
+            canvas.drawRoundRect(area, radius, radius, windowLight);
+        }
     }
 
     private static int modulateAlpha(int color, float factor) {
