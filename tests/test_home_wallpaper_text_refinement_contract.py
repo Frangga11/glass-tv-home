@@ -74,7 +74,8 @@ class HomeWallpaperTextRefinementContractTest(unittest.TestCase):
 
     def test_daily_ayah_scrim_is_subtle_and_has_no_idle_outline(self):
         self.assertIn("new int[]{0x00000000, 0x12000000, 0x26000000}", MAIN)
-        self.assertIn("ayahOpenHint.setBackground(new GliderFocusDrawable(ayahOpenHint, glider, 6f * density))", MAIN)
+        self.assertIn("ayahOpenHint.setBackground(new GliderFocusDrawable(", MAIN)
+        self.assertIn("ayahOpenHint, homeCapsuleGlider, 6f * density)", MAIN)
         self.assertNotIn("ayahOpenHint.setBackground(TvFocusIndicator.createRoundedStateBackground(", MAIN)
         self.assertIn("ayahOpenHint.setOnKeyListener", MAIN)
         self.assertIn("ayahOpenHint.setOnClickListener(v -> showDailyAyahDialog());", MAIN)
