@@ -20,13 +20,13 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("paint.setColor(TvUiTokens.FOCUS_HALO)", glider)
         self.assertNotIn("NAVIGATION_DARK", glider)
 
-    def test_popup_uses_a_subtle_smoke_density_increase_and_quick_settings_scrim(self):
+    def test_popup_uses_smoked_panel_density_without_changing_quick_settings_window_dim(self):
         material = (JAVA / "UniversalGlassMaterial.java").read_text(encoding="utf-8")
         quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
         self.assertIn("PANEL_SHADE = 0xC21D1D1D", material)
-        self.assertIn("window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)", quick)
-        self.assertIn("params.dimAmount = 0.08f", quick)
+        self.assertIn("params.dimAmount = 0f", quick)
+        self.assertIn("window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)", quick)
         self.assertIn("return 0.08f;", wifi)
 
     def test_wifi_popup_uses_universal_panel_material_without_changing_window_contract(self):
