@@ -62,11 +62,18 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
     def test_ported_universal_material_keeps_source_gradient_layers(self):
         glass = (JAVA / "UniversalGlassDrawable.java").read_text(encoding="utf-8")
         material = (JAVA / "UniversalGlassMaterial.java").read_text(encoding="utf-8")
+        # Surface/reflection layers remain Universal Home-owned; Dock rim is
+        # intentionally re-skinned to the pre-adoption Silver-Cyan identity.
         for token in ("0x36FFFFFF", "0x16FFFFFF", "0x0DFFFFFF", "0x30232323",
-                      "0xA6FFFFFF", "0x38FFFFFF", "0x14FFFFFF", "0x66FFFFFF",
-                      "0x22FFFFFF", "0x08FFFFFF", "0x30FFFFFF"):
+                      "0x22FFFFFF", "0x08FFFFFF", "0x30FFFFFF",
+                      "0xD9E2E8EE", "0xA650DDF2", "0x667D8D9B",
+                      "0x80DCE5ED", "0x8067E8F9"):
             with self.subTest(token=token):
                 self.assertIn(token, glass)
+        self.assertIn("rim.setStrokeWidth(density)", glass)
+        self.assertIn("inner.setStrokeWidth(density * 0.7f)", glass)
+        self.assertIn("windowLight.setAlpha(124)", glass)
+        self.assertIn("windowLight.setAlpha(Math.round(124f * alpha / 255f))", glass)
         self.assertIn("0xB31D1D1D", material)
         self.assertIn('getBoolean("glass_effects_enabled", true)', material)
         self.assertIn("if (!isGlassEnabled(context))", material)
