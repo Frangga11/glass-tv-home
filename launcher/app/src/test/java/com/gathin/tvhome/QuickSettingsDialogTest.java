@@ -107,6 +107,19 @@ public class QuickSettingsDialogTest {
         root.measure(View.MeasureSpec.makeMeasureSpec(screenWidthPx, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(screenHeightPx, View.MeasureSpec.EXACTLY));
         root.layout(0, 0, screenWidthPx, screenHeightPx);
+        assertEquals(screenWidthPx, root.getWidth());
+        assertEquals(screenHeightPx, root.getHeight());
+        assertEquals(Math.round(29f * density), settings.getTop());
+        assertEquals(Math.round(30f * density), settings.getHeight());
+        assertEquals(dockTopPx, dock.getTop());
+        assertEquals(dockHeightPx, dock.getHeight());
+        assertTrue("Dock fixture must be visible to QuickSettingsDialog", dock.isShown());
+        int[] rootAt = new int[2], settingsAt = new int[2], dockAt = new int[2];
+        root.getLocationOnScreen(rootAt);
+        settings.getLocationOnScreen(settingsAt);
+        dock.getLocationOnScreen(dockAt);
+        assertEquals(Math.round(29f * density), settingsAt[1] - rootAt[1]);
+        assertEquals(dockTopPx, dockAt[1] - rootAt[1]);
         return new FrameLayout[]{root, root, root};
     }
 
