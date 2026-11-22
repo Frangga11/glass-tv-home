@@ -380,22 +380,38 @@ final class QuickSettingsDialog {
 
                 // LayoutParams.y is relative to the Dialog window's gravity frame, while
                 // panelTop was calculated in the Activity host's coordinate space. Those
-                // origins can differ (system/content insets and Dialog decor). Measure the
-                // actual content position after the window is attached, then translate the
-                // window by the exact screen-space delta so the Dock clearance is real.
-                int[] contentAt = new int[2];
-                content.getLocationOnScreen(contentAt);
-                int desiredContentTopOnScreen = hostAt[1] + panelTop;
-                int windowYCorrection = desiredContentTopOnScreen - contentAt[1];
-                if (windowYCorrection != 0) {
-                    params = window.getAttributes();
-                    params.y += windowYCorrection;
-                    window.setAttributes(params);
-                }
-                android.util.Log.d("TvHome.QuickSettings", "Dialog position hostTop=" + hostAt[1]
-                        + " desiredContentTop=" + desiredContentTopOnScreen
-                        + " measuredContentTop=" + contentAt[1]
-                        + " windowYCorrection=" + windowYCorrection);
+                // origins can differ (system/content insets and Dialog decor). Do not read
+                // content.getLocationOnScreen() synchronously here: setAttributes() only
+                // schedules the Window relayout, so that read can still return the PRE-relayout
+                // position on Android TV and produce a stale/double Y correction. Correct only
+                // after the attached DecorView reaches its first pre-draw with the requested
+                // window geometry in place.
+                final int desiredContentTopOnScreen = hostAt[1] + panelTop;
+                final View decorView = window.getDecorView();
+                final android.view.ViewTreeObserver.OnPreDrawListener[] positionListener =
+                        new android.view.ViewTreeObserver.OnPreDrawListener[1];
+                positionListener[0] = () -> {
+                    android.view.ViewTreeObserver observer = decorView.getViewTreeObserver();
+                    if (!observer.isAlive()) return true;
+                    int[] contentAt = new int[2];
+                    content.getLocationOnScreen(contentAt);
+                    int windowYCorrection = desiredContentTopOnScreen - contentAt[1];
+                    observer.removeOnPreDrawListener(positionListener[0]);
+                    if (windowYCorrection != 0) {
+                        WindowManager.LayoutParams corrected = window.getAttributes();
+                        corrected.y += windowYCorrection;
+                        window.setAttributes(corrected);
+                    }
+                    android.util.Log.d("TvHome.QuickSettings", "Dialog position (post-layout)"
+                            + " hostTop=" + hostAt[1]
+                            + " desiredContentTop=" + desiredContentTopOnScreen
+                            + " measuredContentTop=" + contentAt[1]
+                            + " windowYCorrection=" + windowYCorrection
+                            + " dockTop=" + (hostAt[1] + dockTop)
+                            + " panelHeight=" + content.getMeasuredHeight());
+                    return true;
+                };
+                decorView.getViewTreeObserver().addOnPreDrawListener(positionListener[0]);
             }
             View target = controls[initialFocus >= 0 && initialFocus < controls.length
                     ? initialFocus : QuickSettingsFocusGraph.INPUT];
