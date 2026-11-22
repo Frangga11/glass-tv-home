@@ -118,7 +118,7 @@ final class WifiSettingsDialog {
         content.setPadding(dp(density, 14), 0, dp(density, 14), dp(density, 10));
         // Adopt Universal Home's glass material without changing the approved Wi-Fi geometry.
         content.setBackground(UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,
-                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
+                PopupGlassTokens.PANEL_FALLBACK, PopupGlassTokens.PANEL_BORDER, PopupGlassTokens.PANEL_SHADE));
         pointer = new View(activity) {
             @Override protected void onDraw(Canvas canvas) {
                 super.onDraw(canvas);
@@ -142,13 +142,15 @@ final class WifiSettingsDialog {
                 RectF materialBounds = new RectF(density, density,
                         Math.max(density, w - density), Math.max(density, materialHeight - density));
                 UniversalGlassMaterial.drawPointer(activity, canvas, triangle, pointerEdges,
-                        materialBounds, density, TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
+                        materialBounds, density, PopupGlassTokens.PANEL_FALLBACK, PopupGlassTokens.PANEL_BORDER,
+                        PopupGlassTokens.PANEL_SHADE);
             }
         };
         content.addView(pointer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 12)));
         TextView title = text(R.string.wifi, popupTitleSizeSp(), true, density);
         title.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0, 0, 0);
         title.setCompoundDrawablePadding(dp(density, 6));
+        title.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(PopupGlassTokens.ICON));
         LinearLayout header = new LinearLayout(activity);
         header.setTag("wifi_popup_header");
         header.setOrientation(LinearLayout.HORIZONTAL);
@@ -162,7 +164,7 @@ final class WifiSettingsDialog {
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
         status.setPadding(dp(density, 10), dp(density, 5), dp(density, 10), dp(density, 5));
         status.setBackground(UniversalGlassMaterial.controlIdle(activity, density, TvUiTokens.CARD_RADIUS_DP,
-                TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
+                PopupGlassTokens.CAPSULE_IDLE, PopupGlassTokens.CAPSULE_IDLE_BORDER, true));
         status.setVisibility(View.GONE);
 
         TextView networksHeading = text(R.string.wifi_available_networks, popupSectionSizeSp(), true, density);
@@ -754,12 +756,13 @@ final class WifiSettingsDialog {
         lp.topMargin = dp(density, 2);
         view.setLayoutParams(lp);
         TvFocusIndicator.applyRoundedTextFocus(view, density, TvUiTokens.ROW_RADIUS_DP,
-                TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
-                TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
-                TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
+                PopupGlassTokens.CAPSULE_IDLE, PopupGlassTokens.CAPSULE_FOCUS,
+                PopupGlassTokens.CAPSULE_IDLE_BORDER, PopupGlassTokens.CAPSULE_FOCUS_BORDER,
+                PopupGlassTokens.TEXT_PRIMARY, PopupGlassTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
         // Keep TvFocusIndicator's focus routing/text states; use Universal GlassControls surfaces.
         view.setBackground(UniversalGlassMaterial.controlStateBackground(activity, density,
-                TvUiTokens.ROW_RADIUS_DP, TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
+                TvUiTokens.ROW_RADIUS_DP, PopupGlassTokens.CAPSULE_IDLE,
+                PopupGlassTokens.CAPSULE_IDLE_BORDER, true));
         view.setOnClickListener(v -> {
             if (callback != null) callback.run();
         });
@@ -768,7 +771,7 @@ final class WifiSettingsDialog {
 
     private void styleText(TextView view, float size, boolean bold, float density) {
         view.setTextSize(size);
-        view.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        view.setTextColor(PopupGlassTokens.TEXT_PRIMARY);
         view.setTypeface(activity.getResources().getFont(R.font.inter),
                 bold ? Typeface.BOLD : Typeface.NORMAL);
         view.setPadding(0, dp(density, 3), 0, dp(density, 3));

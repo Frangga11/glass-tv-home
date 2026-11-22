@@ -51,12 +51,18 @@ final class UniversalGlassMaterial {
     /** The same dark shade + DockGlassDrawable layer order used by Universal Home GlassMenu. */
     static Drawable panel(Context context, float density, float radiusDp,
                           int fallbackSurfaceColor, int fallbackBorderColor) {
+        return panel(context, density, radiusDp, fallbackSurfaceColor, fallbackBorderColor, PANEL_SHADE);
+    }
+
+    /** Popup-only shade override; other Universal panels retain the original material. */
+    static Drawable panel(Context context, float density, float radiusDp,
+                          int fallbackSurfaceColor, int fallbackBorderColor, int panelShadeColor) {
         if (!isGlassEnabled(context)) {
             return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
         }
         GradientDrawable shade = new GradientDrawable();
         shade.setCornerRadius(radiusDp * density);
-        shade.setColor(PANEL_SHADE);
+        shade.setColor(panelShadeColor);
         return new LayerDrawable(new Drawable[]{
                 shade, new UniversalGlassDrawable(density, radiusDp)
         });
@@ -74,6 +80,12 @@ final class UniversalGlassMaterial {
     /** Idle control surface from Universal Home GlassControls.surface(), with GTVH radius retained. */
     static GradientDrawable controlIdle(Context context, float density, float radiusDp,
                                         int fallbackFill, int fallbackBorder) {
+        return controlIdle(context, density, radiusDp, fallbackFill, fallbackBorder, false);
+    }
+
+    /** Bright capsule surface used only by Settings and Wi-Fi popup controls. */
+    static GradientDrawable controlIdle(Context context, float density, float radiusDp,
+                                        int fallbackFill, int fallbackBorder, boolean popupBright) {
         if (!isGlassEnabled(context)) {
             GradientDrawable solid = new GradientDrawable();
             solid.setColor(fallbackFill);
@@ -81,10 +93,14 @@ final class UniversalGlassMaterial {
             solid.setStroke(Math.max(1, Math.round(density)), fallbackBorder);
             return solid;
         }
-        GradientDrawable glass = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{0x16FFFFFF, 0x08FFFFFF});
+        GradientDrawable glass = popupBright
+                ? new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                        new int[]{PopupGlassTokens.CAPSULE_IDLE, PopupGlassTokens.CAPSULE_SELECTED})
+                : new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                        new int[]{0x16FFFFFF, 0x08FFFFFF});
         glass.setCornerRadius(radiusDp * density);
-        glass.setStroke(Math.max(1, Math.round(density)), 0x28FFFFFF);
+        glass.setStroke(Math.max(1, Math.round(density)),
+                popupBright ? PopupGlassTokens.CAPSULE_IDLE_BORDER : 0x28FFFFFF);
         return glass;
     }
 
@@ -95,6 +111,12 @@ final class UniversalGlassMaterial {
      */
     static Drawable controlStateBackground(Context context, float density, float radiusDp,
                                            int fallbackFill, int fallbackBorder) {
+        return controlStateBackground(context, density, radiusDp, fallbackFill, fallbackBorder, false);
+    }
+
+    /** Bright, high-contrast state set scoped to popup capsules. */
+    static Drawable controlStateBackground(Context context, float density, float radiusDp,
+                                           int fallbackFill, int fallbackBorder, boolean popupBright) {
         StateListDrawable states = new StateListDrawable();
 
         GradientDrawable disabled = new GradientDrawable();
@@ -107,19 +129,25 @@ final class UniversalGlassMaterial {
         GradientDrawable pressed;
         GradientDrawable focused;
         if (glassEnabled) {
-            pressed = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+            pressed = popupBright ? new GradientDrawable() : new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                     new int[]{0x48FFFFFF, 0x22FFFFFF});
-            pressed.setStroke(Math.max(1, Math.round(density)), 0xBBFFFFFF);
-            focused = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+            if (popupBright) pressed.setColor(PopupGlassTokens.CAPSULE_SELECTED);
+            pressed.setStroke(Math.max(1, Math.round(density)),
+                    popupBright ? PopupGlassTokens.CAPSULE_FOCUS_BORDER : 0xBBFFFFFF);
+            focused = popupBright ? new GradientDrawable() : new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                     new int[]{0x48FFFFFF, 0x22FFFFFF});
-            focused.setStroke(Math.max(1, Math.round(density)), 0xBBFFFFFF);
+            if (popupBright) focused.setColor(PopupGlassTokens.CAPSULE_FOCUS);
+            focused.setStroke(Math.max(1, Math.round(density * (popupBright ? 2f : 1f))),
+                    popupBright ? PopupGlassTokens.CAPSULE_FOCUS_BORDER : 0xBBFFFFFF);
         } else {
             pressed = new GradientDrawable();
-            pressed.setColor(TvUiTokens.SURFACE_SELECTED);
-            pressed.setStroke(Math.max(1, Math.round(density)), TvUiTokens.FOCUS_BORDER);
+            pressed.setColor(popupBright ? PopupGlassTokens.CAPSULE_SELECTED : TvUiTokens.SURFACE_SELECTED);
+            pressed.setStroke(Math.max(1, Math.round(density)),
+                    popupBright ? PopupGlassTokens.CAPSULE_FOCUS_BORDER : TvUiTokens.FOCUS_BORDER);
             focused = new GradientDrawable();
-            focused.setColor(TvUiTokens.SURFACE_FOCUSED);
-            focused.setStroke(Math.max(1, Math.round(2f * density)), TvUiTokens.FOCUS_BORDER);
+            focused.setColor(popupBright ? PopupGlassTokens.CAPSULE_FOCUS : TvUiTokens.SURFACE_FOCUSED);
+            focused.setStroke(Math.max(1, Math.round(2f * density)),
+                    popupBright ? PopupGlassTokens.CAPSULE_FOCUS_BORDER : TvUiTokens.FOCUS_BORDER);
         }
         pressed.setCornerRadius(radiusDp * density);
         focused.setCornerRadius(radiusDp * density);
@@ -127,13 +155,19 @@ final class UniversalGlassMaterial {
         states.addState(new int[]{-android.R.attr.state_enabled}, disabled);
         states.addState(new int[]{android.R.attr.state_pressed}, pressed);
         states.addState(new int[]{android.R.attr.state_focused}, focused);
-        states.addState(new int[]{}, controlIdle(context, density, radiusDp, fallbackFill, fallbackBorder));
+        states.addState(new int[]{}, controlIdle(context, density, radiusDp, fallbackFill, fallbackBorder, popupBright));
         return states;
     }
 
     /** Render the Wi-Fi pointer with the same material as its shell, retaining a solid fallback. */
     static void drawPointer(Context context, Canvas canvas, Path triangle, Path edges,
                             RectF bounds, float density, int fallbackFill, int fallbackBorder) {
+        drawPointer(context, canvas, triangle, edges, bounds, density, fallbackFill, fallbackBorder, PANEL_SHADE);
+    }
+
+    /** Popup pointer follows its shell's bright shade without changing the shared default. */
+    static void drawPointer(Context context, Canvas canvas, Path triangle, Path edges,
+                            RectF bounds, float density, int fallbackFill, int fallbackBorder, int panelShadeColor) {
         if (!isGlassEnabled(context)) {
             Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);
             fill.setColor(fallbackFill);
@@ -147,7 +181,7 @@ final class UniversalGlassMaterial {
         }
 
         Paint shade = new Paint(Paint.ANTI_ALIAS_FLAG);
-        shade.setColor(PANEL_SHADE);
+        shade.setColor(panelShadeColor);
         canvas.drawPath(triangle, shade);
 
         int saved = canvas.save();
