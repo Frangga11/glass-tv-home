@@ -45,14 +45,14 @@ final class QuickSettingsDialog {
     }
 
     // Reuse the approved global Frosted Silver Glass material; this popup is not a second theme.
-    private static final int PANEL_TEXT_PRIMARY = TvUiTokens.POPUP_TEXT_PRIMARY;
-    private static final int PANEL_TEXT_SECONDARY = TvUiTokens.POPUP_TEXT_SECONDARY;
-    private static final int CAPSULE_IDLE_FILL = TvUiTokens.POPUP_CONTROL_IDLE;
-    private static final int CAPSULE_IDLE_BORDER = TvUiTokens.POPUP_BORDER;
-    private static final int CAPSULE_FOCUS_FILL = TvUiTokens.POPUP_CONTROL_FOCUSED;
-    private static final int CAPSULE_FOCUS_BORDER = TvUiTokens.POPUP_FOCUS_BORDER;
-    private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_PANEL_FALLBACK;
-    private static final int PANEL_FALLBACK_BORDER = TvUiTokens.POPUP_BORDER;
+    private static final int PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY;
+    private static final int PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY;
+    private static final int CAPSULE_IDLE_FILL = 0x662D3741;
+    private static final int CAPSULE_IDLE_BORDER = 0x559EABB8;
+    private static final int CAPSULE_FOCUS_FILL = TvUiTokens.SURFACE_FOCUSED;
+    private static final int CAPSULE_FOCUS_BORDER = TvUiTokens.FOCUS_BORDER;
+    private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE;
+    private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
     private static final int TILE_HEIGHT_DP = 36;
     private static final int PANEL_HEIGHT_DP = 320;
     private static final int HALF_TILE_WIDTH_DP = 115;
@@ -384,10 +384,11 @@ final class QuickSettingsDialog {
                         density * cornerRadiusDp);
                 if (view instanceof TextView) {
                     TextView label = (TextView) view;
-                    // Keep dark silver typography legible over bright glass with only a soft shadow.
+                    // Preserve the approved white typography in every focus state. A dark,
+                    // tight shadow/halo separates white glyphs from the moving silver glass.
                     label.setTextColor(PANEL_TEXT_PRIMARY);
                     label.setShadowLayer((focused ? 2.0f : 1.25f) * density, 0f,
-                            0.5f * density, focused ? 0x55000000 : 0x33000000);
+                            0.5f * density, focused ? 0xF0000000 : 0xCC000000);
                 }
             });
         }
