@@ -145,6 +145,7 @@ final class WifiSettingsDialog {
                         materialBounds, density, TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
             }
         };
+        Backdrop.watch(pointer);
         content.addView(pointer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 12)));
         TextView title = text(R.string.wifi, popupTitleSizeSp(), true, density);
         title.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0, 0, 0);
