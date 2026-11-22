@@ -14,11 +14,13 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("TvUiTokens.TEXT_PRIMARY", settings)
         self.assertIn("static final int TEXT_PRIMARY = 0xFFFFFFFF", tokens)
 
-    def test_quick_settings_and_wifi_keep_original_white_typography(self):
+    def test_quick_settings_uses_clean_ink_while_wifi_keeps_its_accepted_typography(self):
         quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
-        self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", quick)
+        self.assertIn("PANEL_TEXT_PRIMARY = 0xFF1B2933", quick)
+        self.assertIn("PANEL_TEXT_SECONDARY = 0xFF435663", quick)
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY)", quick)
+        self.assertIn("label.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)", quick)
         self.assertIn("view.setTextColor(TvUiTokens.TEXT_PRIMARY)", wifi)
         self.assertIn("TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY", wifi)
 
@@ -27,6 +29,10 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         drawable = (JAVA / "UniversalGlassDrawable.java").read_text(encoding="utf-8")
         self.assertIn("PANEL_SHADE = 0x78151D25", material)
         self.assertIn("new UniversalGlassDrawable(owner, density, radiusDp, false, true)", material)
+        self.assertIn("quickSettingsPanel(Context context", material)
+        self.assertIn("new UniversalGlassDrawable(owner, density, radiusDp, false, true, true)", material)
+        self.assertIn("popupVeil.setColor(cleanQuickSettings ? 0x2EFFFFFF : 0x68151D25)", drawable)
+        self.assertIn("new int[]{0x50FFFFFF, 0x3AFFFFFF, 0x2CFFFFFF, 0x20FFFFFF}", drawable)
         for token in ("0x28FFFFFF", "0x14FFFFFF", "0x0AFFFFFF", "0x1E111A22",
                       "0xDFFFFFFF", "0x55FFFFFF", "0x38FFFFFF"):
             self.assertIn(token, drawable)
@@ -36,14 +42,16 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("Backdrop.watch(pointer)", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
         self.assertIn("getBoolean(\"glass_effects_enabled\", true)", material)
 
-    def test_wifi_and_quick_settings_share_panel_material_without_layout_or_focus_rewire(self):
+    def test_quick_settings_gets_scoped_clean_material_without_rewiring_wifi_or_focus(self):
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
         quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
         self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", wifi)
-        self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", quick)
+        self.assertIn("UniversalGlassMaterial.quickSettingsPanel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", quick)
         self.assertIn("new GliderFocusDrawable(control, glider, cornerRadiusDp * density)", quick)
         self.assertIn("QuickSettingsFocusGraph.connect(controls)", quick)
         self.assertIn("QuickSettingsFocusGraph", quick)
+        self.assertIn("glider.setGlassRimStrokeWidth(1.25f * density)", quick)
+        self.assertIn("glider.setPopupShadowStyle(14f * density, 3f * density, 0x58)", quick)
         self.assertIn("UniversalGlassMaterial.drawPointer(activity, pointer, canvas, triangle, pointerEdges", wifi)
 
     def test_settings_sidebar_uses_one_bounded_focus_cursor_only(self):
