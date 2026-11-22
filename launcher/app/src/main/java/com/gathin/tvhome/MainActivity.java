@@ -911,7 +911,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 return false;
             });
-            // One shared Home Glider replaces the legacy prayer-header halo and border.
+            // The dedicated capsule cursor is also initialized when the Ayah action is absent.
+            ensureHomeCapsuleGlider();
+            // One Home capsule cursor replaces the legacy prayer-header halo and border.
             prayerHeaderView.setBackground(new GliderFocusDrawable(
                     prayerHeaderView, homeCapsuleGlider, 8f * density));
             homeCapsuleGlider.addCompanion(prayerHeaderView);
