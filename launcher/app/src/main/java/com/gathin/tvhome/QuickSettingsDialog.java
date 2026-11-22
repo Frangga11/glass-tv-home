@@ -48,12 +48,12 @@ final class QuickSettingsDialog {
     // Charcoal ink on a light frosted surface gives stable contrast across bright and dark wallpapers.
     private static final int PANEL_TEXT_PRIMARY = 0xFF1B2933;
     private static final int PANEL_TEXT_SECONDARY = 0xFF435663;
-    private static final int CAPSULE_IDLE_FILL = 0x22FFFFFF;
-    private static final int CAPSULE_IDLE_BORDER = 0x66899AA6;
+    private static final int CAPSULE_IDLE_FILL = 0xFFF0F4F7;
+    private static final int CAPSULE_IDLE_BORDER = 0xFF8FA0AC;
     private static final int CAPSULE_FOCUS_FILL = TvUiTokens.SURFACE_FOCUSED;
     private static final int CAPSULE_FOCUS_BORDER = TvUiTokens.FOCUS_BORDER;
-    private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE;
-    private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
+    private static final int PANEL_FALLBACK_SURFACE = 0xFFE3EBF0;
+    private static final int PANEL_FALLBACK_BORDER = 0xFF8A9BA8;
     private static final int TILE_HEIGHT_DP = 36;
     private static final int PANEL_HEIGHT_DP = 330;
     private static final int HALF_TILE_WIDTH_DP = 110;
