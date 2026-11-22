@@ -447,7 +447,6 @@ final class WifiSettingsDialog {
         rescan.setVisibility(blocked ? View.GONE : View.VISIBLE);
         scanState.setVisibility(blocked ? View.VISIBLE : View.GONE);
         permissionAction.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 24));
-        permissionAction.setMaxLines(2);
         locationAction.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 24));
         androidSettings.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 24));
         rescan.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 24));
