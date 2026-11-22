@@ -804,15 +804,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     }
                     return keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
                 });
-                // Reuse the same Glider that animates between Dock apps and Home capsules.
-                ayahOpenHint.setBackground(new GliderFocusDrawable(ayahOpenHint, glider, 6f * density));
-                glider.addCompanion(ayahOpenHint);
+                // Match the Settings capsule cursor; the Home/Dock Glider remains reserved for app navigation.
+                ayahOpenHint.setForeground(new SettingsFocusCursorDrawable(density, 6f));
                 ayahOpenHint.setOnFocusChangeListener((v, hasFocus) -> {
-                    if (hasFocus) {
-                        SoundEffects.playNav();
-                        gliderOnPill = false;
-                        moveHomeCapsuleCursor(v);
-                    }
+                    if (hasFocus) SoundEffects.playNav();
                 });
             }
 
@@ -909,16 +904,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 return false;
             });
-            // Prayer header shares the same animated Glider as every other Home focus target.
-            prayerHeaderView.setBackground(new GliderFocusDrawable(
-                    prayerHeaderView, glider, 8f * density));
-            glider.addCompanion(prayerHeaderView);
+            // Use the exact bounded Settings capsule cursor; keep prayer DPAD/click routing unchanged.
+            prayerHeaderView.setForeground(new SettingsFocusCursorDrawable(density, 8f));
             prayerHeaderView.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    SoundEffects.playNav();
-                    gliderOnPill = false;
-                    moveHomeCapsuleCursor(v);
-                }
+                if (hasFocus) SoundEffects.playNav();
             });
         }
         View prayerTableView = findViewById(R.id.prayerTable);
@@ -959,14 +948,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Both Dock and Grid app cards now use the same DockBreathingBorderView focus animation.
         // Do not add a second static Grid outline or a Glider companion over the same focused tile.
         // Preserve one shared glass capsule for Home/Profile/Settings.
-        // Each focusable header control paints the same moving Glider after its glass surface
-        // and before its own text/icon content, so no capsule can cover the focus indicator.
-        // Individual tabs below remain independent focus/click targets with transparent backgrounds.
+        // Home capsules use the Settings cursor renderer; the shared Glider remains dedicated to Dock/app movement.
         View navCapsule = findViewById(R.id.navPill);
         if (navCapsule != null) {
             navCapsule.setBackground(UniversalGlassMaterial.homeCapsule(this, density, 20f,
                     TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
-            glider.addCompanion(navCapsule);
         }
         // One restrained glass surface unifies the prayer timetable and Ayat Pilihan.
         // Background-only treatment: keep shelf bounds, child layout, text, RTL and spacing unchanged.
@@ -983,11 +969,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             boolean navigationTab = id == R.id.btnHome || id == R.id.btnCandyBox
                     || id == R.id.btnSettings;
             if (navigationTab) {
-                // Paint the same moving Glider inside each tab's own drawing pass:
-                // above the shared capsule surface, but below the tab's icon and label.
-                pill.setBackground(new GliderFocusDrawable(pill, glider, 20f * density));
+                // The shared nav capsule owns the glass surface; each tab owns only its focus cursor.
+                pill.setBackground(null);
             } else {
-                // Compose the focus layer after the capsule glass and before the view's content.
+                // Preserve the existing glass recipe and all measured capsule geometry.
                 boolean silverCyanTarget = id == R.id.locationPill
                         || id == R.id.weatherAirQuality || id == R.id.btnWifi
                         || id == R.id.btnAssistant;
@@ -996,17 +981,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                                 TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER)
                         : UniversalGlassMaterial.surface(this, density, 20f,
                                 TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
-                pill.setBackground(new android.graphics.drawable.LayerDrawable(
-                        new Drawable[]{glassBackground,
-                                new GliderFocusDrawable(pill, glider, 20f * density)}));
+                pill.setBackground(glassBackground);
             }
-            glider.addCompanion(pill);
+            pill.setForeground(new SettingsFocusCursorDrawable(density, 20f));
             pill.setOnFocusChangeListener((v, has) -> {
                 if (has) {
                     // Any header focus supersedes a deferred Grid target.
                     gridFocusRequestGeneration++;
-                    moveTopHighlight(v);
-                    // Keep each tab's measured segment geometry stable inside the unified capsule.
+                    SoundEffects.playNav();
                 }
             });
         }
@@ -1262,8 +1244,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             if (!onTile) hideGlass();
             boolean homeCapsuleFocus = newF == ayahOpenHint
-                    || (newF != null && newF.getId() == R.id.prayerHeader);
-            if (!onTile && (newF == null || !(isTopPill(newF) || inMenu(newF) || homeCapsuleFocus))) glider.hide();
+                    || (newF != null && (isTopPill(newF) || newF.getId() == R.id.prayerHeader));
+            // Home capsules draw the Settings cursor themselves; never leave the Dock Glider underneath them.
+            if (!onTile && (newF == null || homeCapsuleFocus || !inMenu(newF))) glider.hide();
         });
 
         packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
@@ -2852,23 +2835,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         return id == R.id.locationPill || id == R.id.weatherAirQuality || id == R.id.btnHome
                 || id == R.id.btnInputs || id == R.id.btnWifi || id == R.id.btnAssistant
                 || id == R.id.btnCandyBox || id == R.id.btnSettings;
-    }
-
-    /**
-     * Sends the shared Home/Dock Glider to a Home shelf action. This is not a second cursor:
-     * the existing Glider keeps its current bounds and spring state, then animates to this target.
-     */
-    private void moveHomeCapsuleCursor(View capsule) {
-        if (capsule == null || glider == null || !capsule.isShown()
-                || capsule.getWidth() <= 0 || capsule.getHeight() <= 0) return;
-        capsule.getLocationInWindow(pillAt);
-        glider.getLocationInWindow(rootAt);
-        float l = pillAt[0] - rootAt[0], t = pillAt[1] - rootAt[1];
-        glassShown = false;
-        gliderOnPill = true;
-        glider.setStyle(Glider.DARK);
-        glider.moveTo(l, t, l + capsule.getWidth(), t + capsule.getHeight(),
-                Math.min(20f * density, capsule.getHeight() / 2f));
     }
 
     /** Sends the focus shape onto a pill: from a tile it glides up and narrows into the pill. */
