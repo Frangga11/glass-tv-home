@@ -190,11 +190,12 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertNotIn(".translationY(focused ? density * 4f : -density * 6f)", adapter)
         self.assertIn(".translationY(0f)", adapter)
 
-    def test_top_navigation_glider_uses_shared_silver_focus_overlay(self):
+    def test_top_navigation_glider_uses_shared_text_first_focus_overlay(self):
         source = (JAVA / "Glider.java").read_text(encoding="utf-8")
-        self.assertIn("paint.setColor(TvUiTokens.FOCUS_HALO)", source)
+        self.assertIn("style == DARK || style == NAVIGATION_DARK", source)
+        self.assertIn("TvUiTokens.NAV_FOCUS_SURFACE : TvUiTokens.FOCUS_HALO", source)
         self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", source)
-        self.assertIn("focusStroke.setAlpha(Math.round(220 * opacity))", source)
+        self.assertIn("focusStroke.setAlpha(Math.round(255 * opacity))", source)
         self.assertNotIn("FOCUS_ALPHA", source)
         grid_focus = (JAVA / "GlassView.java").read_text(encoding="utf-8")
         self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", grid_focus)
