@@ -335,10 +335,16 @@ final class QuickSettingsDialog {
             }
             View target = controls[initialFocus >= 0 && initialFocus < controls.length
                     ? initialFocus : QuickSettingsFocusGraph.INPUT];
-            installDialogGlider(activity, dialog, controls, density);
+            Glider dialogGlider = installDialogGlider(activity, dialog, controls, density);
             content.post(() -> {
                 alignWallpaperHeadingToCapsule(wallpaperTitle, nextPhoto, density);
-                if (target != null && target.isShown()) target.requestFocus();
+                if (target != null && target.isShown()) {
+                    target.requestFocus();
+                    // A dialog may already have assigned initial focus before the Glider is
+                    // installed. Explicitly seed its first target so the silver/cyan pane appears.
+                    float radiusDp = "quick_settings_manage_wallpaper".equals(target.getTag()) ? 7f : 10f;
+                    moveDialogGliderTo(target, dialogGlider, density, radiusDp);
+                }
             });
         });
         dialog.show();
@@ -349,17 +355,21 @@ final class QuickSettingsDialog {
      * Quick Settings owns a dialog-window Glider, using the exact same spring-driven shape as
      * Home app icons. Each capsule paints that one moving shape in its own background pass.
      */
-    private static void installDialogGlider(Activity activity, AlertDialog dialog, View[] controls,
-                                            float density) {
+    private static Glider installDialogGlider(Activity activity, AlertDialog dialog, View[] controls,
+                                               float density) {
         Window window = dialog.getWindow();
-        if (window == null) return;
+        if (window == null) return null;
         View decor = window.getDecorView();
-        if (!(decor instanceof ViewGroup)) return;
+        if (!(decor instanceof ViewGroup)) return null;
         ViewGroup layer = (ViewGroup) decor;
         Glider glider = new Glider(activity, false);
         glider.setStyle(Glider.GLASS);
-        // Keep the Quick Settings focus rim slightly finer without changing Home app icons.
-        glider.setFocusStrokeWidth(1.5f * density);
+        // The popup renders the shared Glider only in clipped capsule companions. This prevents
+        // the full-window shadow from leaking into the four rounded corners of each capsule.
+        glider.setCompanionOnly(true);
+        // One fine silver/cyan glass rim: no second focus outline layered over it.
+        glider.setSingleGlassRim(true);
+        glider.setGlassRimStrokeWidth(2.0f * density);
         layer.addView(glider, 0, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         decor.setTag(glider);
@@ -370,30 +380,38 @@ final class QuickSettingsDialog {
             Drawable idle = UniversalGlassMaterial.controlIdle(activity, density, cornerRadiusDp,
                     CAPSULE_IDLE_FILL, CAPSULE_IDLE_BORDER);
             control.setBackground(new LayerDrawable(new Drawable[]{
-                    idle, new GliderFocusDrawable(control, glider)
+                    idle, new GliderFocusDrawable(control, glider, cornerRadiusDp * density)
             }));
             glider.addCompanion(control);
             control.setOnFocusChangeListener((view, focused) -> {
                 if (!focused || !view.isShown()) return;
-                int[] targetAt = new int[2], gliderAt = new int[2];
-                view.getLocationInWindow(targetAt);
-                glider.getLocationInWindow(gliderAt);
-                float left = targetAt[0] - gliderAt[0];
-                float top = targetAt[1] - gliderAt[1];
-                float pad = dp(density, 2);
-                glider.moveTo(left + pad, top + pad,
-                        left + view.getWidth() - pad, top + view.getHeight() - pad,
-                        density * cornerRadiusDp);
+                moveDialogGliderTo(view, glider, density, cornerRadiusDp);
                 if (view instanceof TextView) {
                     TextView label = (TextView) view;
-                    // Preserve the approved white typography in every focus state. A dark,
-                    // tight shadow/halo separates white glyphs from the moving silver glass.
                     label.setTextColor(PANEL_TEXT_PRIMARY);
-                    label.setShadowLayer((focused ? 1.05f : 0.8f) * density, 0f,
-                            0.4f * density, focused ? 0x78000000 : 0x60000000);
+                    label.setShadowLayer(0.8f * density, 0f,
+                            0.35f * density, 0x60000000);
                 }
             });
         }
+        return glider;
+    }
+
+    /** Aligns the Glider's outer silver rim to the actual capsule perimeter. */
+    private static void moveDialogGliderTo(View view, Glider glider, float density,
+                                           float cornerRadiusDp) {
+        if (view == null || glider == null || !view.isShown()
+                || view.getWidth() <= 0 || view.getHeight() <= 0) return;
+        int[] targetAt = new int[2], gliderAt = new int[2];
+        view.getLocationInWindow(targetAt);
+        glider.getLocationInWindow(gliderAt);
+        float left = targetAt[0] - gliderAt[0];
+        float top = targetAt[1] - gliderAt[1];
+        // Target the measured capsule bounds exactly. The 0.75dp rim is clipped to the
+        // rounded capsule silhouette, so its visible outer edge lands on the capsule perimeter.
+        glider.moveTo(left, top,
+                left + view.getWidth(), top + view.getHeight(),
+                density * cornerRadiusDp);
     }
 
     static int panelTopInHost(int anchorScreenTop, int anchorHeight, int hostScreenTop,

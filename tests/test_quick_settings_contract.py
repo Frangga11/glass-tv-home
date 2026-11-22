@@ -18,9 +18,9 @@ class QuickSettingsContractTest(unittest.TestCase):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
         self.assertNotIn("0xFF17232B", focus_block)
-        self.assertIn("focused ? 1.05f : 0.8f", focus_block)
-        self.assertIn("focused ? 0x78000000 : 0x60000000", focus_block)
-        self.assertIn("0.4f * density", focus_block)
+        self.assertIn("0.8f * density", focus_block)
+        self.assertIn("0x60000000", focus_block)
+        self.assertIn("0.35f * density", focus_block)
 
     def test_wallpaper_heading_and_capsule_share_the_same_left_layout_lane(self):
         self.assertIn("wallpaperHeader.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);", DIALOG)
@@ -111,9 +111,13 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("link.setTextSize(12f);", DIALOG)
         self.assertIn("private static void addGridColumnGap(Activity activity, GridLayout grid, int row, float density, int tileHeightDp)", DIALOG)
         self.assertNotIn("scaleVertical(", DIALOG)
-        self.assertIn("new GliderFocusDrawable(control, glider)", DIALOG)
-        self.assertIn("glider.moveTo(left + pad, top + pad", DIALOG)
+        self.assertIn("new GliderFocusDrawable(control, glider, cornerRadiusDp * density)", DIALOG)
+        self.assertIn("glider.moveTo(left, top,", DIALOG)
         self.assertIn("glider.setStyle(Glider.GLASS)", DIALOG)
+        self.assertIn("glider.setCompanionOnly(true)", DIALOG)
+        self.assertIn("glider.setSingleGlassRim(true)", DIALOG)
+        self.assertIn("glider.setGlassRimStrokeWidth(2.0f * density)", DIALOG)
+        self.assertIn("moveDialogGliderTo(target, dialogGlider, density, radiusDp)", DIALOG)
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
         self.assertIn("dialog.setOnDismissListener", DIALOG)
         self.assertIn("dialog.setCancelable(true)", DIALOG)
