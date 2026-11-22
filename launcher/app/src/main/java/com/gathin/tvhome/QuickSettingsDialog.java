@@ -55,8 +55,8 @@ final class QuickSettingsDialog {
     private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
     private static final int TILE_HEIGHT_DP = 36;
     private static final int PANEL_HEIGHT_DP = 320;
-    private static final int HALF_TILE_WIDTH_DP = 115;
-    private static final int WIDE_TILE_WIDTH_DP = 235;
+    private static final float HALF_TILE_WIDTH_DP = 107.5f;
+    private static final int WIDE_TILE_WIDTH_DP = 220;
     private static final int CAPSULE_GAP_DP = 5;
     private static final int PANEL_VERTICAL_INSET_DP = 10;
     private static final int PANEL_SIDE_INSET_DP = 10;
@@ -90,9 +90,9 @@ final class QuickSettingsDialog {
         // The panel must end 5dp above the dock; never overlap the dock or silently clip content.
         int tileHeightDp = TILE_HEIGHT_DP;
 
-        // The 255dp panel is positioned from the Settings-tab gear, so the popup header gear
+        // The 240dp panel is positioned from the Settings-tab gear, so the popup header gear
         // sits on the same vertical axis as the navigation gear instead of being screen-centered.
-        int width = dp(density, 255);
+        int width = dp(density, 240);
         if (hostWidth < width + dp(density, 24)) {
             android.util.Log.e("TvHome.QuickSettings", "Host is too narrow for the fixed 255dp panel");
             return null;
@@ -190,7 +190,7 @@ final class QuickSettingsDialog {
         wallpaperTitle.setPaddingRelative(0, 0, 0, 0);
         wallpaperTitle.setTranslationY(dp(density, 2));
         wallpaperTitle.setTag("quick_settings_wallpaper_title");
-        wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 166),
+        wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 151),
                 ViewGroup.LayoutParams.MATCH_PARENT));
         wallpaperHeader.addView(wallpaperTitle);
         View wallpaperHeaderGap = new View(activity);
@@ -620,7 +620,11 @@ final class QuickSettingsDialog {
         return anchorScreenX + groupStart + iconWidth / 2;
     }
 
-    private static int dp(float density, int value) {
+    private static int dp(float density, float value) {
         return Math.max(1, Math.round(density * value));
+    }
+
+    private static int dp(float density, int value) {
+        return dp(density, (float) value);
     }
 }
