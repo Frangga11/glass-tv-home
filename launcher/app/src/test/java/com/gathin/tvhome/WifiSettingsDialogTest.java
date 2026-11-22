@@ -8,6 +8,8 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.view.View;
 import android.view.Gravity;
 import android.os.Looper;
@@ -104,6 +106,11 @@ public class WifiSettingsDialogTest {
 
     @Test public void dialogProvidesPermissionGuidanceAndDpadControls() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        // Exercise the permission-blocked state deterministically; Robolectric may otherwise
+        // inherit a granted permission from the test manifest/default package state.
+        Shadows.shadowOf(activity.getPackageManager()).setPermissionGrantResult(
+                activity.getPackageName(), Manifest.permission.ACCESS_FINE_LOCATION,
+                PackageManager.PERMISSION_DENIED);
         final int[] returns = {0};
         AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> returns[0]++);
         assertNotNull(dialog);
@@ -117,6 +124,10 @@ public class WifiSettingsDialogTest {
         assertNotNull(rescan);
         assertNotNull(settings);
         assertNotNull(close);
+        assertEquals(View.VISIBLE, permission.getVisibility());
+        assertEquals(View.GONE, rescan.getVisibility());
+        assertEquals(View.GONE, dialog.getWindow().getDecorView()
+                .findViewWithTag("wifi_network_list").getVisibility());
         assertTrue(rescan.isFocusable());
         assertTrue(settings.isClickable());
         assertNotEquals(View.NO_ID, rescan.getId());
