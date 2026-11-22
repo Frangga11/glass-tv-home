@@ -133,7 +133,7 @@ scanState.setVisibility(View.VISIBLE);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         wifiToggle = action("ON", "wifi_toggle", density, () -> dismissThen(openSystemWifiSettings));
-        wifiToggle.setMinHeight(dp(density, 22));
+        wifiToggle.setMinHeight(dp(density, 21));
         wifiToggle.setGravity(Gravity.CENTER);
         wifiToggle.setTextSize(14f);
         wifiToggle.setTranslationY(dp(density, 3));
