@@ -53,10 +53,11 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("new SettingsFocusCursorDrawable(density, TvUiTokens.NAV_ROW_RADIUS_DP)", settings)
         self.assertNotIn("SettingsNavFocusDrawable", settings)
         self.assertNotIn("bg_tv_focus_outline", settings)
+        self.assertFalse((JAVA / "SettingsNavFocusDrawable.java").exists())
+        self.assertFalse((ROOT / "launcher/app/src/main/res/drawable/bg_tv_focus_outline.xml").exists())
         self.assertIn("NAV_ROW_RADIUS_DP = 14f", tokens)
         self.assertIn("NAV_ROW_HEIGHT_DP = 56f", tokens)
         self.assertIn("NAV_ROW_BOTTOM_MARGIN_DP = 4f", tokens)
-        self.assertIn("perimeter", cursor) if False else None
         self.assertIn("new GlassRim(1f * density", cursor)
         self.assertIn("silverCyanRim.paint.setStrokeWidth(1f * density)", cursor)
         self.assertIn("bounds.left + halfStroke", cursor)
