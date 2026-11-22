@@ -14,13 +14,13 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("TvUiTokens.TEXT_PRIMARY", settings)
         self.assertIn("static final int TEXT_PRIMARY = 0xFFFFFFFF", tokens)
 
-    def test_quick_settings_uses_clean_ink_while_wifi_keeps_its_accepted_typography(self):
+    def test_quick_settings_preserves_bright_white_typography_while_wifi_is_unchanged(self):
         quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
-        self.assertIn("PANEL_TEXT_PRIMARY = 0xFF1B2933", quick)
-        self.assertIn("PANEL_TEXT_SECONDARY = 0xFF435663", quick)
+        self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", quick)
+        self.assertIn("PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY", quick)
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY)", quick)
-        self.assertIn("label.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)", quick)
+        self.assertIn("label.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x55000000)", quick)
         self.assertIn("view.setTextColor(TvUiTokens.TEXT_PRIMARY)", wifi)
         self.assertIn("TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY", wifi)
 
@@ -31,8 +31,8 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("new UniversalGlassDrawable(owner, density, radiusDp, false, true)", material)
         self.assertIn("quickSettingsPanel(Context context", material)
         self.assertIn("new UniversalGlassDrawable(owner, density, radiusDp, false, true, true)", material)
-        self.assertIn("popupVeil.setColor(cleanQuickSettings ? 0x2EFFFFFF : 0x68151D25)", drawable)
-        self.assertIn("new int[]{0x50FFFFFF, 0x3AFFFFFF, 0x2CFFFFFF, 0x20FFFFFF}", drawable)
+        self.assertIn("popupVeil.setColor(cleanQuickSettings ? 0x48343E48 : 0x68151D25)", drawable)
+        self.assertIn("new int[]{0x38FFFFFF, 0x24FFFFFF, 0x18FFFFFF, 0x10343E48}", drawable)
         for token in ("0x28FFFFFF", "0x14FFFFFF", "0x0AFFFFFF", "0x1E111A22",
                       "0xDFFFFFFF", "0x55FFFFFF", "0x38FFFFFF"):
             self.assertIn(token, drawable)
