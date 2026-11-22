@@ -17,7 +17,7 @@ import android.graphics.drawable.StateListDrawable;
  * The existing glass_effects_enabled preference and opaque fallbacks remain authoritative.
  */
 final class UniversalGlassMaterial {
-    private static final int PANEL_SHADE = 0xB31D1D1D;
+    private static final int PANEL_SHADE = 0xC21D1D1D;
 
     private UniversalGlassMaterial() { }
 
