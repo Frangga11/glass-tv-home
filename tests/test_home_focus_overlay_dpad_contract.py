@@ -11,13 +11,16 @@ ANDROID = "{http://schemas.android.com/apk/res/android}"
 
 
 class HomeFocusOverlayDpadContractTest(unittest.TestCase):
-    def test_focus_is_composited_after_capsule_glass_and_before_text_content(self):
-        drawable = (JAVA / "GliderFocusDrawable.java").read_text(encoding="utf-8")
-        self.assertIn("glider.drawShape(canvas", drawable)
-        self.assertIn("canvas.clipRect(getBounds())", drawable)
-        self.assertIn("new GliderFocusDrawable(pill, glider, 20f * density)", MAIN)
-        self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
-        self.assertIn("glider.addCompanion(pill)", MAIN)
+    def test_home_capsules_use_bounded_settings_cursor_without_replacing_main_glider(self):
+        cursor = (JAVA / "SettingsFocusCursorDrawable.java").read_text(encoding="utf-8")
+        self.assertIn("new SettingsFocusCursorDrawable(density, 20f)", MAIN)
+        self.assertIn("pill.setForeground(", MAIN)
+        self.assertIn("b.left + halfStroke", cursor)
+        self.assertIn("radiusPx - halfStroke", cursor)
+        self.assertNotIn("new GliderFocusDrawable(pill, glider", MAIN)
+        self.assertNotIn("glider.addCompanion(pill)", MAIN)
+        self.assertIn("setUpGlider();", MAIN)
+        self.assertIn("glider.addCompanion(dockRecycler", MAIN)
 
     def test_navigation_tabs_have_equal_weights_and_one_dp_icon_label_gap(self):
         root = ET.parse(LAYOUT).getroot()
