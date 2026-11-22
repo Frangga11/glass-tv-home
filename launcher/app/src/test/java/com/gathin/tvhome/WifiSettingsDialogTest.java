@@ -11,6 +11,7 @@ import android.app.AlertDialog;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Gravity;
 import android.os.Looper;
 
@@ -69,32 +70,35 @@ public class WifiSettingsDialogTest {
 
     @Test public void popupUsesConstrainedWidthAndVerticalFirstLayout() {
         assertEquals(180, WifiSettingsDialog.popupWidthDp());
-        assertEquals(12f, WifiSettingsDialog.networkTextSizeSp(), 0.001f);
-        assertEquals(16, WifiSettingsDialog.networkStatusIconSizeDp());
+        assertEquals(11f, WifiSettingsDialog.networkTextSizeSp(), 0.001f);
+        assertEquals(13, WifiSettingsDialog.networkStatusIconSizeDp());
         assertTrue(WifiSettingsDialog.networkStatusIconColor() != 0);
-        assertEquals(14f, WifiSettingsDialog.popupTitleSizeSp(), 0.001f);
-        assertEquals(12f, WifiSettingsDialog.popupSectionSizeSp(), 0.001f);
+        assertEquals(13f, WifiSettingsDialog.popupTitleSizeSp(), 0.001f);
+        assertEquals(11f, WifiSettingsDialog.popupSectionSizeSp(), 0.001f);
         assertEquals(10f, WifiSettingsDialog.popupMetaSizeSp(), 0.001f);
-        assertEquals(12f, WifiSettingsDialog.popupFooterSizeSp(), 0.001f);
+        assertEquals(11f, WifiSettingsDialog.popupFooterSizeSp(), 0.001f);
         assertEquals(12f, WifiSettingsDialog.permissionTextSizeSp(), 0.001f);
+        assertEquals(12f, WifiSettingsDialog.locationTextSizeSp(), 0.001f);
+        assertEquals(11f, WifiSettingsDialog.rescanTextSizeSp(), 0.001f);
+        assertEquals(11f, WifiSettingsDialog.androidSettingsTextSizeSp(), 0.001f);
+        assertEquals(11f, WifiSettingsDialog.toggleTextSizeSp(), 0.001f);
         assertEquals(2, WifiSettingsDialog.visibleNetworkRowCount());
-        assertEquals(26, WifiSettingsDialog.networkRowHeightDp());
+        assertEquals(24, WifiSettingsDialog.networkRowHeightDp());
         assertEquals(4, WifiSettingsDialog.networkRowGapDp());
-        assertEquals(56, WifiSettingsDialog.networkViewportHeightDp());
+        assertEquals(52, WifiSettingsDialog.networkViewportHeightDp());
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> { });
         View toggle = dialog.getWindow().getDecorView().findViewWithTag("wifi_toggle");
         assertNotNull(toggle);
-        assertEquals(14f, ((android.widget.TextView) toggle).getTextSize()
+        assertEquals(11f, ((android.widget.TextView) toggle).getTextSize()
                 / activity.getResources().getDisplayMetrics().scaledDensity, 0.1f);
-        assertEquals(Math.round(42 * activity.getResources().getDisplayMetrics().density),
+        assertEquals(Math.round(41 * activity.getResources().getDisplayMetrics().density),
                 toggle.getLayoutParams().width);
-        assertEquals(Math.round(21 * activity.getResources().getDisplayMetrics().density),
+        assertEquals(Math.round(20 * activity.getResources().getDisplayMetrics().density),
                 toggle.getLayoutParams().height);
         View permission = dialog.getWindow().getDecorView().findViewWithTag("wifi_permission");
         assertNotNull(permission);
-        assertEquals(Math.round(26 * activity.getResources().getDisplayMetrics().density),
-                permission.getLayoutParams().height);
+        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, permission.getLayoutParams().height);
         View settings = dialog.getWindow().getDecorView().findViewWithTag("wifi_open_settings");
         assertNotNull(settings);
         assertEquals(permission.getParent(), settings.getParent());
