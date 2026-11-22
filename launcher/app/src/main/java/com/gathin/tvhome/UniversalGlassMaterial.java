@@ -49,7 +49,8 @@ final class UniversalGlassMaterial {
         if (!isGlassEnabled(context)) {
             return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
         }
-        if (owner != null) Backdrop.watch(owner);
+        // Quick Settings no longer consumes the blurred wallpaper cache; the transparent
+        // Dialog window reveals the real wallpaper directly beneath this optical surface.
         return new UniversalGlassDrawable(owner, density, radiusDp, false, true, true);
     }
 
