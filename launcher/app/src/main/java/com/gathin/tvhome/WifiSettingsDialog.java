@@ -150,6 +150,7 @@ final class WifiSettingsDialog {
         TextView title = text(R.string.wifi, popupTitleSizeSp(), true, density);
         title.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0, 0, 0);
         title.setCompoundDrawablePadding(dp(density, 6));
+        title.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(PopupGlassTokens.ICON));
         LinearLayout header = new LinearLayout(activity);
         header.setTag("wifi_popup_header");
         header.setOrientation(LinearLayout.HORIZONTAL);
