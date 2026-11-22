@@ -111,7 +111,7 @@ final class WifiSettingsDialog {
         LinearLayout content = new LinearLayout(activity);
         content.setTag("wifi_popup_root");
         content.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(density, 10), dp(density, 4), dp(density, 10), dp(density, 8));
         // Adopt Universal Home's glass material without changing the approved Wi-Fi geometry.
@@ -217,12 +217,12 @@ final class WifiSettingsDialog {
             if (action != null && !activity.isFinishing() && !activity.isDestroyed()) action.run();
         });
         dialog.setOnShowListener(d -> {
-            applyAnchoredPopup();
             refreshStatus();
             updatePrerequisites();
             registerScanReceiver();
             requestScan();
             showCachedResults();
+            applyAnchoredPopup();
             connectFocusOrder();
             View initial = firstFocusableControl();
             if (initial != null) initial.requestFocus();
@@ -237,7 +237,10 @@ final class WifiSettingsDialog {
         int screenHeight = activity.getResources().getDisplayMetrics().heightPixels;
         float density = activity.getResources().getDisplayMetrics().density;
         int popupWidth = dp(density, popupWidthDp());
-        int popupHeight = Math.round(screenHeight * popupHeightFraction());
+        content.measure(View.MeasureSpec.makeMeasureSpec(popupWidth, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(Math.max(1, screenHeight - dp(density, 16)),
+                        View.MeasureSpec.AT_MOST));
+        int popupHeight = Math.min(content.getMeasuredHeight(), screenHeight - dp(density, 16));
         int popupLeft = Math.max(8, screenWidth - popupWidth - 8);
         int popupTop = 8;
         if (anchor != null && anchor.getWidth() > 0 && anchor.getHeight() > 0) {
@@ -264,10 +267,6 @@ final class WifiSettingsDialog {
     }
 
     static int popupWidthDp() { return 200; }
-
-    static float popupHeightFraction() {
-        return 0.54f; // Content-fit compact panel with a fixed three-row network viewport.
-    }
 
     static float popupTextSizeSp() { return 12f; }
     static float networkTextSizeSp() { return 12f; }
