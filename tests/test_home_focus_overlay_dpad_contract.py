@@ -15,9 +15,9 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
         drawable = (JAVA / "GliderFocusDrawable.java").read_text(encoding="utf-8")
         self.assertIn("glider.drawShape(canvas", drawable)
         self.assertIn("canvas.clipRect(getBounds())", drawable)
-        self.assertIn("new GliderFocusDrawable(pill, glider, 20f * density)", MAIN)
+        self.assertIn("new GliderFocusDrawable(pill, homeCapsuleGlider, 20f * density)", MAIN)
         self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
-        self.assertIn("glider.addCompanion(pill)", MAIN)
+        self.assertIn("homeCapsuleGlider.addCompanion(pill)", MAIN)
 
     def test_navigation_tabs_have_equal_weights_and_one_dp_icon_label_gap(self):
         root = ET.parse(LAYOUT).getroot()
