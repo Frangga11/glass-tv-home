@@ -106,10 +106,13 @@ public class WifiSettingsDialogTest {
 
     @Test public void dialogProvidesPermissionGuidanceAndDpadControls() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        // Exercise the permission-blocked state deterministically; Robolectric may otherwise
-        // inherit a granted permission from the test manifest/default package state.
-        Shadows.shadowOf(activity.getApplication()).denyPermissions(
+        // Revoke the permission for the Activity's actual process identity. This mirrors
+        // Context.checkSelfPermission(pid, uid) instead of changing only Application shadow state.
+        Shadows.shadowOf(activity).denyPermissions(
+                android.os.Process.myPid(), android.os.Process.myUid(),
                 Manifest.permission.ACCESS_FINE_LOCATION);
+        assertEquals(PackageManager.PERMISSION_DENIED,
+                activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION));
         final int[] returns = {0};
         AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> returns[0]++);
         assertNotNull(dialog);
