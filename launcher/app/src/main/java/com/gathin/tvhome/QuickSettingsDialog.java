@@ -51,9 +51,6 @@ final class QuickSettingsDialog {
     private static final int CAPSULE_IDLE_BORDER = 0x559EABB8;
     private static final int CAPSULE_FOCUS_FILL = TvUiTokens.SURFACE_FOCUSED;
     private static final int CAPSULE_FOCUS_BORDER = TvUiTokens.FOCUS_BORDER;
-    private static final int PANEL_GLASS_VEIL = TvUiTokens.GLASS_VEIL_COLOR;
-    private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE;
-    private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
     private static final int TILE_HEIGHT_DP = 36;
     private static final int PANEL_HEIGHT_DP = 320;
     private static final int HALF_TILE_WIDTH_DP = 115;
@@ -114,7 +111,8 @@ final class QuickSettingsDialog {
         content.setClipChildren(true);
         content.setClipToPadding(true);
         content.setBackground(new GlassDrawable(content, TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false,
-                PANEL_GLASS_VEIL, 0x54, PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER));
+                TvUiTokens.POPUP_GLASS_VEIL_COLOR, TvUiTokens.POPUP_GLASS_VEIL_ALPHA,
+                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER, 0.22f));
         Backdrop.watch(content);
 
         LinearLayout header = new LinearLayout(activity);
@@ -326,12 +324,13 @@ final class QuickSettingsDialog {
                 window.getDecorView().setPadding(0, 0, 0, 0);
                 window.setGravity(Gravity.TOP | Gravity.LEFT);
                 window.setLayout(panelWidth, panelHeight);
+                // Separate the popup from Home's foreground text while retaining the live wallpaper glass.
+                window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                 WindowManager.LayoutParams params = window.getAttributes();
                 params.x = finalPanelLeft;
                 params.y = panelTop;
-                params.dimAmount = 0f;
+                params.dimAmount = popupDimAmount();
                 window.setAttributes(params);
-                window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             }
             View target = controls[initialFocus >= 0 && initialFocus < controls.length
                     ? initialFocus : QuickSettingsFocusGraph.INPUT];
@@ -396,6 +395,10 @@ final class QuickSettingsDialog {
                 }
             });
         }
+    }
+
+    static float popupDimAmount() {
+        return TvUiTokens.POPUP_DIM_AMOUNT;
     }
 
     static int panelTopInHost(int anchorScreenTop, int anchorHeight, int hostScreenTop,
