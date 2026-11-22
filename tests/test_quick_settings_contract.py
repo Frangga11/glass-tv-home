@@ -15,7 +15,8 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 class QuickSettingsContractTest(unittest.TestCase):
     def test_focus_keeps_white_text_and_uses_dark_halo_on_glass(self):
-        focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
+        focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("
+                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
         self.assertNotIn("0xFF17232B", focus_block)
         self.assertIn("0.8f * density", focus_block)
@@ -220,7 +221,14 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("actions.setOrientation(LinearLayout.VERTICAL);", wifi_dialog)
         self.assertIn("dp(density, 28)", wifi_dialog)
         self.assertIn("wifiToggle.setMinHeight(dp(density, 23));", wifi_dialog)
-        self.assertIn("wifiToggle.setGravity(Gravity.CENTER);", wifi_dialog)\n        self.assertIn("new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 30))", wifi_dialog)\n        self.assertIn("wifiToggle.setTextSize(14f);", wifi_dialog)\n        self.assertIn("wifiToggle.setTranslationY(dp(density, 5));", wifi_dialog)\n        self.assertIn("title.setTranslationY(dp(density, 5));", wifi_dialog)\n        self.assertIn("networkViewport.topMargin = dp(density, 10);", wifi_dialog)\n        self.assertIn("networkViewport.bottomMargin = dp(density, 10);", wifi_dialog)\n        self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 34)", wifi_dialog)
+        self.assertIn("wifiToggle.setGravity(Gravity.CENTER);", wifi_dialog)
+        self.assertIn("new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 30))", wifi_dialog)
+        self.assertIn("wifiToggle.setTextSize(14f);", wifi_dialog)
+        self.assertIn("wifiToggle.setTranslationY(dp(density, 5));", wifi_dialog)
+        self.assertIn("title.setTranslationY(dp(density, 5));", wifi_dialog)
+        self.assertIn("networkViewport.topMargin = dp(density, 10);", wifi_dialog)
+        self.assertIn("networkViewport.bottomMargin = dp(density, 10);", wifi_dialog)
+        self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 34)", wifi_dialog)
         self.assertIn("rescan.setMinHeight(dp(density, 28));", wifi_dialog)
         self.assertIn("androidSettings.setMinHeight(dp(density, 28));", wifi_dialog)
         self.assertIn("scanState = text(R.string.wifi_scan_idle, popupMetaSizeSp()", wifi_dialog)
