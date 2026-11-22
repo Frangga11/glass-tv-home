@@ -14,6 +14,22 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 
 class QuickSettingsContractTest(unittest.TestCase):
+    def test_quick_settings_backdrop_captures_the_activity_window_crop(self):
+        capture = (JAVA / "QuickSettingsBackdropCapture.java").read_text(encoding="utf-8")
+        drawable = (JAVA / "UniversalGlassDrawable.java").read_text(encoding="utf-8")
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        self.assertIn("PixelCopy.request(activity.getWindow(), crop, captured", capture)
+        self.assertIn("Backdrop.blur(captured, crop.width(), crop.height(), 0)", capture)
+        self.assertIn("Build.VERSION_CODES.O", capture)
+        self.assertIn("PixelCopy.SUCCESS", capture)
+        self.assertIn("recycle(captured)", capture)
+        self.assertIn("QuickSettingsBackdropCapture.capture(activity, captureRect, backdropWorker, callbackHandler", DIALOG)
+        self.assertIn("quickSettingsGlass.clearCapturedWindowBackdrop()", DIALOG)
+        self.assertIn("}, wallDecoder, handler);", main)
+        surface = drawable[drawable.index("void drawSurface("):drawable.index("void drawReflection(")]
+        self.assertIn("canvas.drawBitmap(capturedWindowBackdrop, null, area, capturedBackdropPaint)", surface)
+        self.assertIn("backdropFill.draw(canvas, owner, area, radius, 1f)", surface)
+
     def test_focus_preserves_bright_white_text_with_subtle_shadow(self):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
