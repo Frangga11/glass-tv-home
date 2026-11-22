@@ -123,6 +123,11 @@ public class WifiSettingsDialogTest {
         assertNotEquals(View.NO_ID, settings.getId());
         assertTrue(permission.getNextFocusDownId() != 0);
         assertTrue(settings.getNextFocusDownId() != 0);
+        // Permission state hides rescan; no DPAD edge may target that hidden control.
+        assertEquals(settings.getId(), settings.getNextFocusLeftId());
+        assertEquals(settings.getId(), settings.getNextFocusRightId());
+        assertEquals(settings.getId(), settings.getNextFocusUpId());
+        assertEquals(settings.getId(), settings.getNextFocusDownId());
         dialog.cancel();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
         assertFalse(dialog.isShowing());
