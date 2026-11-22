@@ -15,8 +15,7 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 class QuickSettingsContractTest(unittest.TestCase):
     def test_focus_keeps_white_text_and_uses_dark_halo_on_glass(self):
-        focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("
-                }", DIALOG.index("if (view instanceof TextView)")) + 18]
+        focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
         self.assertNotIn("0xFF17232B", focus_block)
         self.assertIn("0.8f * density", focus_block)
