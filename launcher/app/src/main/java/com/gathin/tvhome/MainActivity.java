@@ -807,6 +807,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ayahOpenHint.setOnFocusChangeListener((v, hasFocus) -> {
                     if (hasFocus) {
                         SoundEffects.playNav();
+                        gliderOnPill = false;
                         moveHomeCapsuleCursor(v);
                     }
                 });
@@ -911,6 +912,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             prayerHeaderView.setOnFocusChangeListener((v, hasFocus) -> {
                 if (hasFocus) {
                     SoundEffects.playNav();
+                    gliderOnPill = false;
                     moveHomeCapsuleCursor(v);
                 }
             });
