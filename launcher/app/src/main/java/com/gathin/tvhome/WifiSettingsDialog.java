@@ -128,12 +128,12 @@ final class WifiSettingsDialog {
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         wifiToggle = action("ON", "wifi_toggle", density, () -> dismissThen(openSystemWifiSettings));
-        wifiToggle.setMinHeight(dp(density, 25));
+        wifiToggle.setMinHeight(dp(density, 23));
         wifiToggle.setGravity(Gravity.CENTER);
         wifiToggle.setTextSize(14f);
         wifiToggle.setTranslationY(dp(density, 5));
         header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 44), dp(density, 23)));
-        content.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 28)));
+        content.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 30)));
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
         status.setPadding(dp(density, 10), dp(density, 5), dp(density, 10), dp(density, 5));
         status.setBackground(UniversalGlassMaterial.controlIdle(activity, density, TvUiTokens.CARD_RADIUS_DP,
