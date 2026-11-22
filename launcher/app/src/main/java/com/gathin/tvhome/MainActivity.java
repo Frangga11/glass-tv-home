@@ -195,8 +195,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private View ambient;
     /** The focus: one dark shape gliding between tiles and pills (see Glider). */
     private Glider glider;
-    /** Dedicated Home capsule cursor; isolated from the app/Dock Glider state machine. */
-    private Glider homeCapsuleGlider;
     /** Whether the glider is on the top menu, so a move down travels dark. */
     private boolean gliderOnPill;
     private final int[] pillAt = new int[2], rootAt = new int[2];
@@ -803,12 +801,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     }
                     return keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
                 });
-                // Initialize the dedicated capsule cursor before binding it to this target.
-                ensureHomeCapsuleGlider();
-                // One Home Glider is the sole focus cursor; remove the legacy halo/outline layer.
-                ayahOpenHint.setBackground(new GliderFocusDrawable(
-                        ayahOpenHint, homeCapsuleGlider, 6f * density));
-                homeCapsuleGlider.addCompanion(ayahOpenHint);
+                // Reuse the same Glider that animates between Dock apps and Home capsules.
+                ayahOpenHint.setBackground(new GliderFocusDrawable(ayahOpenHint, glider, 6f * density));
+                glider.addCompanion(ayahOpenHint);
                 ayahOpenHint.setOnFocusChangeListener((v, hasFocus) -> {
                     if (hasFocus) {
                         SoundEffects.playNav();
@@ -911,12 +906,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 return false;
             });
-            // The dedicated capsule cursor is also initialized when the Ayah action is absent.
-            ensureHomeCapsuleGlider();
-            // One Home capsule cursor replaces the legacy prayer-header halo and border.
+            // Prayer header shares the same animated Glider as every other Home focus target.
             prayerHeaderView.setBackground(new GliderFocusDrawable(
-                    prayerHeaderView, homeCapsuleGlider, 8f * density));
-            homeCapsuleGlider.addCompanion(prayerHeaderView);
+                    prayerHeaderView, glider, 8f * density));
+            glider.addCompanion(prayerHeaderView);
             prayerHeaderView.setOnFocusChangeListener((v, hasFocus) -> {
                 if (hasFocus) {
                     SoundEffects.playNav();
@@ -971,7 +964,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (navCapsule != null) {
             navCapsule.setBackground(UniversalGlassMaterial.homeCapsule(this, density, 20f,
                     TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
-            // The parent is only the unified idle glass surface; only the focused tab draws the Glider.
+            glider.addCompanion(navCapsule);
         }
         // One restrained glass surface unifies the prayer timetable and Ayat Pilihan.
         // Background-only treatment: keep shelf bounds, child layout, text, RTL and spacing unchanged.
@@ -990,8 +983,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (navigationTab) {
                 // Paint the same moving Glider inside each tab's own drawing pass:
                 // above the shared capsule surface, but below the tab's icon and label.
-                pill.setBackground(new GliderFocusDrawable(
-                        pill, homeCapsuleGlider, 20f * density));
+                pill.setBackground(new GliderFocusDrawable(pill, glider, 20f * density));
             } else {
                 // Compose the focus layer after the capsule glass and before the view's content.
                 boolean silverCyanTarget = id == R.id.locationPill
@@ -1004,9 +996,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                                 TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
                 pill.setBackground(new android.graphics.drawable.LayerDrawable(
                         new Drawable[]{glassBackground,
-                                new GliderFocusDrawable(pill, homeCapsuleGlider, 20f * density)}));
+                                new GliderFocusDrawable(pill, glider, 20f * density)}));
             }
-            homeCapsuleGlider.addCompanion(pill);
+            glider.addCompanion(pill);
             pill.setOnFocusChangeListener((v, has) -> {
                 if (has) {
                     // Any header focus supersedes a deferred Grid target.
@@ -2818,27 +2810,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         root.addView(glider, root.indexOfChild(heroShelf), new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        ensureHomeCapsuleGlider();
-        // The app/Dock Glider continues to own its original focus and animation behavior.
         glass.setVisibility(View.GONE);
-    }
-
-    /** Creates the one Home capsule cursor once; app/Dock Glider remains independent. */
-    private void ensureHomeCapsuleGlider() {
-        if (homeCapsuleGlider != null || root == null) return;
-        homeCapsuleGlider = new Glider(this, reducedMotion);
-        homeCapsuleGlider.setCompanionOnly(true);
-        homeCapsuleGlider.setFocusStrokeWidth(2f * density);
-        homeCapsuleGlider.setStyle(Glider.DARK);
-        int index = heroShelf != null ? root.indexOfChild(heroShelf) : -1;
-        if (index < 0) index = root.getChildCount();
-        root.addView(homeCapsuleGlider, index, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        root.getViewTreeObserver().addOnGlobalFocusChangeListener((oldFocus, newFocus) -> {
-            if (homeCapsuleGlider != null && !isHomeCapsuleCursorTarget(newFocus)) {
-                homeCapsuleGlider.hide();
-            }
-        });
     }
 
     private String topPillKeyForView(View view) {
@@ -2884,32 +2856,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void moveTopHighlight(View pill) {
         if (resuming) return;
         SoundEffects.playNav();
-        // The top row remains part of the established Home/Dock Glider state machine.
-        gliderOnPill = true;
+        pill.getLocationInWindow(pillAt);
+        glider.getLocationInWindow(rootAt);
+        float l = pillAt[0] - rootAt[0], t = pillAt[1] - rootAt[1];
+        // The pills do not scroll with the grid, so the shape stops following the grid's scroll.
         glassShown = false;
-        moveHomeCapsuleCursor(pill);
-    }
-
-    /** Returns true only for the agreed Home capsule/action focus targets. */
-    private boolean isHomeCapsuleCursorTarget(View view) {
-        if (view == null) return false;
-        int id = view.getId();
-        return id == R.id.locationPill || id == R.id.weatherAirQuality
-                || id == R.id.btnInputs || id == R.id.btnWifi || id == R.id.btnAssistant
-                || id == R.id.btnHome || id == R.id.btnCandyBox || id == R.id.btnSettings
-                || id == R.id.ayahOpenHint || id == R.id.prayerHeader;
-    }
-
-    /** Moves the one Home capsule cursor to a measured target; Dock/app focus stays independent. */
-    private void moveHomeCapsuleCursor(View capsule) {
-        if (capsule == null || homeCapsuleGlider == null || !capsule.isShown()
-                || capsule.getWidth() <= 0 || capsule.getHeight() <= 0) return;
-        capsule.getLocationInWindow(pillAt);
-        homeCapsuleGlider.getLocationInWindow(rootAt);
-        float left = pillAt[0] - rootAt[0], top = pillAt[1] - rootAt[1];
-        homeCapsuleGlider.setStyle(Glider.DARK);
-        homeCapsuleGlider.moveTo(left, top, left + capsule.getWidth(), top + capsule.getHeight(),
-                Math.min(20f * density, capsule.getHeight() / 2f));
+        // Up to the top menu it is dark at once, and travels that way.
+        gliderOnPill = true;
+        glider.setStyle(Glider.DARK);
+        glider.moveTo(l, t, l + pill.getWidth(), t + pill.getHeight(),
+                Math.min(20f * density, pill.getHeight() / 2f));
     }
 
     /** The shelf's two lines. An empty description takes no room, so the title keeps its place. */
