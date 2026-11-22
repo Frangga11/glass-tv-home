@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 
 /**
  * Independent DPAD focus overlay for the Settings sidebar capsules.
@@ -20,11 +19,13 @@ final class SettingsNavFocusDrawable extends Drawable {
     private final float radiusPx;
     private final RectF shape = new RectF();
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final GlassRim rim;
     private boolean focused;
 
     SettingsNavFocusDrawable(float density, float radiusDp) {
         this.density = density;
         this.radiusPx = radiusDp * density;
+        this.rim = new GlassRim(1f * density, 0xD9FFFFFF, 0x1AFFFFFF);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStrokeJoin(Paint.Join.ROUND);
@@ -79,17 +80,11 @@ final class SettingsNavFocusDrawable extends Drawable {
         canvas.drawRoundRect(shape, radius, radius, paint);
         paint.clearShadowLayer();
 
-        // Crisp 1dp white-silver edge with a restrained cyan tint.
-        paint.setStrokeWidth(1f * density);
-        paint.setColor(0xF0EAFBFF);
-        canvas.drawRoundRect(shape, radius, radius, paint);
-
-        // Fine inner cyan reflection gives the outline its raised, glass-like finish.
-        shape.inset(1f * density, 1f * density);
-        paint.setStrokeWidth(Math.max(0.5f, 0.5f * density));
-        paint.setColor(0x704ADDF2);
-        canvas.drawRoundRect(shape, Math.max(0f, radius - density),
-                Math.max(0f, radius - density), paint);
+        // Reuse the same silver/cyan gradient rim and overhead window-light reflection as Home glass.
+        rim.fit(shape);
+        rim.paint.setAlpha(255);
+        canvas.drawRoundRect(shape, radius, radius, rim.paint);
+        rim.drawWindowLight(canvas, shape, radius, 0.82f);
 
         canvas.restore();
     }
