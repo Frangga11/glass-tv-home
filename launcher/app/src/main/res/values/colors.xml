@@ -22,4 +22,7 @@
     <color name="tv_ui_selected_border">#99DCE5ED</color>
     <color name="tv_ui_focus_halo">#35DCE5ED</color>
     <color name="tv_ui_glass_veil">#88343E48</color>
+    <color name="tv_ui_nav_glass_veil">#FF27333D</color>
+    <color name="tv_ui_nav_focus_surface">#D92A3540</color>
+    <color name="tv_ui_popup_glass_veil">#FF222D37</color>
 </resources>
