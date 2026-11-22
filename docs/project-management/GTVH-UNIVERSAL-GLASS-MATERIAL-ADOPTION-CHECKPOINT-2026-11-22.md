@@ -81,3 +81,18 @@ No changes to:
 - PR #62 remains OPEN / DRAFT / DEFERRED and untouched.
 - PR #161 remains separate and unmerged; this workstream does not cherry-pick it.
 - Main remains unchanged at `71f3a051a25fd66cabfd1740756cc36442dc92cc`.
+
+
+
+## Superseding integration record — PR #170 is the governing baseline — 22 November 2026
+
+The original planning section above records the earlier PR #162 proposal against `main`. That was not the final integration baseline. Owner direction subsequently established PR #170 as the authoritative accepted baseline.
+
+- Immutable PR #170 source: `2208afbc896f6b08d699156714e7d58dc964f721`.
+- Integration branch: `integration/pr170-universal-glass-sync-001`, created directly from that source.
+- PR #162 was retargeted to the integration branch. The broad Universal Glass material adoption was already in the PR #170 cumulative ancestry; the only remaining source delta was the Wi-Fi pointer backdrop drawing adjustment in `UniversalGlassMaterial.java`.
+- PR #162 merged successfully at `7df0a5bcf82b8fc67863abb886997e3b3df47de9` (merged head `b9866be19db1159f3a856199f8079c77bd50f7a4`).
+- Exact-head PR CI after retargeting: run `44993172112`; Launcher build and unit tests SUCCESS; Lists, tools and docs SUCCESS.
+- Post-merge CI and final documentation CI are still required. No independent Mi TV Stick acceptance is claimed for the post-sync APK.
+- The PR #170 findings are binding for all glass/focus work: clip the moving Glider to the actual rounded capsule silhouette, align the rim to measured capsule bounds, use one rim only, and seed the initial focused capsule explicitly. Do not change capsule measurements, layout, spacing, DPAD graph, focus ownership, dock/app movement, or animation.
+- PR #162 is no longer open. PR #62 remains deferred and untouched. No merge to `main` or release publication occurred in this workstream.
