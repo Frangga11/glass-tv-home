@@ -23,6 +23,8 @@ final class UniversalGlassDrawable extends Drawable {
     private final Paint reflection = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint inner = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint windowLight = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final boolean silverCyanIdentity;
+    private final Paint windowLight = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF area = new RectF();
     private final RectF lastSourceBounds = new RectF();
     private final RectF innerArea = new RectF();
@@ -60,31 +62,35 @@ final class UniversalGlassDrawable extends Drawable {
         surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
                 new int[]{0x36FFFFFF, 0x16FFFFFF, 0x0DFFFFFF, 0x30232323},
                 new float[]{0f, 0.18f, 0.6f, 1f}, Shader.TileMode.CLAMP));
-        // Restore the original Frosted Silver-Cyan edge identity while retaining
-        // Universal Home's 1dp outer rim geometry and current draw order.
-        float rimAlpha = 0xD9 / 255f;
-        int[] rimColors = new int[]{
-                modulateAlpha(0xFFFFFFFF, rimAlpha),
-                modulateAlpha(0xD9E2E8EE, rimAlpha),
-                modulateAlpha(0xA650DDF2, rimAlpha),
-                modulateAlpha(0xD9E2E8EE, rimAlpha),
-                modulateAlpha(0x1AFFFFFF, rimAlpha),
-                modulateAlpha(0x1AFFFFFF, rimAlpha),
-                modulateAlpha(0x667D8D9B, rimAlpha),
-                modulateAlpha(0x80DCE5ED, rimAlpha),
-                modulateAlpha(0xD9FFFFFF, rimAlpha)
-        };
-        float[] rimStops = new float[]{
-                0.00f, 0.04f, 0.09f, 0.15f, 0.46f, 0.54f, 0.85f, 0.925f, 1.00f
-        };
-        rim.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
-                rimColors, rimStops, Shader.TileMode.CLAMP));
-        // A subdued overhead window reflection: original white-to-cyan profile,
-        // deliberately reduced to 62% intensity so it reads as material, not focus.
-        windowLight.setShader(new LinearGradient(area.left, area.top, area.right, area.top,
-                new int[]{0x00FFFFFF, 0x00FFFFFF, 0xD9FFFFFF, 0x8067E8F9, 0x00FFFFFF, 0x00FFFFFF},
-                new float[]{0.00f, 0.15f, 0.32f, 0.46f, 0.68f, 1.00f},
-                Shader.TileMode.CLAMP));
+        if (silverCyanIdentity) {
+            // Dock and explicitly selected Home capsules only: restrained pre-adoption identity.
+            float rimAlpha = 0xD9 / 255f;
+            int[] rimColors = new int[]{
+                    modulateAlpha(0xFFFFFFFF, rimAlpha),
+                    modulateAlpha(0xD9E2E8EE, rimAlpha),
+                    modulateAlpha(0xA650DDF2, rimAlpha),
+                    modulateAlpha(0xD9E2E8EE, rimAlpha),
+                    modulateAlpha(0x1AFFFFFF, rimAlpha),
+                    modulateAlpha(0x1AFFFFFF, rimAlpha),
+                    modulateAlpha(0x667D8D9B, rimAlpha),
+                    modulateAlpha(0x80DCE5ED, rimAlpha),
+                    modulateAlpha(0xD9FFFFFF, rimAlpha)
+            };
+            float[] rimStops = new float[]{
+                    0.00f, 0.04f, 0.09f, 0.15f, 0.46f, 0.54f, 0.85f, 0.925f, 1.00f
+            };
+            rim.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
+                    rimColors, rimStops, Shader.TileMode.CLAMP));
+            windowLight.setShader(new LinearGradient(area.left, area.top, area.right, area.top,
+                    new int[]{0x00FFFFFF, 0x00FFFFFF, 0xD9FFFFFF, 0x8067E8F9, 0x00FFFFFF, 0x00FFFFFF},
+                    new float[]{0.00f, 0.15f, 0.32f, 0.46f, 0.68f, 1.00f},
+                    Shader.TileMode.CLAMP));
+        } else {
+            // Preserve Universal Home's neutral white rim for every non-target surface.
+            rim.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
+                    new int[]{0xA6FFFFFF, 0x38FFFFFF, 0x14FFFFFF, 0x66FFFFFF},
+                    new float[]{0f, 0.3f, 0.65f, 1f}, Shader.TileMode.CLAMP));
+        }
         reflection.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
                 new int[]{0x22FFFFFF, 0x08FFFFFF, 0x00FFFFFF},
                 new float[]{0f, 0.35f, 1f}, Shader.TileMode.CLAMP));
