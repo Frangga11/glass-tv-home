@@ -803,7 +803,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     }
                     return keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
                 });
-                // The Home Glider is the sole focus cursor; remove the legacy halo/outline layer.
+                // Initialize the dedicated capsule cursor before binding it to this target.
+                ensureHomeCapsuleGlider();
+                // One Home Glider is the sole focus cursor; remove the legacy halo/outline layer.
                 ayahOpenHint.setBackground(new GliderFocusDrawable(
                         ayahOpenHint, homeCapsuleGlider, 6f * density));
                 homeCapsuleGlider.addCompanion(ayahOpenHint);
@@ -2814,22 +2816,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         root.addView(glider, root.indexOfChild(heroShelf), new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        // Capsule focus is deliberately isolated from the established app/Dock Glider.
-        // One 2dp outline is drawn by GliderFocusDrawable inside each measured capsule.
+        ensureHomeCapsuleGlider();
+        // The app/Dock Glider continues to own its original focus and animation behavior.
+        glass.setVisibility(View.GONE);
+    }
+
+    /** Creates the one Home capsule cursor once; app/Dock Glider remains independent. */
+    private void ensureHomeCapsuleGlider() {
+        if (homeCapsuleGlider != null || root == null) return;
         homeCapsuleGlider = new Glider(this, reducedMotion);
         homeCapsuleGlider.setCompanionOnly(true);
         homeCapsuleGlider.setFocusStrokeWidth(2f * density);
         homeCapsuleGlider.setStyle(Glider.DARK);
-        root.addView(homeCapsuleGlider, root.indexOfChild(heroShelf),
-                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT));
+        int index = heroShelf != null ? root.indexOfChild(heroShelf) : -1;
+        if (index < 0) index = root.getChildCount();
+        root.addView(homeCapsuleGlider, index, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         root.getViewTreeObserver().addOnGlobalFocusChangeListener((oldFocus, newFocus) -> {
             if (homeCapsuleGlider != null && !isHomeCapsuleCursorTarget(newFocus)) {
                 homeCapsuleGlider.hide();
             }
         });
-        // The app/Dock Glider continues to own its original focus and animation behavior.
-        glass.setVisibility(View.GONE);
     }
 
     private String topPillKeyForView(View view) {
