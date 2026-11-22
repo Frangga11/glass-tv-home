@@ -99,7 +99,7 @@ scanState.setVisibility(View.VISIBLE);
             boolean updated = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false);
             if (updated) {
                 scanState.setText("");
-scanState.setVisibility(View.GONE);
+                scanState.setVisibility(View.GONE);
             } else {
                 scanState.setText(R.string.wifi_scan_limited);
 scanState.setVisibility(View.VISIBLE);
@@ -124,21 +124,21 @@ scanState.setVisibility(View.VISIBLE);
         content.setBackground(UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,
                 TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
         TextView title = text(R.string.wifi, popupTitleSizeSp(), true, density);
-        title.setCompoundDrawablesRelative(sizedDrawable(R.drawable.ic_wifi, 16), null, null, null);
+        title.setCompoundDrawablesRelative(sizedDrawable(R.drawable.ic_wifi, 13), null, null, null);
         title.setCompoundDrawablePadding(dp(density, 6));
-        title.setTranslationY(dp(density, 3));
+        
         LinearLayout header = new LinearLayout(activity);
         header.setTag("wifi_popup_header");
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         wifiToggle = action("ON", "wifi_toggle", density, () -> dismissThen(openSystemWifiSettings));
-        wifiToggle.setMinHeight(dp(density, 21));
+        wifiToggle.setMinHeight(dp(density, 20));
         wifiToggle.setGravity(Gravity.CENTER);
-        wifiToggle.setTextSize(14f);
-        wifiToggle.setTranslationY(dp(density, 3));
-        header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 42), dp(density, 21)));
-        content.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 28)));
+        wifiToggle.setTextSize(toggleTextSizeSp());
+        
+        header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 41), dp(density, 20)));
+        content.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 26)));
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
         status.setPadding(dp(density, 10), dp(density, 5), dp(density, 10), dp(density, 5));
         status.setBackground(UniversalGlassMaterial.controlIdle(activity, density, TvUiTokens.CARD_RADIUS_DP,
@@ -147,7 +147,7 @@ scanState.setVisibility(View.VISIBLE);
 
         TextView networksHeading = text(R.string.wifi_available_networks, popupSectionSizeSp(), true, density);
         networksHeading.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
-        networksHeading.setPadding(0, dp(density, 5), 0, 0);
+        networksHeading.setPadding(0, 0, 0, 0);
         content.addView(networksHeading);
         scanState = text(R.string.wifi_scan_idle, popupMetaSizeSp(), false, density);
         scanState.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
@@ -173,8 +173,8 @@ scanState.setVisibility(View.VISIBLE);
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         LinearLayout.LayoutParams networkViewport = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, networkViewportHeightDp()));
-        networkViewport.topMargin = dp(density, 6);
-        networkViewport.bottomMargin = dp(density, 6);
+        networkViewport.topMargin = dp(density, 8);
+        networkViewport.bottomMargin = dp(density, 4);
         content.addView(networkScroll, networkViewport);
 
         rescan = action(R.string.wifi_rescan, "wifi_rescan", density, this::requestScan);
@@ -183,12 +183,12 @@ scanState.setVisibility(View.VISIBLE);
                 () -> dismissThen(openSystemWifiSettings));
         androidSettings.setGravity(Gravity.CENTER);
         rescan.setGravity(Gravity.CENTER);
-        rescan.setTextSize(popupFooterSizeSp());
-        rescan.setMinHeight(dp(density, 26));
+        rescan.setTextSize(rescanTextSizeSp());
+        rescan.setMinHeight(dp(density, 24));
         androidSettings.setGravity(Gravity.CENTER);
-        androidSettings.setTextSize(popupFooterSizeSp());
-        androidSettings.setMinHeight(dp(density, 26));
-        androidSettings.setCompoundDrawablesRelative(sizedDrawable(R.drawable.ic_settings, 16), null, null, null);
+        androidSettings.setTextSize(androidSettingsTextSizeSp());
+        androidSettings.setMinHeight(dp(density, 24));
+        androidSettings.setCompoundDrawablesRelative(sizedDrawable(R.drawable.ic_settings, 13), null, null, null);
         androidSettings.setCompoundDrawablePadding(dp(density, 6));
         close = action(R.string.close_label, "wifi_close", density, () -> dismissThen(null));
         actions = new LinearLayout(activity);
@@ -202,8 +202,8 @@ scanState.setVisibility(View.VISIBLE);
         LinearLayout.LayoutParams settingsWidth = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 26));
         androidSettings.setLayoutParams(settingsWidth);
-        actions.addView(permissionAction, compactActionLayout(density));
-        actions.addView(locationAction, compactActionLayout(density));
+        actions.addView(permissionAction, compactActionLayout(density, true));
+        actions.addView(locationAction, compactActionLayout(density, false));
         actions.addView(rescan);
         actions.addView(androidSettings);
         content.addView(actions);
@@ -280,19 +280,23 @@ scanState.setVisibility(View.VISIBLE);
     static int popupWidthDp() { return 180; }
 
     static float popupTextSizeSp() { return 12f; }
-    static float networkTextSizeSp() { return 12f; }
-    static int networkStatusIconSizeDp() { return 16; }
+    static float networkTextSizeSp() { return 11f; }
+    static int networkStatusIconSizeDp() { return 13; }
     static int networkStatusIconColor() { return Color.rgb(80, 255, 145); }
 
-    static float popupTitleSizeSp() { return 14f; }
-    static float popupSectionSizeSp() { return 12f; }
+    static float popupTitleSizeSp() { return 13f; }
+    static float popupSectionSizeSp() { return 11f; }
     static float popupMetaSizeSp() { return 10f; }
-    static float popupFooterSizeSp() { return 12f; }
+    static float popupFooterSizeSp() { return 11f; }
     static float permissionTextSizeSp() { return 12f; }
+    static float locationTextSizeSp() { return 12f; }
+    static float rescanTextSizeSp() { return 11f; }
+    static float androidSettingsTextSizeSp() { return 11f; }
+    static float toggleTextSizeSp() { return 11f; }
     static int visibleNetworkRowCount() { return 2; }
     static int networkViewportHeightDp() { return visibleNetworkRowCount() * networkRowHeightDp()
             + (visibleNetworkRowCount() - 1) * networkRowGapDp(); }
-    static int networkRowHeightDp() { return 26; }
+    static int networkRowHeightDp() { return 24; }
     static int networkRowGapDp() { return 4; }
 
     static int anchoredWindowGravity() {
@@ -436,10 +440,11 @@ scanState.setVisibility(View.VISIBLE);
         networkScroll.setVisibility(blocked ? View.GONE : View.VISIBLE);
         rescan.setVisibility(blocked ? View.GONE : View.VISIBLE);
         scanState.setVisibility(blocked ? View.VISIBLE : View.GONE);
-        permissionAction.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 26));
-        locationAction.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 26));
-        androidSettings.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 26));
-        rescan.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 26));
+        permissionAction.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 24));
+        permissionAction.setMaxLines(2);
+        locationAction.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 24));
+        androidSettings.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 24));
+        rescan.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 24));
         // Re-measure the permission-only state independently; the SSID state keeps its own viewport.
         content.requestLayout();
         if (dialog.isShowing()) content.post(this::applyAnchoredPopup);
@@ -723,7 +728,8 @@ scanState.setVisibility(View.VISIBLE);
     }
 
     private TextView action(int resource, String tag, float density, Runnable callback) {
-        TextView view = text(resource, permissionTextSizeSp(), true, density);
+        float size = "wifi_location_settings".equals(tag) ? locationTextSizeSp() : permissionTextSizeSp();
+        TextView view = text(resource, size, true, density);
         return prepareAction(view, tag, density, callback);
     }
 
@@ -744,7 +750,7 @@ scanState.setVisibility(View.VISIBLE);
         view.setClickable(true);
         if (view.getGravity() == 0) view.setGravity(Gravity.CENTER_VERTICAL);
         view.setMinHeight(dp(density, 26));
-        view.setPadding(dp(density, 10), dp(density, 3), dp(density, 10), dp(density, 3));
+        view.setPadding(dp(density, 10), dp(density, 4), dp(density, 10), dp(density, 4));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.topMargin = dp(density, 2);
@@ -844,9 +850,10 @@ scanState.setVisibility(View.VISIBLE);
         }
     }
 
-    private LinearLayout.LayoutParams compactActionLayout(float density) {
+    private LinearLayout.LayoutParams compactActionLayout(float density, boolean contentSized) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 26));
+                ViewGroup.LayoutParams.MATCH_PARENT, contentSized
+                        ? ViewGroup.LayoutParams.WRAP_CONTENT : dp(density, 24));
         params.topMargin = 0;
         params.bottomMargin = dp(density, 4);
         return params;
