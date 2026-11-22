@@ -23,7 +23,6 @@ final class SettingsFocusCursorDrawable extends Drawable {
     private final Paint surface = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint darkLift = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint cyanReflection = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint perimeter = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final GlassRim silverCyanRim;
     private boolean focused;
 
@@ -33,10 +32,6 @@ final class SettingsFocusCursorDrawable extends Drawable {
         surface.setStyle(Paint.Style.FILL);
         darkLift.setStyle(Paint.Style.STROKE);
         cyanReflection.setStyle(Paint.Style.STROKE);
-        perimeter.setStyle(Paint.Style.STROKE);
-        perimeter.setStrokeWidth(1f * density);
-        perimeter.setStrokeJoin(Paint.Join.ROUND);
-        perimeter.setStrokeCap(Paint.Cap.ROUND);
         silverCyanRim = new GlassRim(1f * density, 0xD9FFFFFF, 0x1AFFFFFF);
     }
 
