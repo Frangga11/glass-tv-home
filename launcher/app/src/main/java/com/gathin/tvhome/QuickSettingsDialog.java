@@ -276,9 +276,8 @@ final class QuickSettingsDialog {
         int naturalHeight = measureNaturalHeight(content, width);
         int fixedPanelHeight = dp(density, PANEL_HEIGHT_DP);
         // Keep every capsule, row, inset and section gap at its approved size. The 330dp
-        // panel includes optional trailing breathing room; on a larger four-column Dock,
-        // use only the available height when that trailing space is reduced. Never scale
-        // or compress the actual content to make the dialog fit.
+        // panel includes optional vertical breathing room; never scale or compress the
+        // actual content to make the dialog fit. Any surplus is assigned above the panel.
         int panelHeight = Math.min(fixedPanelHeight, availableHeight);
         // Anchor the panel to the Dock with an exact 5dp lower clearance. Any unused
         // space left by the 330dp design height moves the whole panel down, increasing
@@ -297,13 +296,16 @@ final class QuickSettingsDialog {
             return null;
         }
 
-        // Preserve the full 330dp design panel whenever clearance permits. Only its
-        // unused trailing breathing room contracts for supported Dock capacities.
+        // Preserve the full 330dp design panel whenever clearance permits. The popup is
+        // bottom-anchored to the measured Dock edge, so surplus space becomes top clearance.
         android.util.Log.i("TvHome.QuickSettings", "Fixed panel " + Math.round(width / density)
                 + "x" + Math.round(panelHeight / density) + "dp; side inset "
                 + PANEL_SIDE_INSET_DP + "dp; capsule width " + WIDE_TILE_WIDTH_DP
                 + "dp; capsule height " + tileHeightDp + "dp; all section gaps "
-                + CAPSULE_GAP_DP + "dp; vertical inset " + PANEL_VERTICAL_INSET_DP + "dp.");
+                + CAPSULE_GAP_DP + "dp; vertical inset " + PANEL_VERTICAL_INSET_DP
+                + "dp; Dock clearance " + Math.round(bottomClearancePx / density)
+                + "dp; Settings-to-popup clearance "
+                + Math.round((top - minimumTop) / density) + "dp surplus.");
         final int panelWidth = width;
         final int panelTop = top;
         final int finalPanelLeft = panelLeft;
