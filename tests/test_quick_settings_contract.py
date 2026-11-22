@@ -14,13 +14,13 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 
 class QuickSettingsContractTest(unittest.TestCase):
-    def test_focus_keeps_white_text_and_uses_dark_halo_on_glass(self):
+    def test_focus_uses_clean_ink_and_no_heavy_text_shadow(self):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
-        self.assertNotIn("0xFF17232B", focus_block)
-        self.assertIn("0.8f * density", focus_block)
-        self.assertIn("0x60000000", focus_block)
-        self.assertIn("0.35f * density", focus_block)
+        self.assertIn("PANEL_TEXT_PRIMARY = 0xFF1B2933", DIALOG)
+        self.assertIn("PANEL_TEXT_SECONDARY = 0xFF435663", DIALOG)
+        self.assertIn("label.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT);", focus_block)
+        self.assertNotIn("0x60000000", focus_block)
 
     def test_wallpaper_heading_and_capsule_share_the_same_left_layout_lane(self):
         self.assertIn("wallpaperHeader.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);", DIALOG)
@@ -30,7 +30,7 @@ class QuickSettingsContractTest(unittest.TestCase):
 
     def test_dialog_is_single_frame_glass_and_anchored_to_capsule_and_dock(self):
         self.assertNotIn("ScrollView", DIALOG)
-        self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", DIALOG)
+        self.assertIn("UniversalGlassMaterial.quickSettingsPanel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", DIALOG)
         self.assertIn("PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER", DIALOG)
         self.assertNotIn("Backdrop.watch(content)", DIALOG)
         self.assertIn("panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx)", DIALOG)
@@ -102,8 +102,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("settingsIconCenterX(settingsAnchor, anchorAt[0], density)", DIALOG)
         self.assertIn("Gravity.TOP | Gravity.LEFT", DIALOG)
         self.assertNotIn("addDivider", DIALOG)
-        self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", DIALOG)
-        self.assertIn("PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY", DIALOG)
+        self.assertIn("PANEL_TEXT_PRIMARY = 0xFF1B2933", DIALOG)
+        self.assertIn("PANEL_TEXT_SECONDARY = 0xFF435663", DIALOG)
         self.assertIn("PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE", DIALOG)
         self.assertIn("PANEL_FALLBACK_BORDER = TvUiTokens.BORDER", DIALOG)
         self.assertNotIn("0xB3FFFFFF", DIALOG)
@@ -135,7 +135,9 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("glider.setStyle(Glider.GLASS)", DIALOG)
         self.assertIn("glider.setCompanionOnly(true)", DIALOG)
         self.assertIn("glider.setSingleGlassRim(true)", DIALOG)
-        self.assertIn("glider.setGlassRimStrokeWidth(2.0f * density)", DIALOG)
+        self.assertIn("glider.setGlassRimStrokeWidth(1.25f * density)", DIALOG)
+        self.assertIn("glider.setPopupShadowStyle(14f * density, 3f * density, 0x58)", DIALOG)
+        self.assertIn("UniversalGlassMaterial.quickSettingsControlIdle(activity, density, cornerRadiusDp,", DIALOG)
         self.assertIn("moveDialogGliderTo(target, dialogGlider, density, radiusDp)", DIALOG)
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
         self.assertIn("dialog.setOnDismissListener", DIALOG)
