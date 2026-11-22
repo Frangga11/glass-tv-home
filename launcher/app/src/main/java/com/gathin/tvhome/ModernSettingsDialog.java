@@ -224,7 +224,8 @@ public final class ModernSettingsDialog {
         dialogBg.setColor(TvUiTokens.POPUP_PANEL_FALLBACK);
         dialogBg.setCornerRadius(24 * density);
         dialogBg.setStroke((int) (1.5f * density), TvUiTokens.POPUP_BORDER);
-        root.setBackground(UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,\n                TvUiTokens.POPUP_PANEL_FALLBACK, TvUiTokens.POPUP_BORDER));
+        root.setBackground(UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,
+                TvUiTokens.POPUP_PANEL_FALLBACK, TvUiTokens.POPUP_BORDER));
         root.setClipToOutline(true);
 
         // --- LEFT COLUMN: Sidebar ---
@@ -506,7 +507,7 @@ public final class ModernSettingsDialog {
             // Label
             TextView lbl = new TextView(activity);
             lbl.setText(item.label);
-            lbl.setTextSize(TvUiTokens.POPUP_TEXT_PRIMARY_SP);
+            lbl.setTextSize(TvUiTokens.NAV_ITEM_TEXT_SP);
             lbl.setTextColor(TvUiTokens.POPUP_TEXT_PRIMARY);
             lbl.setTypeface(outfit, Typeface.NORMAL);
             row.addView(lbl);
