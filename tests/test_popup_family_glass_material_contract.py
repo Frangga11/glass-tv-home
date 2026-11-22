@@ -47,11 +47,28 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("new GliderFocusDrawable(control, glider)", quick)
         self.assertNotIn("Backdrop.watch(content)", quick)
 
-    def test_home_navigation_capsule_uses_universal_surface_but_keeps_shared_glider(self):
+    def test_home_navigation_and_header_capsules_share_silver_cyan_windowlight_surface(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        material = (JAVA / "UniversalGlassMaterial.java").read_text(encoding="utf-8")
+        drawable = (JAVA / "UniversalGlassDrawable.java").read_text(encoding="utf-8")
+
+        # Beranda, Profil and Pengaturan sit on one shared navPill surface.
+        self.assertIn("View navCapsule = findViewById(R.id.navPill)", main)
         self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", main)
         self.assertIn("glider.addCompanion(navCapsule)", main)
-        self.assertIn("new GliderFocusDrawable(pill, glider)", main)
+
+        # Location/altitude, Weather/AQI, Wi-Fi and microphone receive the same
+        # UniversalGlassDrawable surface, with the existing Glider overlay kept above it.
+        for token in ("R.id.locationPill", "R.id.weatherAirQuality", "R.id.btnWifi",
+                      "R.id.btnAssistant"):
+            with self.subTest(token=token):
+                self.assertIn(token, main[main.index("for (int id : new int[]{R.id.locationPill"):
+                                         main.index("if (prayerTimesView != null)", main.index("for (int id : new int[]{R.id.locationPill"))])
+        self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", main)
+        self.assertIn("new Drawable[]{glassBackground, new GliderFocusDrawable(pill, glider)}", main)
+        self.assertIn("return new UniversalGlassDrawable(density, radiusDp)", material)
+        self.assertIn("0xA650DDF2", drawable)
+        self.assertIn("windowLight.setAlpha(124)", drawable)
         self.assertNotIn("Backdrop.watch(navCapsule)", main)
 
     def test_wifi_actions_keep_existing_focus_state_contract_and_use_universal_idle_surface(self):
@@ -62,8 +79,9 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
     def test_ported_universal_material_keeps_source_gradient_layers(self):
         glass = (JAVA / "UniversalGlassDrawable.java").read_text(encoding="utf-8")
         material = (JAVA / "UniversalGlassMaterial.java").read_text(encoding="utf-8")
-        # Surface/reflection layers remain Universal Home-owned; Dock rim is
-        # intentionally re-skinned to the pre-adoption Silver-Cyan identity.
+        # Universal surface/reflection layers remain intact; shared rim and Window Light
+        # carry the restrained pre-adoption Silver-Cyan identity across the Dock and
+        # the explicitly selected Home header capsules.
         for token in ("0x36FFFFFF", "0x16FFFFFF", "0x0DFFFFFF", "0x30232323",
                       "0x22FFFFFF", "0x08FFFFFF", "0x30FFFFFF",
                       "0xD9E2E8EE", "0xA650DDF2", "0x667D8D9B",
