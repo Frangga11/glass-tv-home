@@ -1405,3 +1405,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Physical Mi TV Stick visual acceptance for the new material remains pending. No device installation, release publication, or merge is claimed.
 - PR #162 remains OPEN / DRAFT / UNMERGED pending owner visual acceptance and explicit merge approval. PR #161 remains separate/unmerged. PR #62 remains deferred and untouched.
 - Detailed continuation record: `GTVH-UNIVERSAL-GLASS-MATERIAL-ADOPTION-CHECKPOINT-2026-11-22.md`.
+
+
+## 22 November 2026 — Bright Frosted Silver-Cyan Popup Material (rebuilt on PR #166)
+- Correct baseline: PR #166 head `9b77bfa166afc9cd152f850826120bc01659b3ba`; branch `feat/silver-cyan-windowlight-home-capsules-001`.
+- New isolated branch: `feat/bright-frosted-popups-on-pr166-001`, created directly from the exact PR #166 head.
+- PR #167 was not used as a base and its commits were not merged/cherry-picked. Its approved palette direction was re-applied selectively after auditing PR #166's actual popup implementation.
+- PR #166 uses `UniversalGlassMaterial.panel()`, `controlIdle()`, `controlStateBackground()` and `drawPointer()`; it does not use the older GlassDrawable popup construction assumed by the first PR #167 attempt.
+- Added popup-only `PopupGlassTokens` and opt-in bright overloads in `UniversalGlassMaterial`. The original dark Universal panel shade and default control/pointer material remain unchanged for non-popup callers.
+- Quick Settings and Wi-Fi now opt into the bright Silver-Cyan panel, capsule and pointer surfaces. Existing Glider, DPAD, actions, popup dimensions, anchoring, scan lifecycle and geometry are retained.
+- Source regression contract: `tests/test_bright_popup_glass_palette_contract.py`. Exact-head CI and Mi TV Stick visual validation are pending.
+- PR #166 and PR #167 remain OPEN / DRAFT / UNMERGED. No merge, physical device test, or release is authorized or claimed.
