@@ -117,7 +117,7 @@ final class WifiSettingsDialog {
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(density, 14), 0, dp(density, 14), dp(density, 10));
         // Adopt Universal Home's glass material without changing the approved Wi-Fi geometry.
-        content.setBackground(UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,
+        content.setBackground(UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,
                 TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
         pointer = new View(activity) {
             @Override protected void onDraw(Canvas canvas) {
@@ -141,7 +141,7 @@ final class WifiSettingsDialog {
                         ? parent.getHeight() : h;
                 RectF materialBounds = new RectF(density, density,
                         Math.max(density, w - density), Math.max(density, materialHeight - density));
-                UniversalGlassMaterial.drawPointer(activity, canvas, triangle, pointerEdges,
+                UniversalGlassMaterial.drawPointer(activity, pointer, canvas, triangle, pointerEdges,
                         materialBounds, density, TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
             }
         };
