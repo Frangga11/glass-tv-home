@@ -26,6 +26,7 @@ final class UniversalGlassDrawable extends Drawable {
     private final Paint windowLight = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final boolean silverCyanIdentity;
     private final boolean brightSilverPopup;
+    private final boolean cleanQuickSettings;
     private final View owner;
     private final Backdrop.Fill backdropFill = new Backdrop.Fill();
     private final Paint popupVeil = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -52,12 +53,18 @@ final class UniversalGlassDrawable extends Drawable {
 
     UniversalGlassDrawable(View owner, float density, float radiusDp, boolean silverCyanIdentity,
                            boolean brightSilverPopup) {
+        this(owner, density, radiusDp, silverCyanIdentity, brightSilverPopup, false);
+    }
+
+    UniversalGlassDrawable(View owner, float density, float radiusDp, boolean silverCyanIdentity,
+                           boolean brightSilverPopup, boolean cleanQuickSettings) {
         this.owner = owner;
         this.density = density;
         this.radiusDp = radiusDp;
         this.silverCyanIdentity = silverCyanIdentity;
         this.brightSilverPopup = brightSilverPopup;
-        popupVeil.setColor(0x68151D25);
+        this.cleanQuickSettings = cleanQuickSettings;
+        popupVeil.setColor(cleanQuickSettings ? 0x2EFFFFFF : 0x68151D25);
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         inner.setStyle(Paint.Style.STROKE);
@@ -81,7 +88,13 @@ final class UniversalGlassDrawable extends Drawable {
             return;
         }
         radius = Math.min(radiusDp * density, area.height() / 2f);
-        if (brightSilverPopup) {
+        if (cleanQuickSettings) {
+            // A cool, milky veil: keep the wallpaper visible while lifting the panel out of
+            // the dark-grey range so charcoal typography remains crisp on a television.
+            surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
+                    new int[]{0x50FFFFFF, 0x3AFFFFFF, 0x2CFFFFFF, 0x20FFFFFF},
+                    new float[]{0f, 0.22f, 0.68f, 1f}, Shader.TileMode.CLAMP));
+        } else if (brightSilverPopup) {
             surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
                     new int[]{0x28FFFFFF, 0x14FFFFFF, 0x0AFFFFFF, 0x1E111A22},
                     new float[]{0f, 0.22f, 0.68f, 1f}, Shader.TileMode.CLAMP));
