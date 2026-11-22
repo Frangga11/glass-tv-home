@@ -66,7 +66,7 @@ final class UniversalGlassDrawable extends Drawable {
         this.cleanQuickSettings = cleanQuickSettings;
         // Keep the popup recognizably silver-glass, not a white translucent wash.
         // A cool slate veil preserves contrast for the locked bright-white typography.
-        popupVeil.setColor(cleanQuickSettings ? 0x70151D25 : 0x68151D25);
+        popupVeil.setColor(cleanQuickSettings ? 0x42151D25 : 0x68151D25);
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         inner.setStyle(Paint.Style.STROKE);
@@ -91,10 +91,10 @@ final class UniversalGlassDrawable extends Drawable {
         }
         radius = Math.min(radiusDp * density, area.height() / 2f);
         if (cleanQuickSettings) {
-            // Deeper neutral-silver glass: retain controlled highlights without a pale wash.
-            // The darker veil carries panel density; the gradient only supplies glass sheen.
+            // Clear silver glass: a restrained slate veil carries the existing colour while
+            // the brighter upper gradient restores depth, clarity and a clean reflective face.
             surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
-                    new int[]{0x28FFFFFF, 0x18FFFFFF, 0x0CFFFFFF, 0x28151D25},
+                    new int[]{0x3CFFFFFF, 0x24FFFFFF, 0x12FFFFFF, 0x20343E48},
                     new float[]{0f, 0.22f, 0.68f, 1f}, Shader.TileMode.CLAMP));
         } else if (brightSilverPopup) {
             surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
@@ -105,7 +105,15 @@ final class UniversalGlassDrawable extends Drawable {
                     new int[]{0x36FFFFFF, 0x16FFFFFF, 0x0DFFFFFF, 0x30232323},
                     new float[]{0f, 0.18f, 0.6f, 1f}, Shader.TileMode.CLAMP));
         }
-        if (brightSilverPopup) {
+        if (cleanQuickSettings) {
+            // Polished silver edge with a controlled lower return; keep it bright but not chalky.
+            rim.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
+                    new int[]{0xE8FFFFFF, 0x70FFFFFF, 0x25FFFFFF, 0xA8FFFFFF},
+                    new float[]{0f, 0.28f, 0.68f, 1f}, Shader.TileMode.CLAMP));
+            windowLight.setShader(new LinearGradient(area.left, area.top, area.right, area.top,
+                    new int[]{0x00FFFFFF, 0x72FFFFFF, 0xA6FFFFFF, 0x00FFFFFF},
+                    new float[]{0f, 0.28f, 0.48f, 1f}, Shader.TileMode.CLAMP));
+        } else if (brightSilverPopup) {
             rim.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
                     new int[]{0xDFFFFFFF, 0x55FFFFFF, 0x20FFFFFF, 0x99FFFFFF},
                     new float[]{0f, 0.28f, 0.68f, 1f}, Shader.TileMode.CLAMP));
@@ -142,12 +150,16 @@ final class UniversalGlassDrawable extends Drawable {
                     new float[]{0f, 0.3f, 0.65f, 1f}, Shader.TileMode.CLAMP));
         }
         reflection.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
-                brightSilverPopup
+                cleanQuickSettings
+                        ? new int[]{0x4AFFFFFF, 0x1FFFFFFF, 0x00FFFFFF}
+                        : brightSilverPopup
                         ? new int[]{0x38FFFFFF, 0x14FFFFFF, 0x00FFFFFF}
                         : new int[]{0x22FFFFFF, 0x08FFFFFF, 0x00FFFFFF},
                 new float[]{0f, 0.35f, 1f}, Shader.TileMode.CLAMP));
         inner.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
-                brightSilverPopup
+                cleanQuickSettings
+                        ? new int[]{0x46FFFFFF, 0x00FFFFFF, 0x3A95A2AB}
+                        : brightSilverPopup
                         ? new int[]{0x40FFFFFF, 0x00FFFFFF, 0x3095A2AB}
                         : new int[]{0x30FFFFFF, 0x00FFFFFF, 0x20FFFFFF},
                 null, Shader.TileMode.CLAMP));
