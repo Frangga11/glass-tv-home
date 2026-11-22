@@ -119,7 +119,9 @@ final class WifiSettingsDialog {
         // Match the owner-approved Quick Settings master material while preserving Wi-Fi's
         // anchored geometry, pointer, network viewport, and independent scan lifecycle.
         content.setBackground(new GlassDrawable(content,
-                TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false));
+                TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false,
+                TvUiTokens.POPUP_GLASS_VEIL_COLOR, TvUiTokens.POPUP_GLASS_VEIL_ALPHA,
+                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER, 0.22f));
         Backdrop.watch(content);
         pointer = new View(activity) {
             private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -134,7 +136,8 @@ final class WifiSettingsDialog {
                 triangle.close();
                 // Keep the Wi-Fi pointer translucent so the live backdrop glass beneath it
                 // remains visible; an opaque popup token would make this the one non-glass patch.
-                paint.setColor(TvUiTokens.GLASS_VEIL_COLOR);
+                paint.setColor(TvUiTokens.POPUP_GLASS_VEIL_COLOR);
+                paint.setAlpha(TvUiTokens.POPUP_GLASS_VEIL_ALPHA);
                 paint.setStyle(Paint.Style.FILL);
                 canvas.drawPath(triangle, paint);
                 paint.setColor(TvUiTokens.FOCUS_BORDER);
@@ -329,7 +332,7 @@ final class WifiSettingsDialog {
     }
 
     static float popupDimAmount() {
-        return 0.08f;
+        return TvUiTokens.POPUP_DIM_AMOUNT;
     }
 
     static AlertDialog show(Activity activity, Runnable openSystemWifiSettings, Runnable returnToParent) {
