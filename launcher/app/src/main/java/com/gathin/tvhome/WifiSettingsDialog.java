@@ -137,7 +137,7 @@ scanState.setVisibility(View.VISIBLE);
         wifiToggle.setGravity(Gravity.CENTER);
         wifiToggle.setTextSize(14f);
         wifiToggle.setTranslationY(dp(density, 3));
-        header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 42), dp(density, 22)));
+        header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 42), dp(density, 21)));
         content.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 28)));
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
         status.setPadding(dp(density, 10), dp(density, 5), dp(density, 10), dp(density, 5));
