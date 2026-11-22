@@ -977,8 +977,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 pill.setBackground(new GliderFocusDrawable(pill, glider));
             } else {
                 // Compose the focus layer after the capsule glass and before the view's content.
-                Drawable glassBackground = UniversalGlassMaterial.homeCapsule(this, density, 20f,
-                        TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
+                boolean silverCyanTarget = id == R.id.locationPill
+                        || id == R.id.weatherAirQuality || id == R.id.btnWifi
+                        || id == R.id.btnAssistant;
+                Drawable glassBackground = silverCyanTarget
+                        ? UniversalGlassMaterial.homeCapsule(this, density, 20f,
+                                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER)
+                        : UniversalGlassMaterial.surface(this, density, 20f,
+                                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
                 pill.setBackground(new android.graphics.drawable.LayerDrawable(
                         new Drawable[]{glassBackground, new GliderFocusDrawable(pill, glider)}));
             }
