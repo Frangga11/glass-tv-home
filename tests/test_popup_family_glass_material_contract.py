@@ -51,6 +51,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         cursor = (JAVA / "SettingsFocusCursorDrawable.java").read_text(encoding="utf-8")
         tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
         self.assertIn("new SettingsFocusCursorDrawable(density, TvUiTokens.NAV_ROW_RADIUS_DP)", settings)
+        self.assertIn("new SettingsFocusCursorDrawable(density, TvUiTokens.CARD_RADIUS_DP)", settings)
         self.assertNotIn("SettingsNavFocusDrawable", settings)
         self.assertNotIn("bg_tv_focus_outline", settings)
         self.assertFalse((JAVA / "SettingsNavFocusDrawable.java").exists())
