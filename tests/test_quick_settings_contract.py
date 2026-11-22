@@ -36,7 +36,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx)", DIALOG)
         self.assertIn("availablePanelHeight(dockTop, top, bottomClearancePx)", DIALOG)
         self.assertIn("int width = dp(density, 245);", DIALOG)
-        self.assertIn("private static final int PANEL_HEIGHT_DP = 330;", DIALOG)
+        self.assertIn("private static final int PANEL_HEIGHT_DP = 320;", DIALOG)
         self.assertIn("int panelHeight = fixedPanelHeight;", DIALOG)
         self.assertIn("if (naturalHeight > fixedPanelHeight || fixedPanelHeight > availableHeight)", DIALOG)
         self.assertNotIn("addVerticalFlexGap", DIALOG)
