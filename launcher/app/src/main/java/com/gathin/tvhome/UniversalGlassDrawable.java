@@ -121,7 +121,6 @@ final class UniversalGlassDrawable extends Drawable {
         canvas.drawRoundRect(innerArea,
                 Math.max(0f, radius - density * 2f),
                 Math.max(0f, radius - density * 2f), inner);
-        windowLight.setAlpha(Math.round(200f * 0.62f));
         canvas.drawRoundRect(area, radius, radius, windowLight);
     }
 
@@ -161,7 +160,7 @@ final class UniversalGlassDrawable extends Drawable {
         rim.setAlpha(alpha);
         reflection.setAlpha(alpha);
         inner.setAlpha(alpha);
-        windowLight.setAlpha(alpha);
+        windowLight.setAlpha(Math.round(200f * 0.62f * alpha / 255f));
         invalidateSelf();
     }
 
