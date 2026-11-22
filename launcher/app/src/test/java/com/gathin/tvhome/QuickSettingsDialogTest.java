@@ -265,12 +265,34 @@ public class QuickSettingsDialogTest {
     }
 
     @Test
-    public void insufficientHeightRejectsPopupWithoutCompressingFixedGeometry() {
+    public void reducedTrailingClearanceKeepsPopupContentAndCapsulesAtApprovedSize() {
         Activity activity = newActivity();
         FrameLayout[] views = hostAtPx(activity, minimumDockTopForFixedPanelPx(activity) - 1);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
-        assertEquals(null, dialog);
+        assertNotNull("The dialog should use available trailing space instead of rejecting the request", dialog);
+        assertTrue(dialog.isShowing());
+        View content = find(dialog, "quick_settings_root");
+        assertNotNull(content);
+        float density = activity.getResources().getDisplayMetrics().density;
+        assertEquals(Math.round(329.5f * density), content.getMeasuredHeight());
+        assertEquals(Math.round(36f * density), find(dialog, "quick_settings_input").getMeasuredHeight());
+        dialog.dismiss();
+    }
+
+    @Test
+    @Config(sdk = 30, qualifiers = "w960dp-h540dp-xhdpi")
+    public void quickSettingsDialogIsActuallyShownOnAndroid11Api30() {
+        Activity activity = newActivity();
+        FrameLayout[] views = host(activity);
+        AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
+                views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
+        assertNotNull("Android 11 must create the Quick Settings dialog", dialog);
+        assertTrue("Android 11 must display the Quick Settings dialog", dialog.isShowing());
+        assertNotNull(find(dialog, "quick_settings_root"));
+        assertEquals(Math.round(330f * activity.getResources().getDisplayMetrics().density),
+                find(dialog, "quick_settings_root").getMeasuredHeight());
+        dialog.dismiss();
     }
 
     @Test
