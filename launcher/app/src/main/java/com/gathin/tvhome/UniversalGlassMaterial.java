@@ -26,6 +26,16 @@ final class UniversalGlassMaterial {
                 .getBoolean("glass_effects_enabled", true);
     }
 
+    /**
+     * Shared Home header capsule material: Silver-Cyan rim and restrained Window Light
+     * are supplied by UniversalGlassDrawable; existing Glider focus remains a separate overlay.
+     * Used only for the navigation capsule and the selected Home information/action pills.
+     */
+    static Drawable homeCapsule(Context context, float density, float radiusDp,
+                                int fallbackSurfaceColor, int fallbackBorderColor) {
+        return surface(context, density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
+    }
+
     /** A single Universal Home DockGlassDrawable surface, or GTVH's opaque fallback. */
     static Drawable surface(Context context, float density, float radiusDp,
                             int fallbackSurfaceColor, int fallbackBorderColor) {
