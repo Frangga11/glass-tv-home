@@ -289,6 +289,7 @@ public class QuickSettingsDialogTest {
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
         android.view.WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
         assertEquals(TvUiTokens.POPUP_DIM_AMOUNT, QuickSettingsDialog.popupDimAmount(), 0.001f);
         assertEquals(QuickSettingsDialog.popupDimAmount(), params.dimAmount, 0.001f);
