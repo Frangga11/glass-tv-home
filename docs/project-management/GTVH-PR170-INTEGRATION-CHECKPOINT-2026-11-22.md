@@ -41,3 +41,14 @@
 - Device gate for this cumulative candidate: **PASS**.
 - Scope includes PR #169's parent popup material implementation and PR #170's Quick Settings Glider/focus geometry correction.
 - This is owner-reported acceptance, not an independently executed device test by the assistant. It does not extend to later source changes or unrelated PRs.
+
+
+## Follow-on integration — Universal Glass sync — 22 November 2026
+
+- Owner direction: use PR #170 as the authoritative baseline for subsequent synchronization; do not substitute `main`.
+- Dedicated integration branch: `integration/pr170-universal-glass-sync-001`, created at exact accepted PR #170 source `2208afbc896f6b08d699156714e7d58dc964f721`.
+- PR #162 was retargeted to that branch. Its effective source delta against PR #170 was only the Wi-Fi pointer backdrop drawing adjustment in `UniversalGlassMaterial.java`; the rest of the Universal Glass adoption already existed in the cumulative PR #170 ancestry.
+- PR #162 merged: merge commit `7df0a5bcf82b8fc67863abb886997e3b3df47de9`; exact merged head `b9866be19db1159f3a856199f8079c77bd50f7a4`.
+- Retargeted PR CI run `44993172112` passed both required jobs. Post-merge CI on the merge commit and final docs commit must still pass before declaring closeout complete.
+- This does not modify the immutable exact-source pin and does not merge to `main`. Physical device acceptance remains specific to the tested PR #170 APK; the synchronized build is a new QA candidate.
+- Preserve all PR #170 focus/capsule findings and locked geometry/DPAD/animation invariants for future work.
