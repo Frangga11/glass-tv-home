@@ -1433,3 +1433,17 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Device gate for this tested cumulative candidate: **PASS (owner-confirmed)**.
 - CI evidence remains run `44981544358` on exact source commit `2208afbc...`; required CI jobs passed. APK size 1,653,150 bytes and SHA-256 `33724e5d3daba097178e943434c685d9feafeb502a8bf5d65284f62b9a5b6955`.
 - This acceptance applies to the tested APK/source snapshot only. It does not automatically approve later source changes or the unrelated PRs #168, #166, #165, #164, #162, #161, #158 or #62.
+
+
+## PR #170 baseline integration — Universal Glass synchronization — 22 November 2026
+
+- Owner clarified that PR #170 is the governing baseline for this workstream; `main` is not the integration base for this delivery.
+- Immutable accepted source: `2208afbc896f6b08d699156714e7d58dc964f721` (`baseline/pr-170-qa-exact-2026-11-22`). The exact QA pin was not moved or modified.
+- Created `integration/pr170-universal-glass-sync-001` directly from that exact source SHA.
+- PR #162 was retargeted from `main` to this dedicated integration branch. The reconciled diff against PR #170 was limited to the Universal Glass Wi-Fi pointer backdrop adjustment in `UniversalGlassMaterial.java` plus documentation reconciliation; the broader Universal Glass material adoption was already present in the PR #170 cumulative ancestry and was not duplicated.
+- PR #162 was merged successfully on the exact head `b9866be19db1159f3a856199f8079c77bd50f7a4`. Merge commit / integration branch HEAD: `7df0a5bcf82b8fc67863abb886997e3b3df47de9`.
+- PR #162 CI on the retargeted PR head, run `44993172112`: both required jobs passed — Launcher build and unit tests; Lists, tools and docs. This is pre-merge exact-head evidence. Post-merge CI on the merge commit and documentation checkpoint remains the closeout gate.
+- PR #170 findings are mandatory invariants for all follow-on work: rounded capsule clipping, Glider bounds aligned to measured capsule bounds, one glass rim without stacked focus outline, and explicit initial focus seeding. Preserve sizes, spacing, layout, DPAD graph, focus ownership, dock/app behavior, and animations.
+- This integration branch is intentionally separate from `main`; no merge to `main` or release publication is claimed. The PR #170 physical-device acceptance remains scoped to its exact tested APK/source SHA; the post-sync build is a new candidate.
+- PR #62 remains deferred and untouched. PR #171 remains closed/unmerged.
+- Detailed record: `GTVH-PR170-UNIVERSAL-GLASS-SYNC-CHECKPOINT-2026-11-22.md`.
