@@ -43,12 +43,12 @@ public class WifiSettingsDialogTest {
         View header = window.getDecorView().findViewWithTag("wifi_popup_header");
         View footer = window.getDecorView().findViewWithTag("wifi_popup_footer");
         assertNotNull(root);
+        assertNotNull(header);
         assertEquals(Math.round(14 * activity.getResources().getDisplayMetrics().density), root.getPaddingLeft());
         assertEquals(Math.round(14 * activity.getResources().getDisplayMetrics().density), root.getPaddingRight());
         assertEquals(Math.round(5 * activity.getResources().getDisplayMetrics().density), root.getPaddingTop());
         assertEquals(Math.round(14 * activity.getResources().getDisplayMetrics().density), root.getPaddingBottom());
         assertEquals(Math.round(30 * activity.getResources().getDisplayMetrics().density), header.getLayoutParams().height);
-        assertNotNull(header);
         assertNotNull(footer);
         assertEquals(android.widget.LinearLayout.VERTICAL, ((android.widget.LinearLayout) footer).getOrientation());
         View rescan = window.getDecorView().findViewWithTag("wifi_rescan");
@@ -80,10 +80,16 @@ public class WifiSettingsDialogTest {
         AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> { });
         View toggle = dialog.getWindow().getDecorView().findViewWithTag("wifi_toggle");
         assertNotNull(toggle);
+        assertEquals(14f, ((android.widget.TextView) toggle).getTextSize()
+                / activity.getResources().getDisplayMetrics().scaledDensity, 0.1f);
         assertEquals(Math.round(44 * activity.getResources().getDisplayMetrics().density),
                 toggle.getLayoutParams().width);
         assertEquals(Math.round(23 * activity.getResources().getDisplayMetrics().density),
                 toggle.getLayoutParams().height);
+        View permission = dialog.getWindow().getDecorView().findViewWithTag("wifi_permission");
+        assertNotNull(permission);
+        assertEquals(Math.round(34 * activity.getResources().getDisplayMetrics().density),
+                permission.getLayoutParams().height);
         dialog.dismiss();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
