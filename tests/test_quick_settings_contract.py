@@ -116,7 +116,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("glider.setStyle(Glider.GLASS)", DIALOG)
         self.assertIn("glider.setCompanionOnly(true)", DIALOG)
         self.assertIn("glider.setSingleGlassRim(true)", DIALOG)
-        self.assertIn("glider.setGlassRimStrokeWidth(1.35f * density)", DIALOG)
+        self.assertIn("glider.setGlassRimStrokeWidth(2.0f * density)", DIALOG)
         self.assertIn("moveDialogGliderTo(target, dialogGlider, density, radiusDp)", DIALOG)
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
         self.assertIn("dialog.setOnDismissListener", DIALOG)
