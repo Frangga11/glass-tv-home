@@ -953,7 +953,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Individual tabs below remain independent focus/click targets with transparent backgrounds.
         View navCapsule = findViewById(R.id.navPill);
         if (navCapsule != null) {
-            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, glider));
+            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, glider,
+                    1f, false, TvUiTokens.NAV_GLASS_VEIL_COLOR, TvUiTokens.NAV_GLASS_VEIL_ALPHA,
+                    TvUiTokens.SHELL, TvUiTokens.BORDER, 0.36f));
             glider.addCompanion(navCapsule);
             Backdrop.watch(navCapsule);
         }
@@ -980,6 +982,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 Drawable glassBackground = new GlassDrawable(pill, 20f * density, density, glider);
                 pill.setBackground(new android.graphics.drawable.LayerDrawable(
                         new Drawable[]{glassBackground, new GliderFocusDrawable(pill, glider)}));
+            }
+            if (navigationTab && pill instanceof TextView) {
+                // A restrained dark shadow keeps white nav labels legible without changing type size.
+                ((TextView) pill).setShadowLayer(1.2f * density, 0f, 0.5f * density, 0xD9000000);
             }
             glider.addCompanion(pill);
             Backdrop.watch(pill);
@@ -2845,7 +2851,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         glassShown = false;
         // Up to the top menu it is dark at once, and travels that way.
         gliderOnPill = true;
-        glider.setStyle(Glider.DARK);
+        glider.setStyle(Glider.NAVIGATION_DARK);
         glider.moveTo(l, t, l + pill.getWidth(), t + pill.getHeight(), Math.min(20f * density, pill.getHeight() / 2f));
     }
 
