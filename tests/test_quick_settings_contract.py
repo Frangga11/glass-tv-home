@@ -83,6 +83,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("params.y += windowYCorrection;", DIALOG)
         self.assertIn("dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));", DIALOG)
         self.assertIn("Remove the Material floating-dialog frame before DecorView is installed.", DIALOG)
+        self.assertIn("AlertDialog.Builder.setView() replaces the supplied root LayoutParams", DIALOG)
+        self.assertIn("content.setLayoutParams(new ViewGroup.LayoutParams(panelWidth, panelHeight));", DIALOG)
         test_source = (ROOT / "launcher/app/src/test/java/com/gathin/tvhome/QuickSettingsDialogTest.java").read_text(encoding="utf-8")
         self.assertIn('Popup lower edge must remain exactly 5dp above the Dock', test_source)
         self.assertIn('content.getLocationOnScreen(contentAt);', test_source)
