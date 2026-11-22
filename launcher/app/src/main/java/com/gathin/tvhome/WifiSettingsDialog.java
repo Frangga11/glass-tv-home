@@ -769,9 +769,11 @@ scanState.setVisibility(View.VISIBLE);
         if (wifiToggle.isFocusable() && wifiToggle.getVisibility() == View.VISIBLE) return wifiToggle;
         if (permissionAction.getVisibility() == View.VISIBLE) return permissionAction;
         if (locationAction.getVisibility() == View.VISIBLE) return locationAction;
-        for (int i = 0; i < networkRows.getChildCount(); i++) {
-            View child = networkRows.getChildAt(i);
-            if (child.isFocusable() && child.getVisibility() == View.VISIBLE) return child;
+        if (networkScroll.getVisibility() == View.VISIBLE) {
+            for (int i = 0; i < networkRows.getChildCount(); i++) {
+                View child = networkRows.getChildAt(i);
+                if (child.isFocusable() && child.getVisibility() == View.VISIBLE) return child;
+            }
         }
         return rescan.getVisibility() == View.VISIBLE ? rescan : androidSettings;
     }
@@ -781,9 +783,11 @@ scanState.setVisibility(View.VISIBLE);
         focusOrder.add(wifiToggle);
         if (permissionAction.getVisibility() == View.VISIBLE) focusOrder.add(permissionAction);
         if (locationAction.getVisibility() == View.VISIBLE) focusOrder.add(locationAction);
-        for (int i = 0; i < networkRows.getChildCount(); i++) {
-            View child = networkRows.getChildAt(i);
-            if (child.isFocusable() && child.getVisibility() == View.VISIBLE) focusOrder.add(child);
+        if (networkScroll.getVisibility() == View.VISIBLE) {
+            for (int i = 0; i < networkRows.getChildCount(); i++) {
+                View child = networkRows.getChildAt(i);
+                if (child.isFocusable() && child.getVisibility() == View.VISIBLE) focusOrder.add(child);
+            }
         }
         if (rescan.getVisibility() == View.VISIBLE) focusOrder.add(rescan);
         focusOrder.add(androidSettings);
