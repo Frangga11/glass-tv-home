@@ -3,7 +3,6 @@ package com.gathin.tvhome;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
@@ -24,8 +23,6 @@ final class UniversalGlassDrawable extends Drawable {
     private final Paint reflection = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint inner = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint windowLight = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Matrix rimMatrix = new Matrix();
-    private final Matrix windowLightMatrix = new Matrix();
     private final RectF area = new RectF();
     private final RectF lastSourceBounds = new RectF();
     private final RectF innerArea = new RectF();
