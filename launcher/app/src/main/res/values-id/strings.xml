@@ -698,7 +698,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wifi_available_networks">Jaringan di sekitar</string>
     <string name="wifi_scan_idle">Daftar jaringan hanya tersedia jika Android mengizinkan pemindaian.</string>
     <string name="wifi_scan_loading">Memindai jaringan…</string>
-    <string name="wifi_scan_updated">Daftar jaringan diperbarui oleh Android.</string>
+    <string name="wifi_scan_updated"></string>
     <string name="wifi_scan_limited">Android membatasi pemindaian. Menampilkan hasil terakhir jika tersedia.</string>
     <string name="wifi_scan_timeout">Pemindaian belum memberi hasil. Coba lagi nanti.</string>
     <string name="wifi_scan_unavailable">Pemindaian jaringan tidak tersedia pada perangkat ini.</string>
