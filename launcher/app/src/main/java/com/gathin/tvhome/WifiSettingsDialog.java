@@ -83,7 +83,7 @@ final class WifiSettingsDialog {
     private void onScanTimeout() {
         if (scanPending) {
             scanPending = false;
-            scanState.setText(R.string.wifi_scan_timeout);
+            scanState.setText(R.string.wifi_scan_timeout);\n            scanState.setVisibility(View.VISIBLE);
             showCachedResults();
         }
     }
@@ -95,9 +95,9 @@ final class WifiSettingsDialog {
             scanPending = false;
             boolean updated = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false);
             if (updated) {
-                scanState.setText("");
+                scanState.setText("");\n                scanState.setVisibility(View.GONE);
             } else {
-                scanState.setText(R.string.wifi_scan_limited);
+                scanState.setText(R.string.wifi_scan_limited);\n                scanState.setVisibility(View.VISIBLE);
             }
             showCachedResults();
         }
@@ -420,7 +420,7 @@ final class WifiSettingsDialog {
         permissionAction.setVisibility(reason == WifiScanPolicy.BlockReason.PERMISSION ? View.VISIBLE : View.GONE);
         locationAction.setVisibility(reason == WifiScanPolicy.BlockReason.LOCATION ? View.VISIBLE : View.GONE);
         rescan.setVisibility(reason == WifiScanPolicy.BlockReason.NONE ? View.VISIBLE : View.GONE);
-        if (reason == WifiScanPolicy.BlockReason.PERMISSION) scanState.setText(R.string.wifi_scan_permission_required);
+        scanState.setVisibility(reason == WifiScanPolicy.BlockReason.NONE ? View.GONE : View.VISIBLE);\n        if (reason == WifiScanPolicy.BlockReason.PERMISSION) scanState.setText(R.string.wifi_scan_permission_required);
         else if (reason == WifiScanPolicy.BlockReason.LOCATION) scanState.setText(R.string.wifi_scan_location_required);
         else if (reason == WifiScanPolicy.BlockReason.WIFI_DISABLED) scanState.setText(R.string.wifi_scan_radio_off);
     }
@@ -447,7 +447,7 @@ final class WifiSettingsDialog {
             boolean started = manager.startScan();
             if (started) {
                 scanPending = true;
-                scanState.setText(R.string.wifi_scan_loading);
+                scanState.setText(R.string.wifi_scan_loading);\n                scanState.setVisibility(View.VISIBLE);
                 handler.removeCallbacks(scanTimeout);
                 handler.postDelayed(scanTimeout, SCAN_TIMEOUT_MS);
             } else {
