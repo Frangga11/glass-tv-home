@@ -45,14 +45,14 @@ final class QuickSettingsDialog {
     }
 
     // Reuse the approved global Frosted Silver Glass material; this popup is not a second theme.
-    private static final int PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY;
-    private static final int PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY;
-    private static final int CAPSULE_IDLE_FILL = 0x662D3741;
-    private static final int CAPSULE_IDLE_BORDER = 0x559EABB8;
-    private static final int CAPSULE_FOCUS_FILL = TvUiTokens.SURFACE_FOCUSED;
-    private static final int CAPSULE_FOCUS_BORDER = TvUiTokens.FOCUS_BORDER;
-    private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE;
-    private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
+    private static final int PANEL_TEXT_PRIMARY = PopupGlassTokens.TEXT_PRIMARY;
+    private static final int PANEL_TEXT_SECONDARY = PopupGlassTokens.TEXT_SECONDARY;
+    private static final int CAPSULE_IDLE_FILL = PopupGlassTokens.CAPSULE_IDLE;
+    private static final int CAPSULE_IDLE_BORDER = PopupGlassTokens.CAPSULE_IDLE_BORDER;
+    private static final int CAPSULE_FOCUS_FILL = PopupGlassTokens.CAPSULE_FOCUS;
+    private static final int CAPSULE_FOCUS_BORDER = PopupGlassTokens.CAPSULE_FOCUS_BORDER;
+    private static final int PANEL_FALLBACK_SURFACE = PopupGlassTokens.PANEL_FALLBACK;
+    private static final int PANEL_FALLBACK_BORDER = PopupGlassTokens.PANEL_BORDER;
     private static final int TILE_HEIGHT_DP = 36;
     private static final int PANEL_HEIGHT_DP = 320;
     private static final int HALF_TILE_WIDTH_DP = 115;
@@ -113,7 +113,7 @@ final class QuickSettingsDialog {
         content.setClipChildren(true);
         content.setClipToPadding(true);
         content.setBackground(UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,
-                PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER));
+                PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER, PopupGlassTokens.PANEL_SHADE));
 
         LinearLayout header = new LinearLayout(activity);
         header.setOrientation(LinearLayout.HORIZONTAL);
@@ -366,7 +366,7 @@ final class QuickSettingsDialog {
             boolean manageCapsule = "quick_settings_manage_wallpaper".equals(control.getTag());
             float cornerRadiusDp = manageCapsule ? 7f : 10f;
             Drawable idle = UniversalGlassMaterial.controlIdle(activity, density, cornerRadiusDp,
-                    CAPSULE_IDLE_FILL, CAPSULE_IDLE_BORDER);
+                    CAPSULE_IDLE_FILL, CAPSULE_IDLE_BORDER, true);
             control.setBackground(new LayerDrawable(new Drawable[]{
                     idle, new GliderFocusDrawable(control, glider)
             }));
@@ -387,8 +387,8 @@ final class QuickSettingsDialog {
                     // Preserve the approved white typography in every focus state. A dark,
                     // tight shadow/halo separates white glyphs from the moving silver glass.
                     label.setTextColor(PANEL_TEXT_PRIMARY);
-                    label.setShadowLayer((focused ? 2.0f : 1.25f) * density, 0f,
-                            0.5f * density, focused ? 0xF0000000 : 0xCC000000);
+                    label.setShadowLayer((focused ? 1.5f : 0.75f) * density, 0f,
+                            0.5f * density, focused ? 0x55000000 : 0x33000000);
                 }
             });
         }
