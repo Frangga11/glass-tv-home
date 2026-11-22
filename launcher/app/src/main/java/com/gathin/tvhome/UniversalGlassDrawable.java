@@ -64,7 +64,9 @@ final class UniversalGlassDrawable extends Drawable {
         this.silverCyanIdentity = silverCyanIdentity;
         this.brightSilverPopup = brightSilverPopup;
         this.cleanQuickSettings = cleanQuickSettings;
-        popupVeil.setColor(cleanQuickSettings ? 0x2EFFFFFF : 0x68151D25);
+        // Keep the popup recognizably silver-glass, not a white translucent wash.
+        // A cool slate veil preserves contrast for the locked bright-white typography.
+        popupVeil.setColor(cleanQuickSettings ? 0x48343E48 : 0x68151D25);
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         inner.setStyle(Paint.Style.STROKE);
