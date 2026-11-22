@@ -97,14 +97,14 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("right.getLeft()", MAIN)
 
     def test_header_controls_keep_the_established_liquid_glass_surface(self):
-        start = MAIN.index("// Preserve one shared glass capsule for Home/Profile/Settings.")
+        start = MAIN.index("for (int id : new int[]{R.id.locationPill, R.id.weatherAirQuality, R.id.btnInputs,")
         end = MAIN.index("// Hide the glass when focus leaves the tiles.", start)
         header = MAIN[start:end]
         for view_id in ("locationPill", "weatherAirQuality", "btnInputs", "btnWifi",
                         "btnAssistant", "btnHome", "btnCandyBox", "btnSettings"):
             self.assertIn(f"R.id.{view_id}", header)
         self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", header)
-        self.assertIn("new GliderFocusDrawable(pill, glider, 20f * density)", header)
+        self.assertIn("new GliderFocusDrawable(pill, homeCapsuleGlider, 20f * density)", header)
         self.assertIn("new android.graphics.drawable.LayerDrawable(", header)
 
     def test_deferred_grid_focus_is_cancelled_by_newer_focus_destinations(self):
