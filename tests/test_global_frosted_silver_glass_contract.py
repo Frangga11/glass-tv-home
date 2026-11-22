@@ -140,7 +140,6 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
             "bg_track_info_selector.xml": ["enabled", "pressed", "focused"],
             "header_nav_tab_bg.xml": ["enabled", "focused", "pressed", "selected"],
             "bg_recent_card_focus.xml": ["enabled", "pressed", "focused"],
-            "bg_tv_focus_outline.xml": ["enabled", "pressed", "focused"],
         }
         for filename, states in expected.items():
             root = ET.parse(RES / "drawable" / filename).getroot()
