@@ -227,9 +227,9 @@ class QuickSettingsContractTest(unittest.TestCase):
         abort = MAIN[MAIN.index("private void abortHorizontalDockCollapse("):
                      MAIN.index("private int getHorizontalDockPitch(")]
         self.assertIn("pendingQuickSettingsOpen = null;", abort)
-        cancel = MAIN[MAIN.index("public void onAnimationCancel(android.animation.Animator animation)"):
-                      MAIN.index("public void onAnimationEnd(android.animation.Animator animation)",
-                                 MAIN.index("public void onAnimationCancel(android.animation.Animator animation)"))]
+        cancel = collapse[collapse.index("public void onAnimationCancel(android.animation.Animator animation)"): 
+                          collapse.index("public void onAnimationEnd(android.animation.Animator animation)",
+                                         collapse.index("public void onAnimationCancel(android.animation.Animator animation)"))]
         self.assertIn("Deferred popup cancelled because its Dock collapse animation was cancelled", cancel)
         self.assertIn("pendingQuickSettingsOpen = null;", cancel)
 
