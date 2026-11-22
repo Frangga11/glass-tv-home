@@ -225,3 +225,12 @@ The current reconciliation pass is administratively complete for the reviewed qu
 - This merge integrates #170 into its base branch only. It does **not** merge the cumulative branch into `main`.
 - Before a later merge to `main`, audit the cumulative difference against current main. The pre-merge comparison showed the parent line 96 commits ahead and 1 behind, with merge base `71f3a051a25fd66cabfd1740756cc36442dc92cc`; resolve and validate that divergence on a dedicated integration branch.
 - No new physical Mi TV Stick acceptance is claimed by this record. Preserve the RE-SKIN / NOT REWIRE boundary and all locked geometry, DPAD, focus ownership and Glider behavior.
+
+
+## Owner physical-device acceptance — PR #170 cumulative QA — 22 November 2026
+
+- Owner explicitly confirms that the PR #170 checkpoint APK was installed and tested on the target Mi TV Stick and **works well**.
+- This is owner-reported physical-device acceptance for the cumulative APK built from exact source commit `2208afbc896f6b08d699156714e7d58dc964f721`, including the PR #169 parent implementation plus PR #170 Glider/focus geometry changes.
+- Device gate for this tested cumulative candidate: **PASS (owner-confirmed)**.
+- CI evidence remains run `44981544358` on exact source commit `2208afbc...`; required CI jobs passed. APK size 1,653,150 bytes and SHA-256 `33724e5d3daba097178e943434c685d9feafeb502a8bf5d65284f62b9a5b6955`.
+- This acceptance applies to the tested APK/source snapshot only. It does not automatically approve later source changes or the unrelated PRs #168, #166, #165, #164, #162, #161, #158 or #62.
