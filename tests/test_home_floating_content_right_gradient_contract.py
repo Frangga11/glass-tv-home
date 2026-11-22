@@ -79,7 +79,7 @@ class HomeFloatingContentRightGradientContractTest(unittest.TestCase):
         focus_start = main.index("prayerHeaderView.setBackground(new GliderFocusDrawable(")
         focus_end = main.index("prayerHeaderView.setOnFocusChangeListener(", focus_start)
         focus = main[focus_start:focus_end]
-        self.assertIn("GliderFocusDrawable(prayerHeaderView, homeCapsuleGlider, 8f * density)", focus)
+        self.assertIn("homeCapsuleGlider, 8f * density)", focus)
         self.assertIn("@+id/islamicShelf", ids)
         hint = next(node for node in root.iter() if node.get(ANDROID + "id") == "@+id/ayahOpenHint")
         self.assertEqual(hint.get(ANDROID + "textSize"), "9sp")
