@@ -199,6 +199,20 @@ public final class ModernSettingsDialog {
         return false;
     }
 
+    private static void applyPopupTextShadow(View view, float density) {
+        if (view instanceof EditText) return;
+        if (view instanceof TextView) {
+            ((TextView) view).setShadowLayer(0.85f * density, 0f,
+                    0.35f * density, 0x60000000);
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                applyPopupTextShadow(group.getChildAt(i), density);
+            }
+        }
+    }
+
     public static void show(MainActivity activity) {
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
         SoundEffects.playSelect();
@@ -1514,6 +1528,7 @@ public final class ModernSettingsDialog {
                 origin.post(origin::requestFocus);
             }
         });
+        applyPopupTextShadow(root, density);
         dialog.show();
 
         // Keep a validated path into the active pane so a recreated Settings dialog can return
