@@ -266,7 +266,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
     def test_profile_active_state_is_silver_and_distinct_from_cyan_focus(self):
         modern = (JAVA / "ModernSettingsDialog.java").read_text(encoding="utf-8")
         switch = (JAVA / "UserSwitchDialog.java").read_text(encoding="utf-8")
-        self.assertIn("tvTag.setTextColor(TvUiTokens.POPUP_TEXT_SECONDARY)", modern)
+        self.assertIn("tvTag.setTextColor(TvUiTokens.ACCENT_SECTION)", modern)
         self.assertIn("pRow.setSelected(isCur)", modern)
         self.assertIn("TvFocusIndicator.createSelectableRoundedStateBackground(", modern)
         self.assertIn("activeLabel.setTextColor(TvUiTokens.ACCENT_SECTION)", switch)
