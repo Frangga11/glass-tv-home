@@ -117,7 +117,7 @@ final class WifiSettingsDialog {
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(density, 14), 0, dp(density, 14), dp(density, 10));
         // Adopt Universal Home's glass material without changing the approved Wi-Fi geometry.
-        content.setBackground(UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,
+        content.setBackground(UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,
                 TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
         pointer = new View(activity) {
             @Override protected void onDraw(Canvas canvas) {
@@ -141,10 +141,11 @@ final class WifiSettingsDialog {
                         ? parent.getHeight() : h;
                 RectF materialBounds = new RectF(density, density,
                         Math.max(density, w - density), Math.max(density, materialHeight - density));
-                UniversalGlassMaterial.drawPointer(activity, canvas, triangle, pointerEdges,
+                UniversalGlassMaterial.drawPointer(activity, pointer, canvas, triangle, pointerEdges,
                         materialBounds, density, TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
             }
         };
+        Backdrop.watch(pointer);
         content.addView(pointer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 12)));
         TextView title = text(R.string.wifi, popupTitleSizeSp(), true, density);
         title.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0, 0, 0);
@@ -622,6 +623,8 @@ final class WifiSettingsDialog {
                         dp(activity.getResources().getDisplayMetrics().density, 10), 0);
                 row.setLayoutParams(networkRowLayoutParams(activity.getResources().getDisplayMetrics().density));
                 row.setTextSize(TypedValue.COMPLEX_UNIT_PX, networkTextSizePx());
+            row.setShadowLayer(0.85f * activity.getResources().getDisplayMetrics().density, 0f,
+                    0.35f * activity.getResources().getDisplayMetrics().density, 0x60000000);
                 configureNetworkMarquee(row);
                 row.setCompoundDrawablePadding(dp(
                         activity.getResources().getDisplayMetrics().density, 6));
@@ -769,6 +772,7 @@ final class WifiSettingsDialog {
     private void styleText(TextView view, float size, boolean bold, float density) {
         view.setTextSize(size);
         view.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        view.setShadowLayer(0.85f * density, 0f, 0.35f * density, 0x60000000);
         view.setTypeface(activity.getResources().getFont(R.font.inter),
                 bold ? Typeface.BOLD : Typeface.NORMAL);
         view.setPadding(0, dp(density, 3), 0, dp(density, 3));

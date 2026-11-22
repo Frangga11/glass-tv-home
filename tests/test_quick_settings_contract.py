@@ -18,8 +18,9 @@ class QuickSettingsContractTest(unittest.TestCase):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
         self.assertNotIn("0xFF17232B", focus_block)
-        self.assertIn("focused ? 2.0f : 1.25f", focus_block)
-        self.assertIn("focused ? 0xF0000000 : 0xCC000000", focus_block)
+        self.assertIn("0.8f * density", focus_block)
+        self.assertIn("0x60000000", focus_block)
+        self.assertIn("0.35f * density", focus_block)
 
     def test_wallpaper_heading_and_capsule_share_the_same_left_layout_lane(self):
         self.assertIn("wallpaperHeader.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);", DIALOG)
@@ -29,7 +30,7 @@ class QuickSettingsContractTest(unittest.TestCase):
 
     def test_dialog_is_single_frame_glass_and_anchored_to_capsule_and_dock(self):
         self.assertNotIn("ScrollView", DIALOG)
-        self.assertIn("UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,", DIALOG)
+        self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", DIALOG)
         self.assertIn("PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER", DIALOG)
         self.assertNotIn("Backdrop.watch(content)", DIALOG)
         self.assertIn("panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx)", DIALOG)
@@ -110,9 +111,13 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("link.setTextSize(12f);", DIALOG)
         self.assertIn("private static void addGridColumnGap(Activity activity, GridLayout grid, int row, float density, int tileHeightDp)", DIALOG)
         self.assertNotIn("scaleVertical(", DIALOG)
-        self.assertIn("new GliderFocusDrawable(control, glider)", DIALOG)
-        self.assertIn("glider.moveTo(left + pad, top + pad", DIALOG)
+        self.assertIn("new GliderFocusDrawable(control, glider, cornerRadiusDp * density)", DIALOG)
+        self.assertIn("glider.moveTo(left, top,", DIALOG)
         self.assertIn("glider.setStyle(Glider.GLASS)", DIALOG)
+        self.assertIn("glider.setCompanionOnly(true)", DIALOG)
+        self.assertIn("glider.setSingleGlassRim(true)", DIALOG)
+        self.assertIn("glider.setGlassRimStrokeWidth(2.0f * density)", DIALOG)
+        self.assertIn("moveDialogGliderTo(target, dialogGlider, density, radiusDp)", DIALOG)
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
         self.assertIn("dialog.setOnDismissListener", DIALOG)
         self.assertIn("dialog.setCancelable(true)", DIALOG)

@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 /**
  * Universal Home's DockGlassDrawable material, ported under its MIT license.
@@ -24,6 +25,10 @@ final class UniversalGlassDrawable extends Drawable {
     private final Paint inner = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint windowLight = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final boolean silverCyanIdentity;
+    private final boolean brightSilverPopup;
+    private final View owner;
+    private final Backdrop.Fill backdropFill = new Backdrop.Fill();
+    private final Paint popupVeil = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF area = new RectF();
     private final RectF lastSourceBounds = new RectF();
     private final RectF innerArea = new RectF();
@@ -33,13 +38,26 @@ final class UniversalGlassDrawable extends Drawable {
     private boolean prepared;
 
     UniversalGlassDrawable(float density, float radiusDp) {
-        this(density, radiusDp, false);
+        this(null, density, radiusDp, false, false);
     }
 
     UniversalGlassDrawable(float density, float radiusDp, boolean silverCyanIdentity) {
+        this(null, density, radiusDp, silverCyanIdentity, false);
+    }
+
+    UniversalGlassDrawable(float density, float radiusDp, boolean silverCyanIdentity,
+                           boolean brightSilverPopup) {
+        this(null, density, radiusDp, silverCyanIdentity, brightSilverPopup);
+    }
+
+    UniversalGlassDrawable(View owner, float density, float radiusDp, boolean silverCyanIdentity,
+                           boolean brightSilverPopup) {
+        this.owner = owner;
         this.density = density;
         this.radiusDp = radiusDp;
         this.silverCyanIdentity = silverCyanIdentity;
+        this.brightSilverPopup = brightSilverPopup;
+        popupVeil.setColor(0x68151D25);
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         inner.setStyle(Paint.Style.STROKE);
@@ -63,10 +81,23 @@ final class UniversalGlassDrawable extends Drawable {
             return;
         }
         radius = Math.min(radiusDp * density, area.height() / 2f);
-        surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
-                new int[]{0x36FFFFFF, 0x16FFFFFF, 0x0DFFFFFF, 0x30232323},
-                new float[]{0f, 0.18f, 0.6f, 1f}, Shader.TileMode.CLAMP));
-        if (silverCyanIdentity) {
+        if (brightSilverPopup) {
+            surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
+                    new int[]{0x28FFFFFF, 0x14FFFFFF, 0x0AFFFFFF, 0x1E111A22},
+                    new float[]{0f, 0.22f, 0.68f, 1f}, Shader.TileMode.CLAMP));
+        } else {
+            surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
+                    new int[]{0x36FFFFFF, 0x16FFFFFF, 0x0DFFFFFF, 0x30232323},
+                    new float[]{0f, 0.18f, 0.6f, 1f}, Shader.TileMode.CLAMP));
+        }
+        if (brightSilverPopup) {
+            rim.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
+                    new int[]{0xDFFFFFFF, 0x55FFFFFF, 0x20FFFFFF, 0x99FFFFFF},
+                    new float[]{0f, 0.28f, 0.68f, 1f}, Shader.TileMode.CLAMP));
+            windowLight.setShader(new LinearGradient(area.left, area.top, area.right, area.top,
+                    new int[]{0x00FFFFFF, 0x70FFFFFF, 0xA6FFFFFF, 0x00FFFFFF},
+                    new float[]{0f, 0.28f, 0.48f, 1f}, Shader.TileMode.CLAMP));
+        } else if (silverCyanIdentity) {
             // Dock and explicitly selected Home capsules only: restrained pre-adoption identity.
             float rimAlpha = 0xD9 / 255f;
             int[] rimColors = new int[]{
@@ -86,7 +117,7 @@ final class UniversalGlassDrawable extends Drawable {
             rim.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
                     rimColors, rimStops, Shader.TileMode.CLAMP));
             windowLight.setShader(new LinearGradient(area.left, area.top, area.right, area.top,
-                    new int[]{0x00FFFFFF, 0x00FFFFFF, 0xD9FFFFFF, 0x8067E8F9, 0x00FFFFFF, 0x00FFFFFF},
+                    new int[]{0x00FFFFFF, 0x00FFFFFF, 0xBFFFFFFF, 0x55FFFFFF, 0x00FFFFFF, 0x00FFFFFF},
                     new float[]{0.00f, 0.15f, 0.32f, 0.46f, 0.68f, 1.00f},
                     Shader.TileMode.CLAMP));
         } else {
@@ -96,10 +127,15 @@ final class UniversalGlassDrawable extends Drawable {
                     new float[]{0f, 0.3f, 0.65f, 1f}, Shader.TileMode.CLAMP));
         }
         reflection.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
-                new int[]{0x22FFFFFF, 0x08FFFFFF, 0x00FFFFFF},
+                brightSilverPopup
+                        ? new int[]{0x38FFFFFF, 0x14FFFFFF, 0x00FFFFFF}
+                        : new int[]{0x22FFFFFF, 0x08FFFFFF, 0x00FFFFFF},
                 new float[]{0f, 0.35f, 1f}, Shader.TileMode.CLAMP));
         inner.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
-                new int[]{0x30FFFFFF, 0x00FFFFFF, 0x20FFFFFF}, null, Shader.TileMode.CLAMP));
+                brightSilverPopup
+                        ? new int[]{0x40FFFFFF, 0x00FFFFFF, 0x3095A2AB}
+                        : new int[]{0x30FFFFFF, 0x00FFFFFF, 0x20FFFFFF},
+                null, Shader.TileMode.CLAMP));
         clip.reset();
         clip.addRoundRect(area, radius, radius, Path.Direction.CW);
         sweep.reset();
@@ -113,7 +149,12 @@ final class UniversalGlassDrawable extends Drawable {
 
     void drawSurface(Canvas canvas, RectF sourceBounds) {
         prepare(sourceBounds);
-        if (!area.isEmpty()) canvas.drawRoundRect(area, radius, radius, surface);
+        if (area.isEmpty()) return;
+        if (brightSilverPopup && owner != null) {
+            backdropFill.draw(canvas, owner, area, radius, 1f);
+            canvas.drawRoundRect(area, radius, radius, popupVeil);
+        }
+        canvas.drawRoundRect(area, radius, radius, surface);
     }
 
     void drawReflection(Canvas canvas, RectF sourceBounds) {
@@ -134,7 +175,7 @@ final class UniversalGlassDrawable extends Drawable {
         canvas.drawRoundRect(innerArea,
                 Math.max(0f, radius - density * 2f),
                 Math.max(0f, radius - density * 2f), inner);
-        if (silverCyanIdentity) {
+        if (silverCyanIdentity || brightSilverPopup) {
             canvas.drawRoundRect(area, radius, radius, windowLight);
         }
     }
