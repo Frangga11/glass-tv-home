@@ -79,7 +79,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("params.y = panelTop;", DIALOG)
         test_source = (ROOT / "launcher/app/src/test/java/com/gathin/tvhome/QuickSettingsDialogTest.java").read_text(encoding="utf-8")
         self.assertIn("assertEquals(5, dockTop - (panelTop + content.getMeasuredHeight()));", test_source)
-        self.assertIn("assertEquals(330, find(dialog, \\"quick_settings_root\\").getMeasuredHeight());", test_source)
+        self.assertIn('assertEquals(330, find(dialog, "quick_settings_root").getMeasuredHeight());', test_source)
         self.assertIn("lp.height = dp(density, tileHeightDp);", DIALOG)
         self.assertIn("params.x = finalPanelLeft;", DIALOG)
         self.assertIn("settingsIconCenterX(settingsAnchor, anchorAt[0], density)", DIALOG)
