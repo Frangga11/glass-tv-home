@@ -423,7 +423,6 @@ public final class ModernSettingsDialog {
             GradientDrawable pcBg = new GradientDrawable();
             pcBg.setColor(isProfile ? TvUiTokens.NAV_PROFILE_SELECTED : TvUiTokens.NAV_PROFILE_IDLE);
             pcBg.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            if (isProfile) pcBg.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
             profileCard.setBackground(pcBg);
 
             ProfileManager.UserProfile sidebarActive = ProfileManager.getActiveProfile(activity);
@@ -438,7 +437,6 @@ public final class ModernSettingsDialog {
                 GradientDrawable rbg = new GradientDrawable();
                 rbg.setColor(isSelected ? TvUiTokens.NAV_ITEM_SELECTED : Color.TRANSPARENT);
                 rbg.setCornerRadius(TvUiTokens.NAV_ROW_RADIUS_DP * density);
-                if (isSelected) rbg.setStroke((int) (1 * density), TvUiTokens.NAV_SELECTION_BORDER);
                 item.rowView.setBackground(rbg);
             }
         };
