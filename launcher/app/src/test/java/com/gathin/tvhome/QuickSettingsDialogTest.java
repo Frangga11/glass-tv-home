@@ -170,6 +170,40 @@ public class QuickSettingsDialogTest {
         return new FrameLayout[]{root, root, root};
     }
 
+    private String describeViewTree(View view) {
+        StringBuilder out = new StringBuilder();
+        View current = view;
+        int depth = 0;
+        while (current != null) {
+            out.append(current.getClass().getSimpleName())
+                    .append("{measured=").append(current.getMeasuredWidth()).append("x")
+                    .append(current.getMeasuredHeight())
+                    .append(", bounds=").append(current.getLeft()).append(",").append(current.getTop())
+                    .append("-").append(current.getRight()).append(",").append(current.getBottom())
+                    .append(", padding=").append(current.getPaddingLeft()).append("/")
+                    .append(current.getPaddingTop()).append("/")
+                    .append(current.getPaddingRight()).append("/")
+                    .append(current.getPaddingBottom());
+            ViewGroup.LayoutParams lp = current.getLayoutParams();
+            if (lp != null) {
+                out.append(", lp=").append(lp.width).append("x").append(lp.height);
+                if (lp instanceof ViewGroup.MarginLayoutParams) {
+                    ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) lp;
+                    out.append(", margins=").append(mlp.leftMargin).append("/")
+                            .append(mlp.topMargin).append("/")
+                            .append(mlp.rightMargin).append("/")
+                            .append(mlp.bottomMargin);
+                }
+            }
+            out.append("} <- ");
+            android.view.ViewParent parent = current.getParent();
+            current = parent instanceof View ? (View) parent : null;
+            depth++;
+            if (depth > 8) break;
+        }
+        return out.toString();
+    }
+
     private View find(AlertDialog dialog, String tag) {
         return dialog.getWindow().getDecorView().findViewWithTag(tag);
     }
@@ -195,12 +229,13 @@ public class QuickSettingsDialogTest {
     }
 
     @Test
-    public void fixedPanelUsesExactGeometryAndKeepsFiveDpAnchorClearance() {
+    public void fixedPanelUsesExactFiveDpDockClearanceAndMovesUnusedSpaceAbove() {
         Activity activity = newActivity();
         FrameLayout[] views = host(activity);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
         int[] hostAt = new int[2], anchorAt = new int[2], dockAt = new int[2];
         views[0].getLocationOnScreen(hostAt);
         views[0].getChildAt(0).getLocationOnScreen(anchorAt);
@@ -214,10 +249,35 @@ public class QuickSettingsDialogTest {
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
         assertEquals(Math.round(340.5f * density), availableHeight);
-        assertEquals(Math.round(330f * density), content.getMeasuredHeight());
-        // Production Dock geometry leaves 340.5dp available; the fixed 330dp panel
-        // preserves the 5dp minimum clearance and leaves the remaining space untouched.
-        assertEquals(Math.round(15.5f * density), dockTop - (panelTop + content.getMeasuredHeight()));
+        View decor = dialog.getWindow().getDecorView();
+        ViewGroup contentParent = (ViewGroup) content.getParent();
+        assertEquals("330dp content must survive Dialog decor measurement"
+                + " [content=" + content.getMeasuredHeight()
+                + ", contentLayoutHeight=" + content.getLayoutParams().height
+                + ", parent=" + contentParent.getClass().getName()
+                + ", parentHeight=" + contentParent.getMeasuredHeight()
+                + ", parentPadding=" + contentParent.getPaddingTop() + "/" + contentParent.getPaddingBottom()
+                + ", decorHeight=" + decor.getMeasuredHeight()
+                + ", decorPadding=" + decor.getPaddingTop() + "/" + decor.getPaddingBottom()
+                + ", windowHeight=" + dialog.getWindow().getAttributes().height
+                + ", tree=" + describeViewTree(content) + "]",
+                Math.round(330f * density), content.getMeasuredHeight());
+        int[] contentAt = new int[2];
+        content.getLocationOnScreen(contentAt);
+        int actualPanelTop = contentAt[1] - hostAt[1];
+        int actualBottomGap = dockAt[1] - (contentAt[1] + content.getMeasuredHeight());
+        System.out.println("QUICK_SETTINGS_GAP_FIXED dockTop=" + dockTop + " panelTop=" + actualPanelTop
+                + " height=" + content.getMeasuredHeight() + " hostY=" + hostAt[1]
+                + " screenY=" + contentAt[1] + " gap=" + actualBottomGap + " expected=" + fiveDp);
+        assertEquals("Popup lower edge must remain exactly 5dp above the Dock"
+                + " [dockTop=" + dockTop + ", contentTop=" + actualPanelTop
+                + ", contentHeight=" + content.getMeasuredHeight() + ", hostY=" + hostAt[1]
+                + ", contentScreenY=" + contentAt[1] + "]", fiveDp, actualBottomGap);
+        assertEquals("The 10.5dp surplus must move the popup down from its minimum top",
+                Math.round(10.5f * density), actualPanelTop - panelTop);
+        assertEquals("Popup top must be derived from Dock top, measured panel height and exact clearance",
+                QuickSettingsDialog.panelTopForBottomClearance(dockTop, content.getMeasuredHeight(), fiveDp),
+                actualPanelTop);
         for (String tag : new String[] {
                 "quick_settings_gap_header_grid",
                 "quick_settings_gap_grid_wallpaper",
@@ -244,6 +304,7 @@ public class QuickSettingsDialogTest {
             assertNotNull("Quick Settings must open with Dock capacity " + capacity, dialog);
             assertTrue("Quick Settings must be visible with Dock capacity " + capacity,
                     dialog.isShowing());
+            Shadows.shadowOf(Looper.getMainLooper()).idle();
             View content = find(dialog, "quick_settings_root");
             assertNotNull(content);
             float density = activity.getResources().getDisplayMetrics().density;
@@ -255,10 +316,26 @@ public class QuickSettingsDialogTest {
                     hostAt[1], Math.round(5f * density));
             int available = QuickSettingsDialog.availablePanelHeight(
                     dockAt[1] - hostAt[1], top, Math.round(5f * density));
-            assertEquals("Panel may use only the unused trailing space when needed",
+            assertEquals("Panel may use only the unused vertical space when needed",
                     Math.min(Math.round(330f * density), available), content.getMeasuredHeight());
             assertTrue("All action content must remain inside the measured panel",
                     content.getMeasuredHeight() >= Math.round(320f * density));
+            int[] contentAt = new int[2];
+            content.getLocationOnScreen(contentAt);
+            int actualPanelTop = contentAt[1] - hostAt[1];
+            int actualBottomGap = dockAt[1] - (contentAt[1] + content.getMeasuredHeight());
+            System.out.println("QUICK_SETTINGS_GAP_CAPACITY capacity=" + capacity
+                    + " dockTop=" + (dockAt[1] - hostAt[1]) + " panelTop=" + actualPanelTop
+                    + " height=" + content.getMeasuredHeight() + " hostY=" + hostAt[1]
+                    + " screenY=" + contentAt[1] + " gap=" + actualBottomGap
+                    + " expected=" + Math.round(5f * density));
+            assertEquals("Every supported Dock capacity must preserve the exact 5dp lower gap"
+                    + " [capacity=" + capacity + ", dockTop=" + (dockAt[1] - hostAt[1])
+                    + ", contentTop=" + actualPanelTop + ", contentHeight=" + content.getMeasuredHeight()
+                    + ", hostY=" + hostAt[1] + ", contentScreenY=" + contentAt[1] + "]",
+                    Math.round(5f * density), actualBottomGap);
+            assertTrue("Popup must never overlap the Settings capsule clearance",
+                    actualPanelTop >= top);
             dialog.dismiss();
             activity.finish();
         }

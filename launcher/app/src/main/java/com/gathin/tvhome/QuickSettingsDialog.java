@@ -77,6 +77,8 @@ final class QuickSettingsDialog {
         int hostHeight = host.getHeight() > 0 ? host.getHeight() : activity.getResources().getDisplayMetrics().heightPixels;
         int topClearancePx = dp(density, 5);
         int bottomClearancePx = dp(density, 5);
+        // This is the minimum allowed top boundary. When the fixed-height panel leaves
+        // unused vertical space, that space is absorbed above the popup, not below it.
         int top = panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx);
         // The Dock can be bottom-anchored (horizontal carousel) or start-anchored
         // (vertical rail). Its top edge is a valid popup boundary only in the former mode.
@@ -273,10 +275,18 @@ final class QuickSettingsDialog {
         int naturalHeight = measureNaturalHeight(content, width);
         int fixedPanelHeight = dp(density, PANEL_HEIGHT_DP);
         // Keep every capsule, row, inset and section gap at its approved size. The 330dp
-        // panel includes optional trailing breathing room; on a larger four-column Dock,
-        // use only the available height when that trailing space is reduced. Never scale
-        // or compress the actual content to make the dialog fit.
+        // panel includes optional vertical breathing room; never scale or compress the
+        // actual content to make the dialog fit. Any surplus is assigned above the panel.
         int panelHeight = Math.min(fixedPanelHeight, availableHeight);
+        // Anchor the panel to the Dock with an exact 5dp lower clearance. Any unused
+        // space left by the 330dp design height moves the whole panel down, increasing
+        // the distance from the Settings capsule to the popup's lower edge.
+        int positionedTop = panelTopForBottomClearance(dockTop, panelHeight, bottomClearancePx);
+        if (positionedTop < top) {
+            android.util.Log.e("TvHome.QuickSettings",
+                    "Computed popup top would overlap the Settings navigation clearance");
+            return null;
+        }
         if (naturalHeight > panelHeight) {
             android.util.Log.e("TvHome.QuickSettings", "Quick Settings content cannot fit without compression: "
                     + Math.round(naturalHeight / density) + "dp content, "
@@ -285,23 +295,35 @@ final class QuickSettingsDialog {
             return null;
         }
 
-        // Preserve the full 330dp design panel whenever clearance permits. Only its
-        // unused trailing breathing room contracts for supported Dock capacities.
+        // Preserve the full 330dp design panel whenever clearance permits. The popup is
+        // bottom-anchored to the measured Dock edge, so surplus space becomes top clearance.
         android.util.Log.i("TvHome.QuickSettings", "Fixed panel " + Math.round(width / density)
                 + "x" + Math.round(panelHeight / density) + "dp; side inset "
                 + PANEL_SIDE_INSET_DP + "dp; capsule width " + WIDE_TILE_WIDTH_DP
                 + "dp; capsule height " + tileHeightDp + "dp; all section gaps "
-                + CAPSULE_GAP_DP + "dp; vertical inset " + PANEL_VERTICAL_INSET_DP + "dp.");
+                + CAPSULE_GAP_DP + "dp; vertical inset " + PANEL_VERTICAL_INSET_DP
+                + "dp; Dock clearance " + Math.round(bottomClearancePx / density)
+                + "dp; Settings-to-popup clearance "
+                + Math.round((positionedTop - top) / density) + "dp surplus.");
         final int panelWidth = width;
-        final int panelTop = top;
+        final int panelTop = positionedTop;
         final int finalPanelLeft = panelLeft;
-        content.setLayoutParams(new ViewGroup.LayoutParams(panelWidth, panelHeight));
+        content.setLayoutParams(new android.widget.FrameLayout.LayoutParams(panelWidth, panelHeight));
         content.measure(View.MeasureSpec.makeMeasureSpec(panelWidth, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(panelHeight, View.MeasureSpec.EXACTLY));
 
         AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                 .setView(content).create();
         dialogHolder[0] = dialog;
+        // Remove the Material floating-dialog frame before DecorView is installed. Doing
+        // this in onShow is too late: the frame's default vertical insets have already
+        // reduced the measured content height even though the custom panel is transparent.
+        Window dialogWindow = dialog.getWindow();
+        if (dialogWindow != null) {
+            dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialogWindow.getDecorView().setPadding(0, 0, 0, 0);
+            dialogWindow.setGravity(Gravity.TOP | Gravity.LEFT);
+        }
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setOnKeyListener((ignored, keyCode, event) -> {
@@ -330,8 +352,23 @@ final class QuickSettingsDialog {
         dialog.setOnShowListener(d -> {
             Window window = dialog.getWindow();
             if (window != null) {
-                window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                window.getDecorView().setPadding(0, 0, 0, 0);
+                // AlertDialog.Builder.setView() places the supplied root inside an
+                // internal custom-panel FrameLayout whose height is WRAP_CONTENT. That
+                // wrapper remeasures the 330dp panel to its 319dp natural content height.
+                // Give the custom-panel wrapper the same exact measured height as the panel;
+                // this preserves the approved vertical insets and every capsule dimension.
+                content.setLayoutParams(new android.widget.FrameLayout.LayoutParams(panelWidth, panelHeight));
+                android.view.ViewParent contentParent = content.getParent();
+                if (contentParent instanceof View) {
+                    View wrapper = (View) contentParent;
+                    ViewGroup.LayoutParams wrapperParams = wrapper.getLayoutParams();
+                    if (wrapperParams != null) {
+                        wrapperParams.width = panelWidth;
+                        wrapperParams.height = panelHeight;
+                        wrapper.setLayoutParams(wrapperParams);
+                    }
+                }
+                content.requestLayout();
                 window.setGravity(Gravity.TOP | Gravity.LEFT);
                 window.setLayout(panelWidth, panelHeight);
                 WindowManager.LayoutParams params = window.getAttributes();
@@ -340,6 +377,25 @@ final class QuickSettingsDialog {
                 params.dimAmount = 0f;
                 window.setAttributes(params);
                 window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+                // LayoutParams.y is relative to the Dialog window's gravity frame, while
+                // panelTop was calculated in the Activity host's coordinate space. Those
+                // origins can differ (system/content insets and Dialog decor). Measure the
+                // actual content position after the window is attached, then translate the
+                // window by the exact screen-space delta so the Dock clearance is real.
+                int[] contentAt = new int[2];
+                content.getLocationOnScreen(contentAt);
+                int desiredContentTopOnScreen = hostAt[1] + panelTop;
+                int windowYCorrection = desiredContentTopOnScreen - contentAt[1];
+                if (windowYCorrection != 0) {
+                    params = window.getAttributes();
+                    params.y += windowYCorrection;
+                    window.setAttributes(params);
+                }
+                android.util.Log.d("TvHome.QuickSettings", "Dialog position hostTop=" + hostAt[1]
+                        + " desiredContentTop=" + desiredContentTopOnScreen
+                        + " measuredContentTop=" + contentAt[1]
+                        + " windowYCorrection=" + windowYCorrection);
             }
             View target = controls[initialFocus >= 0 && initialFocus < controls.length
                     ? initialFocus : QuickSettingsFocusGraph.INPUT];
@@ -438,8 +494,15 @@ final class QuickSettingsDialog {
         return anchorScreenTop + anchorHeight - hostScreenTop + topClearancePx;
     }
 
-    static int availablePanelHeight(int dockTopInHost, int panelTopInHost, int bottomClearancePx) {
-        return dockTopInHost - panelTopInHost - bottomClearancePx;
+    static int availablePanelHeight(int dockTopInHost, int minimumPanelTopInHost,
+                                     int bottomClearancePx) {
+        return dockTopInHost - minimumPanelTopInHost - bottomClearancePx;
+    }
+
+    /** Positions the panel against the Dock while preserving its exact lower clearance. */
+    static int panelTopForBottomClearance(int dockTopInHost, int panelHeightPx,
+                                          int bottomClearancePx) {
+        return dockTopInHost - panelHeightPx - bottomClearancePx;
     }
 
     /**
