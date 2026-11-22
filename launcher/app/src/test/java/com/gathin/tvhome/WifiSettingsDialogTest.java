@@ -50,7 +50,7 @@ public class WifiSettingsDialogTest {
         assertEquals(Math.round(12 * activity.getResources().getDisplayMetrics().density), root.getPaddingLeft());
         assertEquals(Math.round(12 * activity.getResources().getDisplayMetrics().density), root.getPaddingRight());
         assertEquals(Math.round(5 * activity.getResources().getDisplayMetrics().density), root.getPaddingTop());
-        assertEquals(Math.round(12 * activity.getResources().getDisplayMetrics().density), root.getPaddingBottom());
+        assertEquals(Math.round(10 * activity.getResources().getDisplayMetrics().density), root.getPaddingBottom());
         assertEquals(Math.round(28 * activity.getResources().getDisplayMetrics().density), header.getLayoutParams().height);
         assertNotNull(footer);
         assertEquals(android.widget.LinearLayout.VERTICAL, ((android.widget.LinearLayout) footer).getOrientation());
@@ -75,10 +75,10 @@ public class WifiSettingsDialogTest {
         assertEquals(10f, WifiSettingsDialog.popupMetaSizeSp(), 0.001f);
         assertEquals(12f, WifiSettingsDialog.popupFooterSizeSp(), 0.001f);
         assertEquals(12f, WifiSettingsDialog.permissionTextSizeSp(), 0.001f);
-        assertEquals(3, WifiSettingsDialog.visibleNetworkRowCount());
-        assertEquals(28, WifiSettingsDialog.networkRowHeightDp());
+        assertEquals(2, WifiSettingsDialog.visibleNetworkRowCount());
+        assertEquals(26, WifiSettingsDialog.networkRowHeightDp());
         assertEquals(4, WifiSettingsDialog.networkRowGapDp());
-        assertEquals(92, WifiSettingsDialog.networkViewportHeightDp());
+        assertEquals(56, WifiSettingsDialog.networkViewportHeightDp());
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> { });
         View toggle = dialog.getWindow().getDecorView().findViewWithTag("wifi_toggle");
@@ -87,12 +87,17 @@ public class WifiSettingsDialogTest {
                 / activity.getResources().getDisplayMetrics().scaledDensity, 0.1f);
         assertEquals(Math.round(42 * activity.getResources().getDisplayMetrics().density),
                 toggle.getLayoutParams().width);
-        assertEquals(Math.round(22 * activity.getResources().getDisplayMetrics().density),
+        assertEquals(Math.round(21 * activity.getResources().getDisplayMetrics().density),
                 toggle.getLayoutParams().height);
         View permission = dialog.getWindow().getDecorView().findViewWithTag("wifi_permission");
         assertNotNull(permission);
-        assertEquals(Math.round(34 * activity.getResources().getDisplayMetrics().density),
+        assertEquals(Math.round(26 * activity.getResources().getDisplayMetrics().density),
                 permission.getLayoutParams().height);
+        View settings = dialog.getWindow().getDecorView().findViewWithTag("wifi_open_settings");
+        assertNotNull(settings);
+        assertEquals(permission.getParent(), settings.getParent());
+        assertEquals(Math.round(4 * activity.getResources().getDisplayMetrics().density),
+                ((android.widget.LinearLayout.LayoutParams) permission.getLayoutParams()).bottomMargin);
         dialog.dismiss();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
