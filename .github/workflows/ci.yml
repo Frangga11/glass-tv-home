@@ -46,6 +46,16 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon testReleaseUnitTest assembleRelease
+      - name: Upload Android unit test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quick-settings-unit-test-reports-${{ github.run_id }}
+          path: |
+            launcher/app/build/test-results/testReleaseUnitTest/
+            launcher/app/build/reports/tests/testReleaseUnitTest/
+          if-no-files-found: warn
+          retention-days: 7
       - name: APK size diagnostics (read-only)
         run: |
           python3 - <<'PY'
