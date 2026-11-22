@@ -48,6 +48,9 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
             "DISABLED_TEXT": "tv_ui_disabled_text",
             "FOCUS_HALO": "tv_ui_focus_halo",
             "GLASS_VEIL_COLOR": "tv_ui_glass_veil",
+            "NAV_GLASS_VEIL_COLOR": "tv_ui_nav_glass_veil",
+            "NAV_FOCUS_SURFACE": "tv_ui_nav_focus_surface",
+            "POPUP_GLASS_VEIL_COLOR": "tv_ui_popup_glass_veil",
             "NAV_SELECTION_BORDER": "tv_ui_selected_border",
         }
         for java_name, xml_name in mapping.items():
