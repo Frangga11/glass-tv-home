@@ -282,4 +282,23 @@ public class QuickSettingsDialogTest {
         assertEquals(null, actions.lastAction);
         assertFalse(dialog.isShowing());
     }
+    @Test
+    public void popupDiminishesHomeBehindGlassWithoutChangingPanelGeometry() {
+        Activity activity = newActivity();
+        FrameLayout[] views = host(activity);
+        AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
+                views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
+        assertNotNull(dialog);
+        android.view.WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        assertEquals(TvUiTokens.POPUP_DIM_AMOUNT, QuickSettingsDialog.popupDimAmount(), 0.001f);
+        assertEquals(QuickSettingsDialog.popupDimAmount(), params.dimAmount, 0.001f);
+        assertTrue((params.flags & android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND) != 0);
+        View content = find(dialog, "quick_settings_root");
+        assertNotNull(content);
+        assertEquals(255 * 2, content.getLayoutParams().width);
+        assertEquals(320 * 2, content.getLayoutParams().height);
+        dialog.dismiss();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+    }
+
 }
