@@ -24,6 +24,7 @@ final class UniversalGlassDrawable extends Drawable {
     private final Paint inner = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint windowLight = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final boolean silverCyanIdentity;
+    private final boolean brightSilverPopup;
     private final RectF area = new RectF();
     private final RectF lastSourceBounds = new RectF();
     private final RectF innerArea = new RectF();
@@ -33,13 +34,19 @@ final class UniversalGlassDrawable extends Drawable {
     private boolean prepared;
 
     UniversalGlassDrawable(float density, float radiusDp) {
-        this(density, radiusDp, false);
+        this(density, radiusDp, false, false);
     }
 
     UniversalGlassDrawable(float density, float radiusDp, boolean silverCyanIdentity) {
+        this(density, radiusDp, silverCyanIdentity, false);
+    }
+
+    UniversalGlassDrawable(float density, float radiusDp, boolean silverCyanIdentity,
+                           boolean brightSilverPopup) {
         this.density = density;
         this.radiusDp = radiusDp;
         this.silverCyanIdentity = silverCyanIdentity;
+        this.brightSilverPopup = brightSilverPopup;
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         inner.setStyle(Paint.Style.STROKE);
@@ -63,10 +70,23 @@ final class UniversalGlassDrawable extends Drawable {
             return;
         }
         radius = Math.min(radiusDp * density, area.height() / 2f);
-        surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
-                new int[]{0x36FFFFFF, 0x16FFFFFF, 0x0DFFFFFF, 0x30232323},
-                new float[]{0f, 0.18f, 0.6f, 1f}, Shader.TileMode.CLAMP));
-        if (silverCyanIdentity) {
+        if (brightSilverPopup) {
+            surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
+                    new int[]{0xE6F9FAFB, 0xDCEFF2F4, 0xC9E2E6E9, 0xB8D2D8DD},
+                    new float[]{0f, 0.22f, 0.68f, 1f}, Shader.TileMode.CLAMP));
+        } else {
+            surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
+                    new int[]{0x36FFFFFF, 0x16FFFFFF, 0x0DFFFFFF, 0x30232323},
+                    new float[]{0f, 0.18f, 0.6f, 1f}, Shader.TileMode.CLAMP));
+        }
+        if (brightSilverPopup) {
+            rim.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
+                    new int[]{0xF0FFFFFF, 0xBBDDE3E8, 0x667F8D96, 0xD9F4F6F7},
+                    new float[]{0f, 0.28f, 0.68f, 1f}, Shader.TileMode.CLAMP));
+            windowLight.setShader(new LinearGradient(area.left, area.top, area.right, area.top,
+                    new int[]{0x00FFFFFF, 0x70FFFFFF, 0xA6FFFFFF, 0x00FFFFFF},
+                    new float[]{0f, 0.28f, 0.48f, 1f}, Shader.TileMode.CLAMP));
+        } else if (silverCyanIdentity) {
             // Dock and explicitly selected Home capsules only: restrained pre-adoption identity.
             float rimAlpha = 0xD9 / 255f;
             int[] rimColors = new int[]{
@@ -96,10 +116,15 @@ final class UniversalGlassDrawable extends Drawable {
                     new float[]{0f, 0.3f, 0.65f, 1f}, Shader.TileMode.CLAMP));
         }
         reflection.setShader(new LinearGradient(area.left, area.top, area.right, area.bottom,
-                new int[]{0x22FFFFFF, 0x08FFFFFF, 0x00FFFFFF},
+                brightSilverPopup
+                        ? new int[]{0x66FFFFFF, 0x22FFFFFF, 0x00FFFFFF}
+                        : new int[]{0x22FFFFFF, 0x08FFFFFF, 0x00FFFFFF},
                 new float[]{0f, 0.35f, 1f}, Shader.TileMode.CLAMP));
         inner.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
-                new int[]{0x30FFFFFF, 0x00FFFFFF, 0x20FFFFFF}, null, Shader.TileMode.CLAMP));
+                brightSilverPopup
+                        ? new int[]{0x55FFFFFF, 0x00FFFFFF, 0x4495A2AB}
+                        : new int[]{0x30FFFFFF, 0x00FFFFFF, 0x20FFFFFF},
+                null, Shader.TileMode.CLAMP));
         clip.reset();
         clip.addRoundRect(area, radius, radius, Path.Direction.CW);
         sweep.reset();
