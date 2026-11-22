@@ -190,7 +190,7 @@ class QuickSettingsContractTest(unittest.TestCase):
 
     def test_wifi_popup_refinement_preserves_compact_width_and_balanced_type(self):
         wifi_dialog = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
-        self.assertIn("static int popupWidthDp() { return 200; }", wifi_dialog)
+        self.assertIn("static int popupWidthDp() { return 190; }", wifi_dialog)
         self.assertIn("static float networkTextSizeSp() { return 12f; }", wifi_dialog)
         self.assertIn("TypedValue.COMPLEX_UNIT_SP, networkTextSizeSp()", wifi_dialog)
         self.assertIn("TextUtils.TruncateAt.MARQUEE", wifi_dialog)
@@ -219,8 +219,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("dp(density, networkViewportHeightDp())", wifi_dialog)
         self.assertIn("actions.setOrientation(LinearLayout.VERTICAL);", wifi_dialog)
         self.assertIn("dp(density, 28)", wifi_dialog)
-        self.assertIn("wifiToggle.setMinHeight(dp(density, 25));", wifi_dialog)
-        self.assertIn("wifiToggle.setGravity(Gravity.CENTER);", wifi_dialog)
+        self.assertIn("wifiToggle.setMinHeight(dp(density, 23));", wifi_dialog)
+        self.assertIn("wifiToggle.setGravity(Gravity.CENTER);", wifi_dialog)\n        self.assertIn("new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 30))", wifi_dialog)\n        self.assertIn("wifiToggle.setTextSize(14f);", wifi_dialog)\n        self.assertIn("wifiToggle.setTranslationY(dp(density, 5));", wifi_dialog)\n        self.assertIn("title.setTranslationY(dp(density, 5));", wifi_dialog)\n        self.assertIn("networkViewport.topMargin = dp(density, 10);", wifi_dialog)\n        self.assertIn("networkViewport.bottomMargin = dp(density, 10);", wifi_dialog)\n        self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 34)", wifi_dialog)
         self.assertIn("rescan.setMinHeight(dp(density, 28));", wifi_dialog)
         self.assertIn("androidSettings.setMinHeight(dp(density, 28));", wifi_dialog)
         self.assertIn("scanState = text(R.string.wifi_scan_idle, popupMetaSizeSp()", wifi_dialog)
