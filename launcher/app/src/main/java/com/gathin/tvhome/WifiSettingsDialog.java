@@ -796,11 +796,16 @@ scanState.setVisibility(View.VISIBLE);
             view.setNextFocusLeftId(view.getId());
             view.setNextFocusRightId(view.getId());
         }
-        rescan.setNextFocusRightId(androidSettings.getId());
-        androidSettings.setNextFocusLeftId(rescan.getId());
-        androidSettings.setNextFocusRightId(androidSettings.getId());
         if (rescan.getVisibility() == View.VISIBLE) {
+            rescan.setNextFocusRightId(androidSettings.getId());
+            androidSettings.setNextFocusLeftId(rescan.getId());
             androidSettings.setNextFocusUpId(rescan.getId());
+            androidSettings.setNextFocusDownId(androidSettings.getId());
+        } else {
+            // Do not route DPAD toward a GONE rescan control in permission/location states.
+            androidSettings.setNextFocusLeftId(androidSettings.getId());
+            androidSettings.setNextFocusRightId(androidSettings.getId());
+            androidSettings.setNextFocusUpId(androidSettings.getId());
             androidSettings.setNextFocusDownId(androidSettings.getId());
         }
     }
