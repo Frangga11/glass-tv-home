@@ -240,7 +240,6 @@ final class WifiSettingsDialog {
         int popupHeight = Math.round(screenHeight * popupHeightFraction());
         int popupLeft = Math.max(8, screenWidth - popupWidth - 8);
         int popupTop = 8;
-        int contentInset = dp(density, 10);
         if (anchor != null && anchor.getWidth() > 0 && anchor.getHeight() > 0) {
             int[] location = new int[2];
             anchor.getLocationOnScreen(location);
@@ -248,7 +247,6 @@ final class WifiSettingsDialog {
             int popupRight = Math.min(screenWidth - 8, anchorCenter + popupWidth / 2);
             popupLeft = Math.max(8, popupRight - popupWidth);
             popupTop = Math.min(screenHeight - popupHeight - 8, location[1] + anchor.getHeight() + 14);
-
         }
         // The panel surface uses Universal Home's layered material, with a transparent window.
         window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
