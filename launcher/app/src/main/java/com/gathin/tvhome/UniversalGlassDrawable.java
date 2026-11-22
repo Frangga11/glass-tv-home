@@ -1,5 +1,6 @@
 package com.gathin.tvhome;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
