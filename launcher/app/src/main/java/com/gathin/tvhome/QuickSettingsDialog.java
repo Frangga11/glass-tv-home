@@ -77,14 +77,17 @@ final class QuickSettingsDialog {
         int hostHeight = host.getHeight() > 0 ? host.getHeight() : activity.getResources().getDisplayMetrics().heightPixels;
         int topClearancePx = dp(density, 5);
         int bottomClearancePx = dp(density, 5);
-        int top = panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx);
+        // This is the minimum allowed top boundary. When the fixed-height panel leaves
+        // unused vertical space, that space is absorbed above the popup, not below it.
+        int minimumTop = panelTopInHost(
+                anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx);
         // The Dock can be bottom-anchored (horizontal carousel) or start-anchored
         // (vertical rail). Its top edge is a valid popup boundary only in the former mode.
         // A vertical rail spans the screen height, so use the Home bottom safe edge instead.
         int dockTop = isBottomAnchoredDock(dock) && dock.isShown() && dock.getHeight() > 0
                 ? dockAt[1] - hostAt[1]
                 : hostHeight - DockGeometry.safeBottomInsetPx(density);
-        int availableHeight = availablePanelHeight(dockTop, top, bottomClearancePx);
+        int availableHeight = availablePanelHeight(dockTop, minimumTop, bottomClearancePx);
         if (availableHeight <= 0) {
             android.util.Log.e("TvHome.QuickSettings", "No vertical space remains between navigation and dock");
             return null;
@@ -277,6 +280,15 @@ final class QuickSettingsDialog {
         // use only the available height when that trailing space is reduced. Never scale
         // or compress the actual content to make the dialog fit.
         int panelHeight = Math.min(fixedPanelHeight, availableHeight);
+        // Anchor the panel to the Dock with an exact 5dp lower clearance. Any unused
+        // space left by the 330dp design height moves the whole panel down, increasing
+        // the distance from the Settings capsule to the popup's lower edge.
+        int top = panelTopForBottomClearance(dockTop, panelHeight, bottomClearancePx);
+        if (top < minimumTop) {
+            android.util.Log.e("TvHome.QuickSettings",
+                    "Computed popup top would overlap the Settings navigation clearance");
+            return null;
+        }
         if (naturalHeight > panelHeight) {
             android.util.Log.e("TvHome.QuickSettings", "Quick Settings content cannot fit without compression: "
                     + Math.round(naturalHeight / density) + "dp content, "
@@ -438,8 +450,15 @@ final class QuickSettingsDialog {
         return anchorScreenTop + anchorHeight - hostScreenTop + topClearancePx;
     }
 
-    static int availablePanelHeight(int dockTopInHost, int panelTopInHost, int bottomClearancePx) {
-        return dockTopInHost - panelTopInHost - bottomClearancePx;
+    static int availablePanelHeight(int dockTopInHost, int minimumPanelTopInHost,
+                                     int bottomClearancePx) {
+        return dockTopInHost - minimumPanelTopInHost - bottomClearancePx;
+    }
+
+    /** Positions the panel against the Dock while preserving its exact lower clearance. */
+    static int panelTopForBottomClearance(int dockTopInHost, int panelHeightPx,
+                                          int bottomClearancePx) {
+        return dockTopInHost - panelHeightPx - bottomClearancePx;
     }
 
     /**
