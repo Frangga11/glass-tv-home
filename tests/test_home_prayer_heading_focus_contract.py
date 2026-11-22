@@ -12,7 +12,7 @@ class HomePrayerHeadingFocusContractTest(unittest.TestCase):
         self.assertNotIn("R.id.prayerTable", block)
 
     def test_heading_is_the_only_focusable_prayer_entry_point(self):
-        block = MAIN[MAIN.index("// The Waktu Sholat heading is the single Home DPAD/click target."):MAIN.index("updatePrayerTimes();", MAIN.index("// The Waktu Sholat heading is the single Home DPAD/click target."))]
+        block = MAIN[MAIN.index("// The Waktu Sholat heading is the single Home DPAD/click target."):MAIN.index("View prayerTableView = findViewById(R.id.prayerTable);", MAIN.index("// The Waktu Sholat heading is the single Home DPAD/click target."))]
         self.assertIn("prayerHeaderView.setFocusable(true)", block)
         self.assertIn("prayerHeaderView.setClickable(true)", block)
         self.assertIn("prayerHeaderView.setOnClickListener(v -> showPrayerPopup())", block)
