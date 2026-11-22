@@ -24,7 +24,6 @@ final class UniversalGlassDrawable extends Drawable {
     private final Paint inner = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint windowLight = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final boolean silverCyanIdentity;
-    private final Paint windowLight = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF area = new RectF();
     private final RectF lastSourceBounds = new RectF();
     private final RectF innerArea = new RectF();
