@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Single-frame Quick Settings glass surface. Existing actions remain owned by their modules. */
 final class QuickSettingsDialog {
@@ -130,6 +131,7 @@ final class QuickSettingsDialog {
         content.setBackground(panelBackground);
         final UniversalGlassDrawable quickSettingsGlass = panelBackground instanceof UniversalGlassDrawable
                 ? (UniversalGlassDrawable) panelBackground : null;
+        final AtomicBoolean backdropCaptureActive = new AtomicBoolean(true);
 
         LinearLayout header = new LinearLayout(activity);
         header.setOrientation(LinearLayout.HORIZONTAL);
@@ -351,6 +353,7 @@ final class QuickSettingsDialog {
             return false;
         });
         dialog.setOnDismissListener(d -> {
+            backdropCaptureActive.set(false);
             if (quickSettingsGlass != null) quickSettingsGlass.clearCapturedWindowBackdrop();
             Object tag = dialog.getWindow() != null ? dialog.getWindow().getDecorView().getTag() : null;
             if (tag instanceof Glider) {
@@ -442,15 +445,12 @@ final class QuickSettingsDialog {
         // Dialog window is attached. This includes Home labels/prayer text as well as wallpaper.
         // A wallpaper-only blur cannot soften those separate foreground Views.
         if (quickSettingsGlass != null && backdropWorker != null && callbackHandler != null) {
-            View activityDecor = activity.getWindow().getDecorView();
-            int[] decorAt = new int[2];
-            activityDecor.getLocationOnScreen(decorAt);
-            int captureLeft = hostAt[0] + finalPanelLeft - decorAt[0];
-            int captureTop = hostAt[1] + panelTop - decorAt[1];
-            Rect captureRect = new Rect(captureLeft, captureTop,
-                    captureLeft + panelWidth, captureTop + panelHeight);
+            int[] hostWindowAt = new int[2];
+            host.getLocationInWindow(hostWindowAt);
+            Rect captureRect = QuickSettingsBackdropCapture.panelCropInWindow(
+                    hostWindowAt[0], hostWindowAt[1], finalPanelLeft, panelTop, panelWidth, panelHeight);
             QuickSettingsBackdropCapture.capture(activity, captureRect, backdropWorker, callbackHandler,
-                    new QuickSettingsBackdropCapture.Listener() {
+                    backdropCaptureActive, new QuickSettingsBackdropCapture.Listener() {
                         @Override public void onReady(Bitmap blurredPanel) {
                             if (!dialog.isShowing() || activity.isFinishing() || activity.isDestroyed()) {
                                 if (!blurredPanel.isRecycled()) blurredPanel.recycle();
