@@ -30,7 +30,7 @@ class QuickSettingsContractTest(unittest.TestCase):
     def test_dialog_is_single_frame_glass_and_anchored_to_capsule_and_dock(self):
         self.assertNotIn("ScrollView", DIALOG)
         self.assertIn("new GlassDrawable(content, TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false,", DIALOG)
-        self.assertIn("PANEL_GLASS_VEIL, 0x54, PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER", DIALOG)
+        self.assertIn("TvUiTokens.POPUP_GLASS_VEIL_COLOR, TvUiTokens.POPUP_GLASS_VEIL_ALPHA,", DIALOG)
         self.assertIn("Backdrop.watch(content)", DIALOG)
         self.assertIn("panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx)", DIALOG)
         self.assertIn("availablePanelHeight(dockTop, top, bottomClearancePx)", DIALOG)
@@ -84,9 +84,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertNotIn("addDivider", DIALOG)
         self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", DIALOG)
         self.assertIn("PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY", DIALOG)
-        self.assertIn("PANEL_GLASS_VEIL = TvUiTokens.GLASS_VEIL_COLOR", DIALOG)
-        self.assertIn("PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE", DIALOG)
-        self.assertIn("PANEL_FALLBACK_BORDER = TvUiTokens.BORDER", DIALOG)
+        self.assertIn("TvUiTokens.POPUP_GLASS_VEIL_COLOR", DIALOG)
+        self.assertIn("TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER", DIALOG)
         self.assertNotIn("0xB3FFFFFF", DIALOG)
         self.assertNotIn("0xEAF8FC", DIALOG)
         self.assertNotIn("gridLp.topMargin", DIALOG)
@@ -117,7 +116,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
         self.assertIn("dialog.setOnDismissListener", DIALOG)
         self.assertIn("dialog.setCancelable(true)", DIALOG)
-        self.assertIn("params.dimAmount = 0f", DIALOG)
+        self.assertIn("window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)", DIALOG)
+        self.assertIn("params.dimAmount = popupDimAmount()", DIALOG)
 
     def test_all_approved_quick_actions_route_to_existing_owners(self):
         for source in (
@@ -163,7 +163,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("params.gravity = anchoredWindowGravity();", wifi_dialog)
         self.assertIn("return Gravity.TOP | Gravity.RIGHT;", wifi_dialog)
         self.assertIn("params.dimAmount = popupDimAmount();", wifi_dialog)
-        self.assertIn("return 0.08f;", wifi_dialog)
+        self.assertIn("return TvUiTokens.POPUP_DIM_AMOUNT;", wifi_dialog)
 
     def test_wifi_popup_refinement_preserves_compact_width_and_balanced_type(self):
         wifi_dialog = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
