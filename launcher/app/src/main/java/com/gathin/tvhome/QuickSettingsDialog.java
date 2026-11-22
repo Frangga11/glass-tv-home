@@ -79,8 +79,7 @@ final class QuickSettingsDialog {
         int bottomClearancePx = dp(density, 5);
         // This is the minimum allowed top boundary. When the fixed-height panel leaves
         // unused vertical space, that space is absorbed above the popup, not below it.
-        int minimumTop = panelTopInHost(
-                anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx);
+        int minimumTop = panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx);
         // The Dock can be bottom-anchored (horizontal carousel) or start-anchored
         // (vertical rail). Its top edge is a valid popup boundary only in the former mode.
         // A vertical rail spans the screen height, so use the Home bottom safe edge instead.
