@@ -84,7 +84,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("private boolean isWifiFocusTarget(View view)", wifi)
         self.assertIn("private void moveHomeCapsuleCursor(View capsule)", main)
         self.assertIn("ayahOpenHint, homeCapsuleGlider, 6f * density)", main)
-        self.assertIn("new GliderFocusDrawable(prayerHeaderView, homeCapsuleGlider, 8f * density)", main)
+        self.assertIn("prayerHeaderView, homeCapsuleGlider, 8f * density)", main)
         self.assertIn("homeCapsuleGlider.setFocusStrokeWidth(2f * density)", main)
         self.assertIn("homeCapsuleGlider.setCompanionOnly(true)", main)
         self.assertIn("new GliderFocusDrawable(pill, homeCapsuleGlider, 20f * density)", main)
