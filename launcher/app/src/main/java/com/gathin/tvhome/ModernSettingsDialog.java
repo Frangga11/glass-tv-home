@@ -199,6 +199,20 @@ public final class ModernSettingsDialog {
         return false;
     }
 
+    private static void applyPopupTextShadow(View view, float density) {
+        if (view instanceof EditText) return;
+        if (view instanceof TextView) {
+            ((TextView) view).setShadowLayer(0.85f * density, 0f,
+                    0.35f * density, 0x60000000);
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                applyPopupTextShadow(group.getChildAt(i), density);
+            }
+        }
+    }
+
     public static void show(MainActivity activity) {
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
         SoundEffects.playSelect();
@@ -219,12 +233,9 @@ public final class ModernSettingsDialog {
         root.setClipToPadding(false);
         root.setPadding((int) (12 * density), (int) (8 * density), (int) (12 * density), (int) (12 * density));
 
-        // Dark matte rounded container matching screenshot
-        GradientDrawable dialogBg = new GradientDrawable();
-        dialogBg.setColor(TvUiTokens.SHELL);
-        dialogBg.setCornerRadius(24 * density);
-        dialogBg.setStroke((int) (1.5f * density), TvUiTokens.BORDER);
-        root.setBackground(dialogBg);
+        // Glass-only shell update. Existing geometry and all original white typography stay intact.
+        root.setBackground(UniversalGlassMaterial.panel(activity, root, density, 24f,
+                TvUiTokens.SHELL, TvUiTokens.BORDER));
         root.setClipToOutline(true);
 
         // --- LEFT COLUMN: Sidebar ---
@@ -412,7 +423,6 @@ public final class ModernSettingsDialog {
             GradientDrawable pcBg = new GradientDrawable();
             pcBg.setColor(isProfile ? TvUiTokens.NAV_PROFILE_SELECTED : TvUiTokens.NAV_PROFILE_IDLE);
             pcBg.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            if (isProfile) pcBg.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
             profileCard.setBackground(pcBg);
 
             ProfileManager.UserProfile sidebarActive = ProfileManager.getActiveProfile(activity);
@@ -427,7 +437,6 @@ public final class ModernSettingsDialog {
                 GradientDrawable rbg = new GradientDrawable();
                 rbg.setColor(isSelected ? TvUiTokens.NAV_ITEM_SELECTED : Color.TRANSPARENT);
                 rbg.setCornerRadius(TvUiTokens.NAV_ROW_RADIUS_DP * density);
-                if (isSelected) rbg.setStroke((int) (1 * density), TvUiTokens.NAV_SELECTION_BORDER);
                 item.rowView.setBackground(rbg);
             }
         };
@@ -439,7 +448,7 @@ public final class ModernSettingsDialog {
             }
         };
 
-        profileCard.setForeground(activity.getDrawable(R.drawable.bg_tv_focus_outline));
+        profileCard.setForeground(new SettingsFocusCursorDrawable(density, TvUiTokens.CARD_RADIUS_DP));
 
         profileCard.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -511,7 +520,7 @@ public final class ModernSettingsDialog {
             lbl.setTypeface(outfit, Typeface.NORMAL);
             row.addView(lbl);
 
-            row.setForeground(activity.getDrawable(R.drawable.bg_tv_focus_outline));
+            row.setForeground(new SettingsFocusCursorDrawable(density, TvUiTokens.NAV_ROW_RADIUS_DP));
             row.setOnFocusChangeListener((v, hasFocus) -> {
                 if (hasFocus) {
                     activeSidebarView[0] = row;
@@ -1517,6 +1526,7 @@ public final class ModernSettingsDialog {
                 origin.post(origin::requestFocus);
             }
         });
+        applyPopupTextShadow(root, density);
         dialog.show();
 
         // Keep a validated path into the active pane so a recreated Settings dialog can return

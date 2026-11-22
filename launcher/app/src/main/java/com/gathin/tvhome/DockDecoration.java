@@ -41,7 +41,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         this.density = density;
         this.vertical = vertical;
         // Ported Universal Home surface material; focus remains owned by the existing Glider.
-        universalGlass = new UniversalGlassDrawable(density, 26f);
+        universalGlass = new UniversalGlassDrawable(density, 26f, true);
         trayShadowPaint.setColor(0x38000000);
         solidTrayPaint.setColor(TvUiTokens.DOCK_SURFACE);
         solidTrayBorder.setColor(TvUiTokens.BORDER);

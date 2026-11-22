@@ -1405,3 +1405,31 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Physical Mi TV Stick visual acceptance for the new material remains pending. No device installation, release publication, or merge is claimed.
 - PR #162 remains OPEN / DRAFT / UNMERGED pending owner visual acceptance and explicit merge approval. PR #161 remains separate/unmerged. PR #62 remains deferred and untouched.
 - Detailed continuation record: `GTVH-UNIVERSAL-GLASS-MATERIAL-ADOPTION-CHECKPOINT-2026-11-22.md`.
+
+
+## PR #170 integration and synchronized handover — 22 November 2026
+
+- PR #170 — **Fix Quick Settings Glider capsule corners and focus geometry** — was merged into its declared base branch `feat/popup-bright-frosted-silver-001`.
+- Exact PR #170 head verified before merge: `2208afbc896f6b08d699156714e7d58dc964f721`.
+- Merge commit: `e47c7686233b4dd998fc24b7875e5bc235baecad`.
+- The immutable QA reference remains `baseline/pr-170-2dp-qa-2026-11-22` at the tested source checkpoint. Verified APK size 1,653,150 bytes; SHA-256 `33724e5d3daba097178e943434c685d9feafeb502a8bf5d65284f62b9a5b6955`. CI run `44981544358` passed required jobs. Release-publisher workflow was SKIPPED.
+- PR #170 is now CLOSED / MERGED. PR #171 remains CLOSED / UNMERGED and is not to be reused. A fresh live search after the merge shows no open PR numbered above #170.
+- PR #169 and lower-numbered PRs remain separate open queue items/parent history; do not treat them as “newer than #170” or merge/close them without their own audit. PR #62 remains deferred.
+- This merge integrates #170 into its base branch only. It does **not** merge the cumulative branch into `main`.
+- Before a later merge to `main`, audit the cumulative difference against current main. The pre-merge comparison showed the parent line 96 commits ahead and 1 behind, with merge base `71f3a051a25fd66cabfd1740756cc36442dc92cc`; resolve and validate that divergence on a dedicated integration branch.
+- No new physical Mi TV Stick acceptance is claimed by this record. Preserve the RE-SKIN / NOT REWIRE boundary and all locked geometry, DPAD, focus ownership and Glider behavior.
+
+
+## QA source pin clarification — 22 November 2026
+
+- To keep the tested source SHA independently pinned after documentation commits were added to the working baseline branch, a dedicated exact-source ref was created: `baseline/pr-170-qa-exact-2026-11-22` → `2208afbc896f6b08d699156714e7d58dc964f721`.
+- `baseline/pr-170-2dp-qa-2026-11-22` now also contains documentation-only commits; do not treat its current tip as the exact tested source SHA. The immutable QA source is the dedicated `baseline/pr-170-qa-exact-2026-11-22` ref above.
+
+
+## Owner physical-device acceptance — PR #170 cumulative QA — 22 November 2026
+
+- Owner explicitly confirms that the PR #170 checkpoint APK was installed and tested on the target Mi TV Stick and **works well**.
+- This is owner-reported physical-device acceptance for the cumulative APK built from exact source commit `2208afbc896f6b08d699156714e7d58dc964f721`, including the PR #169 parent implementation plus PR #170 Glider/focus geometry changes.
+- Device gate for this tested cumulative candidate: **PASS (owner-confirmed)**.
+- CI evidence remains run `44981544358` on exact source commit `2208afbc...`; required CI jobs passed. APK size 1,653,150 bytes and SHA-256 `33724e5d3daba097178e943434c685d9feafeb502a8bf5d65284f62b9a5b6955`.
+- This acceptance applies to the tested APK/source snapshot only. It does not automatically approve later source changes or the unrelated PRs #168, #166, #165, #164, #162, #161, #158 or #62.
