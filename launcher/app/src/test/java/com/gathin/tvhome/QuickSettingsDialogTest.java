@@ -296,8 +296,8 @@ public class QuickSettingsDialogTest {
         assertTrue((params.flags & android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND) != 0);
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
-        float density = activity.getResources().getDisplayMetrics().density;
-        assertEquals(Math.round(320f * density), content.getMeasuredHeight());
+        // Fixed popup geometry is covered by fixedPanelUsesExactGeometryAndKeepsFiveDpAnchorClearance
+        // and fixedCapsuleGeometryIsPreserved; this test isolates the window dim contract.
         dialog.dismiss();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
