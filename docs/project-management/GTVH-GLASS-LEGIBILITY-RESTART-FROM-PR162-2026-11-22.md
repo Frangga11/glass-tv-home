@@ -59,8 +59,16 @@ Do not modify:
 - Capture Home navigation idle/focused and Quick Settings/Wi-Fi popup states.
 - No merge until owner accepts the actual device appearance.
 
+## First implementation pass (fresh PR #162 branch)
+- Navigation capsule now uses a restrained 14% graphite underlay beneath the unchanged UniversalGlassDrawable. It does not touch the moving focus layer.
+- Navigation labels receive a very subtle dark text shadow for bright-wallpaper legibility; typography, bounds, icon positions and Glider remain unchanged.
+- Original silver Glider treatment remains authoritative: `FOCUS_HALO = 0x35DCE5ED`, `FOCUS_BORDER = 0xFFDCE5ED`. No dark focus fill or alternate Glider style was introduced.
+- Popup smoke layer increased modestly from `0xB31D1D1D` to `0xC21D1D1D`; Universal glass reflections/rims remain above it.
+- Quick Settings now receives a restrained 0.08 backdrop dim, aligned with Wi-Fi's existing 0.08 policy.
+- Added/updated source-level regression contracts for the original silver focus, nav underlay, popup veil and dim amount.
+
 ## Current status
-- Fresh branch created from PR #162 HEAD.
+- Fresh branch is based on exact PR #162 HEAD; PR #164 is stacked on PR #162.
 - No PR #163 code is present on this branch.
-- Re-audit of exact baseline source is underway.
-- No visual fix has yet been claimed as complete.
+- First restrained material-level correction is committed; exact-head CI and Mi TV Stick visual acceptance are pending.
+- No merge or final visual acceptance is claimed.
