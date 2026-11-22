@@ -93,9 +93,9 @@ final class UniversalGlassMaterial {
         StateListDrawable states = new StateListDrawable();
 
         GradientDrawable disabled = new GradientDrawable();
-        disabled.setColor(TvUiTokens.DISABLED_SURFACE);
+        disabled.setColor(TvUiTokens.POPUP_DISABLED_SURFACE);
         disabled.setCornerRadius(radiusDp * density);
-        disabled.setStroke(Math.max(1, Math.round(density)), TvUiTokens.DISABLED_BORDER);
+        disabled.setStroke(Math.max(1, Math.round(density)), TvUiTokens.POPUP_DISABLED_BORDER);
 
         // Match Universal Home GlassControls when glass is enabled; retain GTVH focus fills otherwise.
         boolean glassEnabled = isGlassEnabled(context);
@@ -110,11 +110,11 @@ final class UniversalGlassMaterial {
             focused.setStroke(Math.max(1, Math.round(2f * density)), 0xFF657984);
         } else {
             pressed = new GradientDrawable();
-            pressed.setColor(TvUiTokens.SURFACE_SELECTED);
-            pressed.setStroke(Math.max(1, Math.round(density)), TvUiTokens.FOCUS_BORDER);
+            pressed.setColor(TvUiTokens.POPUP_CARD_SELECTED);
+            pressed.setStroke(Math.max(1, Math.round(density)), TvUiTokens.POPUP_FOCUS_BORDER);
             focused = new GradientDrawable();
-            focused.setColor(TvUiTokens.SURFACE_FOCUSED);
-            focused.setStroke(Math.max(1, Math.round(2f * density)), TvUiTokens.FOCUS_BORDER);
+            focused.setColor(TvUiTokens.POPUP_CONTROL_FOCUSED);
+            focused.setStroke(Math.max(1, Math.round(2f * density)), TvUiTokens.POPUP_FOCUS_BORDER);
         }
         pressed.setCornerRadius(radiusDp * density);
         focused.setCornerRadius(radiusDp * density);
