@@ -117,26 +117,26 @@ scanState.setVisibility(View.VISIBLE);
         content.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(dp(density, 14), dp(density, 5), dp(density, 14), dp(density, 14));
+        content.setPadding(dp(density, 12), dp(density, 5), dp(density, 12), dp(density, 12));
         // Adopt Universal Home's glass material without changing the approved Wi-Fi geometry.
         content.setBackground(UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,
                 TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
         TextView title = text(R.string.wifi, popupTitleSizeSp(), true, density);
         title.setCompoundDrawablesRelative(sizedDrawable(R.drawable.ic_wifi, 16), null, null, null);
         title.setCompoundDrawablePadding(dp(density, 6));
-        title.setTranslationY(dp(density, 5));
+        title.setTranslationY(dp(density, 3));
         LinearLayout header = new LinearLayout(activity);
         header.setTag("wifi_popup_header");
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         wifiToggle = action("ON", "wifi_toggle", density, () -> dismissThen(openSystemWifiSettings));
-        wifiToggle.setMinHeight(dp(density, 23));
+        wifiToggle.setMinHeight(dp(density, 22));
         wifiToggle.setGravity(Gravity.CENTER);
         wifiToggle.setTextSize(14f);
-        wifiToggle.setTranslationY(dp(density, 5));
-        header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 44), dp(density, 23)));
-        content.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 30)));
+        wifiToggle.setTranslationY(dp(density, 3));
+        header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 42), dp(density, 22)));
+        content.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 28)));
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
         status.setPadding(dp(density, 10), dp(density, 5), dp(density, 10), dp(density, 5));
         status.setBackground(UniversalGlassMaterial.controlIdle(activity, density, TvUiTokens.CARD_RADIUS_DP,
@@ -164,15 +164,15 @@ scanState.setVisibility(View.VISIBLE);
         ScrollView networkScroll = new ScrollView(activity);
         networkScroll.setTag("wifi_network_list");
         networkScroll.setFillViewport(false);
-        networkScroll.setVerticalScrollBarEnabled(true);
+        networkScroll.setVerticalScrollBarEnabled(true);\n        networkScroll.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);\n        networkScroll.setPadding(0, 0, dp(density, 4), 0);
         networkScroll.setScrollbarFadingEnabled(false);
         networkScroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
         networkScroll.addView(networkRows, new ScrollView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         LinearLayout.LayoutParams networkViewport = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, networkViewportHeightDp()));
-        networkViewport.topMargin = dp(density, 10);
-        networkViewport.bottomMargin = dp(density, 10);
+        networkViewport.topMargin = dp(density, 6);
+        networkViewport.bottomMargin = dp(density, 6);
         content.addView(networkScroll, networkViewport);
 
         rescan = action(R.string.wifi_rescan, "wifi_rescan", density, this::requestScan);
@@ -273,7 +273,7 @@ scanState.setVisibility(View.VISIBLE);
         window.setAttributes(params);
     }
 
-    static int popupWidthDp() { return 190; }
+    static int popupWidthDp() { return 180; }
 
     static float popupTextSizeSp() { return 12f; }
     static float networkTextSizeSp() { return 12f; }
@@ -284,7 +284,7 @@ scanState.setVisibility(View.VISIBLE);
     static float popupSectionSizeSp() { return 12f; }
     static float popupMetaSizeSp() { return 10f; }
     static float popupFooterSizeSp() { return 12f; }
-    static float permissionTextSizeSp() { return 14f; }
+    static float permissionTextSizeSp() { return 12f; }
     static int visibleNetworkRowCount() { return 3; }
     static int networkViewportHeightDp() { return visibleNetworkRowCount() * networkRowHeightDp()
             + (visibleNetworkRowCount() - 1) * networkRowGapDp(); }
