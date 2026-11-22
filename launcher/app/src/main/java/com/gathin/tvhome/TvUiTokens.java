@@ -31,6 +31,14 @@ final class TvUiTokens {
     static final int FOCUS_BORDER = 0xFFDCE5ED; // polished silver edge; cyan remains a restrained reflection
     static final int FOCUS_HALO = 0x35DCE5ED; // soft frosted-silver cursor veil
     static final int GLASS_VEIL_COLOR = 0x88343E48;
+    // Navigation glass is darker than the general Home glass so white labels remain legible over bright wallpaper.
+    static final int NAV_GLASS_VEIL_COLOR = 0xFF27333D;
+    static final int NAV_GLASS_VEIL_ALPHA = 0xA8;
+    static final int NAV_FOCUS_SURFACE = 0xD92A3540;
+    // Popups use a denser smoked-graphite veil and a shared, restrained background dim.
+    static final int POPUP_GLASS_VEIL_COLOR = 0xFF222D37;
+    static final int POPUP_GLASS_VEIL_ALPHA = 0xC2;
+    static final float POPUP_DIM_AMOUNT = 0.22f;
 
     // Persistent selected/active state is silver, never the same treatment as DPAD focus.
     static final int NAV_PROFILE_SELECTED = 0xFF46535F;
