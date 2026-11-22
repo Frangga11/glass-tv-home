@@ -78,8 +78,12 @@ final class QuickSettingsDialog {
         int topClearancePx = dp(density, 5);
         int bottomClearancePx = dp(density, 5);
         int top = panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx);
-        int dockTop = dock.isShown() && dock.getHeight() > 0
-                ? dockAt[1] - hostAt[1] : hostHeight - dp(density, 28);
+        // The Dock can be bottom-anchored (horizontal carousel) or start-anchored
+        // (vertical rail). Its top edge is a valid popup boundary only in the former mode.
+        // A vertical rail spans the screen height, so use the Home bottom safe edge instead.
+        int dockTop = isBottomAnchoredDock(dock) && dock.isShown() && dock.getHeight() > 0
+                ? dockAt[1] - hostAt[1]
+                : hostHeight - DockGeometry.safeBottomInsetPx(density);
         int availableHeight = availablePanelHeight(dockTop, top, bottomClearancePx);
         if (availableHeight <= 0) {
             android.util.Log.e("TvHome.QuickSettings", "No vertical space remains between navigation and dock");
@@ -412,6 +416,17 @@ final class QuickSettingsDialog {
         glider.moveTo(left, top,
                 left + view.getWidth(), top + view.getHeight(),
                 density * cornerRadiusDp);
+    }
+
+    private static boolean isBottomAnchoredDock(View dock) {
+        ViewGroup.LayoutParams params = dock != null ? dock.getLayoutParams() : null;
+        if (params instanceof android.widget.FrameLayout.LayoutParams) {
+            int verticalGravity = ((android.widget.FrameLayout.LayoutParams) params).gravity
+                    & Gravity.VERTICAL_GRAVITY_MASK;
+            return verticalGravity == Gravity.BOTTOM;
+        }
+        // Preserve the historical bottom-Dock contract for non-FrameLayout callers.
+        return true;
     }
 
     static int panelTopInHost(int anchorScreenTop, int anchorHeight, int hostScreenTop,
