@@ -337,7 +337,6 @@ final class WifiSettingsDialog {
         WifiSettingsDialog screen = new WifiSettingsDialog(activity, openSystemWifiSettings, returnToParent);
         active = new WeakReference<>(screen);
         screen.dialog.show();
-        screen.installFocusCursor();
         return screen.dialog;
     }
 
