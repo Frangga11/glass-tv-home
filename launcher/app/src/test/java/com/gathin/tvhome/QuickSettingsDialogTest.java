@@ -78,6 +78,37 @@ public class QuickSettingsDialogTest {
         return new int[]{screenWidthPx, screenHeightPx, dockHeightPx, dockBottomMarginPx, dockTopPx};
     }
 
+    private FrameLayout[] hostWithVerticalDock(Activity activity) {
+        android.util.DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
+        float density = metrics.density;
+        int screenWidthPx = metrics.widthPixels;
+        int screenHeightPx = metrics.heightPixels;
+        FrameLayout root = new FrameLayout(activity);
+        View settings = new View(activity);
+        FrameLayout.LayoutParams settingsLp = new FrameLayout.LayoutParams(
+                Math.round(320f * density), Math.round(30f * density),
+                Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        settingsLp.topMargin = Math.round(29f * density);
+        root.addView(settings, settingsLp);
+
+        View dock = new View(activity);
+        FrameLayout.LayoutParams dockLp = new FrameLayout.LayoutParams(
+                Math.round(202f * density), ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.START);
+        dockLp.bottomMargin = DockGeometry.safeBottomInsetPx(density);
+        root.addView(dock, dockLp);
+
+        activity.setContentView(root);
+        root.measure(View.MeasureSpec.makeMeasureSpec(screenWidthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(screenHeightPx, View.MeasureSpec.EXACTLY));
+        root.layout(0, 0, screenWidthPx, screenHeightPx);
+        assertTrue("Vertical Dock fixture must be visible", dock.isShown());
+        assertEquals(0, dock.getTop());
+        assertTrue("Vertical Dock must span almost the full host height",
+                dock.getHeight() > screenHeightPx / 2);
+        return new FrameLayout[]{root, root, root};
+    }
+
     private FrameLayout[] hostAtPx(Activity activity, int dockTopPx) {
         android.util.DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
         assertEquals(2f, metrics.density, 0.01f);
@@ -192,6 +223,27 @@ public class QuickSettingsDialogTest {
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertEquals(null, dialog);
+    }
+
+    @Test
+    public void verticalDockUsesBottomSafeEdgeInsteadOfItsFullHeightTopEdge() {
+        Activity activity = newActivity();
+        FrameLayout[] views = hostWithVerticalDock(activity);
+        View anchor = views[0].getChildAt(0);
+        View verticalDock = views[0].getChildAt(1);
+
+        AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], anchor, verticalDock,
+                new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
+
+        assertNotNull("Vertical Dock must not be mistaken for a bottom Dock boundary", dialog);
+        assertTrue("Quick Settings dialog must actually be shown", dialog.isShowing());
+        float density = activity.getResources().getDisplayMetrics().density;
+        int safeBottom = DockGeometry.safeBottomInsetPx(density);
+        int panelTop = dialog.getWindow().getAttributes().y;
+        int panelHeight = find(dialog, "quick_settings_root").getMeasuredHeight();
+        assertTrue("Fixed panel must remain above the Home bottom safe edge",
+                panelTop + panelHeight <= views[0].getHeight() - safeBottom);
+        dialog.dismiss();
     }
 
     @Test
