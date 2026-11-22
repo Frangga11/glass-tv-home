@@ -246,7 +246,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertNotIn('label = "⌁  " + label', wifi_dialog)
         for resource in ("values/strings.xml", "values-id/strings.xml", "values-en/strings.xml"):
             content = (RES / resource).read_text(encoding="utf-8")
-            self.assertNotIn('name="wifi_scan_updated"', content)
+            self.assertIn('<string name="wifi_scan_updated"></string>', content)
         for resource in ("values/strings.xml", "values-id/strings.xml"):
             content = (RES / resource).read_text(encoding="utf-8")
             self.assertIn('name="wifi_open_android_settings">Pengaturan Wi-Fi &gt;', content)
