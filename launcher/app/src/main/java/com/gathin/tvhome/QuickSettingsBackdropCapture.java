@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.PixelCopy;
 import android.view.View;
 
@@ -21,6 +22,9 @@ import java.util.concurrent.RejectedExecutionException;
  * existing Backdrop blur routine then softens that complete composition off the UI thread.
  */
 final class QuickSettingsBackdropCapture {
+    // Keep PixelCopy callbacks independent from Activity handlers that are cleared onDestroy().
+    private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
+
     interface Listener {
         void onReady(Bitmap blurredPanel);
         void onFailure(String reason);
@@ -36,31 +40,31 @@ final class QuickSettingsBackdropCapture {
     }
 
     static void capture(Activity activity, Rect sourceRect, Executor worker,
-                        Handler callbackHandler, AtomicBoolean active, Listener listener) {
+                        AtomicBoolean active, Listener listener) {
         if (activity == null || sourceRect == null || worker == null
-                || callbackHandler == null || active == null || listener == null) {
-            notifyFailure(callbackHandler, listener, "Missing capture dependency");
+                || active == null || listener == null) {
+            notifyFailure(listener, "Missing capture dependency");
             return;
         }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            notifyFailure(callbackHandler, listener, "PixelCopy requires API 26");
+            notifyFailure(listener, "PixelCopy requires API 26");
             return;
         }
         if (!active.get() || activity.isFinishing() || activity.isDestroyed()) {
-            notifyFailure(callbackHandler, listener, "Activity is no longer active");
+            notifyFailure(listener, "Activity is no longer active");
             return;
         }
 
         View decor = activity.getWindow().getDecorView();
         if (!decor.isAttachedToWindow() || !decor.isLaidOut()
                 || decor.getWidth() <= 0 || decor.getHeight() <= 0) {
-            notifyFailure(callbackHandler, listener, "Activity window has no laid-out surface");
+            notifyFailure(listener, "Activity window has no laid-out surface");
             return;
         }
         Rect windowBounds = new Rect(0, 0, decor.getWidth(), decor.getHeight());
         Rect crop = new Rect(sourceRect);
         if (!windowBounds.contains(crop) || crop.width() <= 0 || crop.height() <= 0) {
-            notifyFailure(callbackHandler, listener, "Panel crop is outside the Activity window: " + crop);
+            notifyFailure(listener, "Panel crop is outside the Activity window: " + crop);
             return;
         }
 
@@ -69,7 +73,7 @@ final class QuickSettingsBackdropCapture {
             // Capture at native pixel dimensions for this panel only (normally about 0.3 MP).
             captured = Bitmap.createBitmap(crop.width(), crop.height(), Bitmap.Config.ARGB_8888);
         } catch (OutOfMemoryError | IllegalArgumentException e) {
-            notifyFailure(callbackHandler, listener, "Unable to allocate panel capture bitmap");
+            notifyFailure(listener, "Unable to allocate panel capture bitmap");
             return;
         }
 
@@ -103,7 +107,7 @@ final class QuickSettingsBackdropCapture {
                             recycle(ready);
                             return;
                         }
-                        boolean posted = callbackHandler.post(() -> {
+                        boolean posted = MAIN_HANDLER.post(() -> {
                             if (!active.get()) {
                                 recycle(ready);
                                 return;
@@ -120,20 +124,16 @@ final class QuickSettingsBackdropCapture {
                     recycle(captured);
                     listener.onFailure("Backdrop worker is shutting down");
                 }
-            }, callbackHandler);
+            }, MAIN_HANDLER);
         } catch (RuntimeException e) {
             recycle(captured);
             listener.onFailure("PixelCopy request failed: " + e.getClass().getSimpleName());
         }
     }
 
-    private static void notifyFailure(Handler handler, Listener listener, String reason) {
+    private static void notifyFailure(Listener listener, String reason) {
         if (listener == null) return;
-        if (handler == null) {
-            listener.onFailure(reason);
-        } else {
-            handler.post(() -> listener.onFailure(reason));
-        }
+        MAIN_HANDLER.post(() -> listener.onFailure(reason));
     }
 
     private static void recycle(Bitmap bitmap) {
