@@ -54,7 +54,7 @@ public class WifiSettingsDialogTest {
         assertEquals(Math.round(12 * activity.getResources().getDisplayMetrics().density), root.getPaddingRight());
         assertEquals(Math.round(5 * activity.getResources().getDisplayMetrics().density), root.getPaddingTop());
         assertEquals(Math.round(10 * activity.getResources().getDisplayMetrics().density), root.getPaddingBottom());
-        assertEquals(Math.round(28 * activity.getResources().getDisplayMetrics().density), header.getLayoutParams().height);
+        assertEquals(Math.round(26 * activity.getResources().getDisplayMetrics().density), header.getLayoutParams().height);
         assertNotNull(footer);
         assertEquals(android.widget.LinearLayout.VERTICAL, ((android.widget.LinearLayout) footer).getOrientation());
         View rescan = window.getDecorView().findViewWithTag("wifi_rescan");
@@ -96,9 +96,19 @@ public class WifiSettingsDialogTest {
                 toggle.getLayoutParams().width);
         assertEquals(Math.round(20 * activity.getResources().getDisplayMetrics().density),
                 toggle.getLayoutParams().height);
+        assertEquals(0, toggle.getPaddingTop());
+        assertEquals(0, toggle.getPaddingBottom());
         View permission = dialog.getWindow().getDecorView().findViewWithTag("wifi_permission");
         assertNotNull(permission);
         assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, permission.getLayoutParams().height);
+        assertEquals(2, ((android.widget.TextView) permission).getMaxLines());
+        View location = dialog.getWindow().getDecorView().findViewWithTag("wifi_location_settings");
+        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, location.getLayoutParams().height);
+        assertEquals(2, ((android.widget.TextView) location).getMaxLines());
+        assertEquals(12f, ((android.widget.TextView) permission).getTextSize()
+                / activity.getResources().getDisplayMetrics().scaledDensity, 0.1f);
+        assertEquals(12f, ((android.widget.TextView) location).getTextSize()
+                / activity.getResources().getDisplayMetrics().scaledDensity, 0.1f);
         View rescan = dialog.getWindow().getDecorView().findViewWithTag("wifi_rescan");
         assertEquals(Math.round(24 * activity.getResources().getDisplayMetrics().density),
                 rescan.getLayoutParams().height);
