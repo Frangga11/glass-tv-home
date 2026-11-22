@@ -171,8 +171,8 @@ scanState.setVisibility(View.VISIBLE);
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         LinearLayout.LayoutParams networkViewport = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, networkViewportHeightDp()));
-        networkViewport.topMargin = dp(density, 2);
-        networkViewport.bottomMargin = dp(density, 4);
+        networkViewport.topMargin = dp(density, 10);
+        networkViewport.bottomMargin = dp(density, 10);
         content.addView(networkScroll, networkViewport);
 
         rescan = action(R.string.wifi_rescan, "wifi_rescan", density, this::requestScan);
@@ -818,8 +818,8 @@ scanState.setVisibility(View.VISIBLE);
 
     private LinearLayout.LayoutParams compactActionLayout(float density) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 28));
-        params.topMargin = dp(density, 2);
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 34));
+        params.topMargin = 0;
         return params;
     }
 
