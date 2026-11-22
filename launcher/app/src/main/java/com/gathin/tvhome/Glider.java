@@ -67,6 +67,10 @@ final class Glider extends View {
     private final android.graphics.RectF shape = new android.graphics.RectF();
     private int style = DARK;
     private boolean paneHidden;
+    /** Quick Settings paints the shared Glider only inside each capsule's clipped companion. */
+    private boolean companionOnly;
+    /** A capsule gets one glass rim, not a second cyan focus stroke stacked on top. */
+    private boolean singleGlassRim;
     /**
      * The selected app's drop shadow, drawn by the glass glider behind it: soft and even all round,
      * where the system's shadow fell mostly below the tile and was trimmed at its sides. Drawn once
@@ -278,6 +282,29 @@ final class Glider extends View {
         changed();
     }
 
+    /** Restricts this Glider to its capsule companions; prevents the full-window shadow bleeding at corners. */
+    void setCompanionOnly(boolean companionOnly) {
+        if (this.companionOnly == companionOnly) return;
+        this.companionOnly = companionOnly;
+        invalidate();
+        for (View companion : companions) companion.invalidate();
+    }
+
+    /** Uses the silver/cyan glass rim as the only perimeter for capsule focus. */
+    void setSingleGlassRim(boolean singleGlassRim) {
+        if (this.singleGlassRim == singleGlassRim) return;
+        this.singleGlassRim = singleGlassRim;
+        changed();
+    }
+
+    /** Sets the popup-only rim thickness without changing the Home app/dock Glider. */
+    void setGlassRimStrokeWidth(float widthPx) {
+        float width = Math.max(1f, widthPx);
+        rim.paint.setStrokeWidth(width);
+        rim.windowLightPaint.setStrokeWidth(Math.max(1f, width * 0.9f));
+        changed();
+    }
+
     /** Switches look at once; there is no blend between the two. The shadow eases in with the glass. */
     void setFocusStrokeWidth(float widthPx) {
         focusStroke.setStrokeWidth(Math.max(1f, widthPx));
@@ -376,16 +403,18 @@ final class Glider extends View {
         rim.paint.setAlpha(Math.round(255 * opacity));
         canvas.drawRoundRect(shape, r - half, r - half, rim.paint);
         rim.drawWindowLight(canvas, shape, r - half, opacity);
-        float focusHalf = focusStroke.getStrokeWidth() / 2f;
-        shape.inset(focusHalf, focusHalf);
-        focusStroke.setAlpha(Math.round(220 * opacity));
-        canvas.drawRoundRect(shape, Math.max(0f, r - half - focusHalf),
-                Math.max(0f, r - half - focusHalf), focusStroke);
+        if (!singleGlassRim) {
+            float focusHalf = focusStroke.getStrokeWidth() / 2f;
+            shape.inset(focusHalf, focusHalf);
+            focusStroke.setAlpha(Math.round(220 * opacity));
+            canvas.drawRoundRect(shape, Math.max(0f, r - half - focusHalf),
+                    Math.max(0f, r - half - focusHalf), focusStroke);
+        }
     }
 
     /** Draws only the focus rim in front of Grid children; never paints glass over app artwork. */
     void drawFocusOutline(Canvas canvas, float dx, float dy) {
-        if (!isShowing()) return;
+        if (!isShowing() || singleGlassRim) return;
         float t = edges[TOP] + yShift, b = edges[BOTTOM] + yShift;
         float r = Math.min(edges[RADIUS], Math.min(b - t, edges[RIGHT] - edges[LEFT]) / 2f);
         shape.set(edges[LEFT] + dx, t + dy, edges[RIGHT] + dx, b + dy);
@@ -484,6 +513,7 @@ final class Glider extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (companionOnly) return;
         drawShape(canvas, 0f, 0f, this);
     }
 }
