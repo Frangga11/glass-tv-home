@@ -143,16 +143,15 @@ final class UniversalGlassMaterial {
             return;
         }
 
-        int saved = canvas.save();
-        canvas.clipPath(triangle);
         if (owner != null) {
-            POINTER_BACKDROP.draw(canvas, owner,
-                    new RectF(0f, 0f, owner.getWidth(), owner.getHeight()),
-                    Math.min(owner.getHeight() / 2f, 12f * density), 1f);
+            POINTER_BACKDROP.draw(canvas, owner, bounds, Math.min(bounds.height() / 2f, 12f * density), 1f);
         }
         Paint shade = new Paint(Paint.ANTI_ALIAS_FLAG);
         shade.setColor(PANEL_SHADE);
         canvas.drawPath(triangle, shade);
+
+        int saved = canvas.save();
+        canvas.clipPath(triangle);
 
         Paint surface = new Paint(Paint.ANTI_ALIAS_FLAG);
         surface.setShader(new LinearGradient(0f, bounds.top, 0f, bounds.bottom,
