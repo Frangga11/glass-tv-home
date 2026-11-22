@@ -47,17 +47,18 @@ class HomeHeaderTypographyFocusContractTest(unittest.TestCase):
         for view_id in ("@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"):
             self.assertEqual(self.views[view_id].get(ANDROID + "gravity"), "center")
 
-    def test_shared_glider_is_drawn_over_capsules_but_below_icon_and_label(self):
-        self.assertIn("new GliderFocusDrawable(pill, glider, 20f * density)", MAIN)
-        self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
-        drawable = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/GliderFocusDrawable.java").read_text(encoding="utf-8")
-        self.assertIn("canvas.clipRect(getBounds())", drawable)
-        self.assertIn("glider.drawShape(canvas", drawable)
+    def test_settings_cursor_is_drawn_over_home_capsules_without_changing_geometry(self):
+        self.assertIn("pill.setForeground(new SettingsFocusCursorDrawable(density, 20f))", MAIN)
+        cursor = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/SettingsFocusCursorDrawable.java").read_text(encoding="utf-8")
+        self.assertIn("b.left + halfStroke", cursor)
+        self.assertIn("b.right - halfStroke", cursor)
+        self.assertIn("radiusPx - halfStroke", cursor)
         self.assertNotIn("pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg));", MAIN)
 
     def test_wifi_keeps_its_existing_glass_focus_path(self):
         self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", MAIN)
-        self.assertIn("moveTopHighlight(v)", MAIN)
+        self.assertIn("pill.setForeground(new SettingsFocusCursorDrawable(density, 20f))", MAIN)
+        self.assertIn("glider.hide();", MAIN)
         self.assertIn("btnWifi.setOnClickListener(v -> showWifiPopup())", MAIN)
         self.assertIn("private void showWifiPopup(Runnable returnToParent)", MAIN)
 
