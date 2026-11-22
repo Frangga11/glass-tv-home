@@ -22,7 +22,7 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 34, qualifiers = "xhdpi")
+@Config(sdk = 34, qualifiers = "w960dp-h540dp-xhdpi")
 public class QuickSettingsDialogTest {
     private static final class RecordingActions implements QuickSettingsDialog.Actions {
         String lastAction;
@@ -73,7 +73,11 @@ public class QuickSettingsDialogTest {
     }
 
     private FrameLayout[] host(Activity activity, int dockTopDp) {
-        float density = activity.getResources().getDisplayMetrics().density;
+        android.util.DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
+        assertEquals(2f, metrics.density, 0.01f);
+        assertEquals(1920, metrics.widthPixels);
+        assertEquals(1080, metrics.heightPixels);
+        float density = metrics.density;
         int[] production = productionDockMetricsPx(activity);
         int screenWidthPx = production[0];
         int screenHeightPx = production[1];
