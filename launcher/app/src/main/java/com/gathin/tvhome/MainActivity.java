@@ -1145,8 +1145,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             int id = v.getId();
-            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
-                    || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
+            if (isSettingsConfirmKey(keyCode)) {
                 v.performClick();
                 return true;
             }
@@ -5963,6 +5962,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             tv.setContentDescription(getString(R.string.current_user_content_description, active.name, isChild ? getString(R.string.child_mode_suffix) : ""));
         }
+    }
+
+    /** Confirm keys emitted by Android TV remotes for the Home header controls. */
+    static boolean isSettingsConfirmKey(int keyCode) {
+        return keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+                || keyCode == KeyEvent.KEYCODE_ENTER
+                || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER
+                || keyCode == KeyEvent.KEYCODE_BUTTON_A;
     }
 
     /** Opens the centered V04 Quick Settings modal using the shared G2 dialog/focus contract. */
