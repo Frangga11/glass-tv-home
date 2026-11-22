@@ -369,7 +369,7 @@ final class QuickSettingsDialog {
         glider.setCompanionOnly(true);
         // One fine silver/cyan glass rim: no second focus outline layered over it.
         glider.setSingleGlassRim(true);
-        glider.setGlassRimStrokeWidth(1.35f * density);
+        glider.setGlassRimStrokeWidth(2.0f * density);
         layer.addView(glider, 0, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         decor.setTag(glider);
