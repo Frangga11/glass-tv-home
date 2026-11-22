@@ -40,6 +40,9 @@ final class UniversalGlassDrawable extends Drawable {
         inner.setStrokeWidth(density * 0.7f);
         windowLight.setStyle(Paint.Style.STROKE);
         windowLight.setStrokeWidth(Math.max(1f, density * 0.9f));
+        // Paint alpha is independent of shader alpha; set the intended 62% level
+        // here because Drawable.draw() does not guarantee setAlpha() is called.
+        windowLight.setAlpha(124);
     }
 
     private void prepare(RectF sourceBounds) {
@@ -160,7 +163,7 @@ final class UniversalGlassDrawable extends Drawable {
         rim.setAlpha(alpha);
         reflection.setAlpha(alpha);
         inner.setAlpha(alpha);
-        windowLight.setAlpha(Math.round(200f * 0.62f * alpha / 255f));
+        windowLight.setAlpha(Math.round(124f * alpha / 255f));
         invalidateSelf();
     }
 
