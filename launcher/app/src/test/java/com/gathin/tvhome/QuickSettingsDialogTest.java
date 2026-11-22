@@ -195,7 +195,7 @@ public class QuickSettingsDialogTest {
     }
 
     @Test
-    public void fixedPanelUsesExactGeometryAndKeepsFiveDpAnchorClearance() {
+    public void fixedPanelUsesExactFiveDpDockClearanceAndMovesUnusedSpaceAbove() {
         Activity activity = newActivity();
         FrameLayout[] views = host(activity);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
@@ -215,9 +215,14 @@ public class QuickSettingsDialogTest {
         assertNotNull(content);
         assertEquals(Math.round(340.5f * density), availableHeight);
         assertEquals(Math.round(330f * density), content.getMeasuredHeight());
-        // Production Dock geometry leaves 340.5dp available; the fixed 330dp panel
-        // preserves the 5dp minimum clearance and leaves the remaining space untouched.
-        assertEquals(Math.round(15.5f * density), dockTop - (panelTop + content.getMeasuredHeight()));
+        int actualPanelTop = dialog.getWindow().getAttributes().y;
+        int actualBottomGap = dockTop - (actualPanelTop + content.getMeasuredHeight());
+        assertEquals("Popup lower edge must remain exactly 5dp above the Dock", fiveDp, actualBottomGap);
+        assertEquals("The 10.5dp surplus must move the popup down from its minimum top",
+                Math.round(10.5f * density), actualPanelTop - panelTop);
+        assertEquals("Popup top must be derived from Dock top, measured panel height and exact clearance",
+                QuickSettingsDialog.panelTopForBottomClearance(dockTop, content.getMeasuredHeight(), fiveDp),
+                actualPanelTop);
         for (String tag : new String[] {
                 "quick_settings_gap_header_grid",
                 "quick_settings_gap_grid_wallpaper",
@@ -255,10 +260,17 @@ public class QuickSettingsDialogTest {
                     hostAt[1], Math.round(5f * density));
             int available = QuickSettingsDialog.availablePanelHeight(
                     dockAt[1] - hostAt[1], top, Math.round(5f * density));
-            assertEquals("Panel may use only the unused trailing space when needed",
+            assertEquals("Panel may use only the unused vertical space when needed",
                     Math.min(Math.round(330f * density), available), content.getMeasuredHeight());
             assertTrue("All action content must remain inside the measured panel",
                     content.getMeasuredHeight() >= Math.round(320f * density));
+            int actualPanelTop = dialog.getWindow().getAttributes().y;
+            int actualBottomGap = (dockAt[1] - hostAt[1])
+                    - (actualPanelTop + content.getMeasuredHeight());
+            assertEquals("Every supported Dock capacity must preserve the exact 5dp lower gap",
+                    Math.round(5f * density), actualBottomGap);
+            assertTrue("Popup must never overlap the Settings capsule clearance",
+                    actualPanelTop >= top);
             dialog.dismiss();
             activity.finish();
         }
