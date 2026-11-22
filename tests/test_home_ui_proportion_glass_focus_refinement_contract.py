@@ -113,7 +113,7 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
     def test_all_header_pills_share_one_glider_focus_and_glass_material(self):
         self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", MAIN)
         self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", MAIN)
-        self.assertNotIn("glider.addCompanion(navCapsule)", MAIN)
+        self.assertIn("glider.addCompanion(navCapsule)", MAIN)
         self.assertIn("glider.addCompanion(pill)", MAIN)
         self.assertIn("glider.setStyle(Glider.DARK)", MAIN)
         self.assertIn("Math.min(20f * density, capsule.getHeight() / 2f)", MAIN)
