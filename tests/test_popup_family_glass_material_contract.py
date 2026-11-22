@@ -52,6 +52,9 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
         self.assertIn("new SettingsFocusCursorDrawable(density, TvUiTokens.NAV_ROW_RADIUS_DP)", settings)
         self.assertIn("new SettingsFocusCursorDrawable(density, TvUiTokens.CARD_RADIUS_DP)", settings)
+        selection_block = settings[settings.index("Runnable updateSidebarSelection"):settings.index("View[] activeSidebarView")]
+        self.assertNotIn("pcBg.setStroke", selection_block)
+        self.assertNotIn("rbg.setStroke", selection_block)
         self.assertNotIn("SettingsNavFocusDrawable", settings)
         self.assertNotIn("bg_tv_focus_outline", settings)
         self.assertFalse((JAVA / "SettingsNavFocusDrawable.java").exists())
