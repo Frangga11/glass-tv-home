@@ -142,7 +142,7 @@ final class WifiSettingsDialog {
                 RectF materialBounds = new RectF(density, density,
                         Math.max(density, w - density), Math.max(density, materialHeight - density));
                 UniversalGlassMaterial.drawPointer(activity, canvas, triangle, pointerEdges,
-                        materialBounds, density, TvUiTokens.POPUP_SURFACE, TvUiTokens.POPUP_BORDER);
+                        materialBounds, density, TvUiTokens.POPUP_PANEL_FALLBACK, TvUiTokens.POPUP_BORDER);
             }
         };
         content.addView(pointer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 12)));
@@ -754,9 +754,9 @@ final class WifiSettingsDialog {
         lp.topMargin = dp(density, 2);
         view.setLayoutParams(lp);
         TvFocusIndicator.applyRoundedTextFocus(view, density, TvUiTokens.ROW_RADIUS_DP,
-                TvUiTokens.SURFACE_IDLE, TvUiTokens.POPUP_CONTROL_FOCUSED,
-                TvUiTokens.BORDER, TvUiTokens.POPUP_FOCUS_BORDER,
-                TvUiTokens.POPUP_TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
+                TvUiTokens.POPUP_CONTROL_IDLE, TvUiTokens.POPUP_CONTROL_FOCUSED,
+                TvUiTokens.POPUP_BORDER, TvUiTokens.POPUP_FOCUS_BORDER,
+                TvUiTokens.POPUP_TEXT_PRIMARY, TvUiTokens.POPUP_TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
         // Keep TvFocusIndicator's focus routing/text states; use Universal GlassControls surfaces.
         view.setBackground(UniversalGlassMaterial.controlStateBackground(activity, density,
                 TvUiTokens.ROW_RADIUS_DP, TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
