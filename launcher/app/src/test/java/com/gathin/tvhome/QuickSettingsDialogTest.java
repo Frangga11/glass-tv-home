@@ -170,6 +170,40 @@ public class QuickSettingsDialogTest {
         return new FrameLayout[]{root, root, root};
     }
 
+    private String describeViewTree(View view) {
+        StringBuilder out = new StringBuilder();
+        View current = view;
+        int depth = 0;
+        while (current != null) {
+            out.append(current.getClass().getSimpleName())
+                    .append("{measured=").append(current.getMeasuredWidth()).append("x")
+                    .append(current.getMeasuredHeight())
+                    .append(", bounds=").append(current.getLeft()).append(",").append(current.getTop())
+                    .append("-").append(current.getRight()).append(",").append(current.getBottom())
+                    .append(", padding=").append(current.getPaddingLeft()).append("/")
+                    .append(current.getPaddingTop()).append("/")
+                    .append(current.getPaddingRight()).append("/")
+                    .append(current.getPaddingBottom());
+            ViewGroup.LayoutParams lp = current.getLayoutParams();
+            if (lp != null) {
+                out.append(", lp=").append(lp.width).append("x").append(lp.height);
+                if (lp instanceof ViewGroup.MarginLayoutParams) {
+                    ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) lp;
+                    out.append(", margins=").append(mlp.leftMargin).append("/")
+                            .append(mlp.topMargin).append("/")
+                            .append(mlp.rightMargin).append("/")
+                            .append(mlp.bottomMargin);
+                }
+            }
+            out.append("} <- ");
+            android.view.ViewParent parent = current.getParent();
+            current = parent instanceof View ? (View) parent : null;
+            depth++;
+            if (depth > 8) break;
+        }
+        return out.toString();
+    }
+
     private View find(AlertDialog dialog, String tag) {
         return dialog.getWindow().getDecorView().findViewWithTag(tag);
     }
@@ -225,7 +259,8 @@ public class QuickSettingsDialogTest {
                 + ", parentPadding=" + contentParent.getPaddingTop() + "/" + contentParent.getPaddingBottom()
                 + ", decorHeight=" + decor.getMeasuredHeight()
                 + ", decorPadding=" + decor.getPaddingTop() + "/" + decor.getPaddingBottom()
-                + ", windowHeight=" + dialog.getWindow().getAttributes().height + "]",
+                + ", windowHeight=" + dialog.getWindow().getAttributes().height
+                + ", tree=" + describeViewTree(content) + "]",
                 Math.round(330f * density), content.getMeasuredHeight());
         int[] contentAt = new int[2];
         content.getLocationOnScreen(contentAt);
