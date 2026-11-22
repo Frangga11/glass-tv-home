@@ -35,7 +35,10 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("new android.graphics.drawable.LayerDrawable(new Drawable[]{glass, specular})", material)
         self.assertIn("0x889EABB8", material)
         self.assertIn("new UniversalGlassDrawable(owner, density, radiusDp, false, true, true)", material)
-        self.assertIn("popupVeil.setColor(cleanQuickSettings ? 0x78343E48 : 0x68151D25)", drawable)
+        self.assertIn("popupVeil.setColor(cleanQuickSettings ? 0xE8333E48 : 0x68151D25)", drawable)
+        self.assertIn("void setCapturedWindowBackdrop(Bitmap bitmap)", drawable)
+        self.assertIn("popupVeil.setColor(0x78343E48)", drawable)
+        self.assertIn("canvas.drawBitmap(capturedWindowBackdrop, null, area, capturedBackdropPaint)", drawable)
         self.assertIn("new int[]{0x30FFFFFF, 0x1CFFFFFF, 0x10343E48, 0x30343E48}", drawable)
         self.assertIn("new int[]{0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF}", drawable)
         self.assertIn("new int[]{0xE8FFFFFF, 0x70FFFFFF, 0x25FFFFFF, 0xA8FFFFFF}", drawable)
@@ -43,8 +46,13 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
                       "0xDFFFFFFF", "0x55FFFFFF", "0x38FFFFFF"):
             self.assertIn(token, drawable)
         self.assertIn("silverCyanIdentity || brightSilverPopup", drawable)
-        self.assertIn("backdropFill.draw(canvas, owner, area, radius, cleanQuickSettings ? 0.72f : 1f)", drawable)
-        self.assertIn("if (cleanQuickSettings) return; // No broad white wash across the clear glass face.", drawable)
+        surface_block = drawable[drawable.index("void drawSurface("):drawable.index("void drawReflection(")]
+        self.assertIn("if (cleanQuickSettings)", surface_block)
+        self.assertIn("canvas.drawBitmap(capturedWindowBackdrop, null, area, capturedBackdropPaint)", surface_block)
+        self.assertIn("backdropFill.draw(canvas, owner, area, radius, 1f)", surface_block)
+        self.assertIn("if (cleanQuickSettings) return;", drawable)
+        quick_panel = material[material.index("static Drawable quickSettingsPanel"):material.index("static Drawable surface(")]
+        self.assertNotIn("Backdrop.watch(owner)", quick_panel)
         self.assertIn("Backdrop.watch(owner)", material)
         self.assertIn("Backdrop.watch(pointer)", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
         self.assertIn("getBoolean(\"glass_effects_enabled\", true)", material)
