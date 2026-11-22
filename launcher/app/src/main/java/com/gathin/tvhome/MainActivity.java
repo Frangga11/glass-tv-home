@@ -6076,7 +6076,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (!isFinishing() && !isDestroyed() && anchor.isAttachedToWindow()) {
                 anchor.requestFocus();
             }
-        }, wallDecoder, handler);
+        }, wallDecoder);
         quickSettingsDialog = dialogRef[0];
         if (quickSettingsDialog == null) {
             android.util.Log.e("TvHome.QuickSettings",
