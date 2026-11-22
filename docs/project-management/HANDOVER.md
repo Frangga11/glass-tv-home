@@ -1374,3 +1374,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #156 can be moved from Draft to Ready for Review after exact-head CI for this documentation update succeeds. It must remain OPEN / UNMERGED until the owner explicitly authorizes merging into `main`; this handover entry is not merge authorization.
 - PR #62 remains deferred and untouched. PR #153 and #154 remain closed unmerged; PR #155 remains merged.
 - Do not reuse run #2504 to validate this documentation commit. Verify a fresh CI run on the exact resulting PR #156 head before declaring documentation closeout complete.
+
+
+## 22 November 2026 — Bright Frosted Silver-Cyan Popup Glass
+- New isolated workstream: `feat/bright-frosted-silver-cyan-popups-001`, based on the PR #156 Quick Settings baseline.
+- Added popup-only `PopupGlassTokens`; Settings/Quick Settings is the master, and Wi-Fi adopts the same bright frosted material.
+- Updated panel veil/fallback, capsule idle/focus states, pointer, connected-network surface and popup text contrast.
+- Preserved global tokens and Home/Dock/Quran styling, fixed geometry, popup actions, Wi-Fi lifecycle, DPAD graph, Glider and animations.
+- Checkpoint: `docs/project-management/GTVH-BRIGHT-FROSTED-SILVER-CYAN-POPUP-GLASS-CHECKPOINT-2026-11-22.md`.
+- Exact-head CI and owner visual test on Mi TV Stick remain pending. This work is not merged; no merge approval is implied.
