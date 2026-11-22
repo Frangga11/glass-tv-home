@@ -117,6 +117,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("dialog.setOnDismissListener", DIALOG)
         self.assertIn("dialog.setCancelable(true)", DIALOG)
         self.assertIn("params.dimAmount = 0f", DIALOG)
+        self.assertIn("window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)", DIALOG)
 
     def test_all_approved_quick_actions_route_to_existing_owners(self):
         for source in (

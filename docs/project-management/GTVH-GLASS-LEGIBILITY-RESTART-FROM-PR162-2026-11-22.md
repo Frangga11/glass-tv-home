@@ -1,0 +1,85 @@
+# Glass legibility refinement — restart from PR #162 — 22 November 2026
+
+## Authoritative restart point
+- Repository: `Frangga11/glass-tv-home`
+- Base PR: #162 — Adopt Universal Home glass material across Dock, home capsules and popups
+- Exact PR #162 HEAD: `adf4ef961537a630f7463eba53debf4ead5b37e3`
+- Fresh work branch: `fix/glass-legibility-from-pr162-001`
+- This branch was created directly from the exact PR #162 HEAD.
+- PR #163 / Obsidian Silver Glass is NOT the source of truth and none of its commits are included in this branch.
+- PR #162 itself is left unchanged.
+- `main` is not the working baseline for this refinement.
+
+## Why the previous attempt is rejected
+The Obsidian Silver Glass attempt introduced a dark graphite navigation focus fill. The owner's device photo showed the focused navigation capsule becoming a visually heavy near-black block. This conflicts with the accepted Universal Glass identity and is rejected. A passing CI result does not make this visual decision acceptable.
+
+## What is retained from PR #162
+- Universal Home glass surface material: gradient, sweep reflection, outer rim and inner rim.
+- Existing GTVH Glider remains the only moving navigation/app focus owner.
+- Original silver translucent focus treatment:
+  - `TvUiTokens.FOCUS_HALO = 0x35DCE5ED`
+  - `TvUiTokens.FOCUS_BORDER = 0xFFDCE5ED`
+- Existing `GliderFocusDrawable` layer order: capsule glass, moving focus overlay, then label/icon.
+- Existing popup family material and control treatment.
+- All approved geometry, typography, focus graph, DPAD behavior, animations, Dock horizontal/vertical motion and application layout.
+
+## Re-audit findings from exact PR #162 source
+### Navigation
+- The nav capsule uses `UniversalGlassMaterial.surface(...)`.
+- Each nav tab paints the shared `Glider` through `GliderFocusDrawable`.
+- The original `Glider.DARK` mode uses a translucent silver halo and a silver rim; it is not the dark graphite block introduced by PR #163.
+- The moving focus remains one shared Glider; no alternate focus system is permitted.
+
+### Popup
+- Quick Settings and Wi-Fi use `UniversalGlassMaterial.panel(...)`.
+- The panel foundation is `PANEL_SHADE = 0xB31D1D1D` with the Universal glass drawable above it.
+- Quick Settings explicitly disables backdrop dim in PR #162; Wi-Fi applies its own dim policy.
+- The visible text bleed in the owner's photos must be diagnosed against actual panel composition, window dim and wallpaper rendering before selecting a correction. Do not simply make the panel opaque or black.
+
+## Fresh correction strategy — investigation before implementation
+1. Compare the PR #162 Universal Home material source values and GTVH call sites; retain the same material identity.
+2. Navigation bright-wallpaper case: investigate a restrained surface-level contrast adjustment and text legibility treatment that does not replace the silver focus halo, alter label geometry, or add a black focus fill.
+3. Popup bright-wallpaper case: isolate how much bleed comes from the window behind the popup versus the popup glass itself. Consider a restrained backdrop scrim and a controlled increase in smoked-glass panel density while retaining visible reflections/rims.
+4. Validate bright and dark wallpaper cases independently. Avoid one global tint that fixes one scene but damages the other.
+5. Implement only the smallest visual-only change after the source audit and compare before/after captures.
+
+## Hard-locked invariants
+Do not modify:
+- Any capsule, popup, card, app icon or Dock width/height/position/radius/spacing.
+- DPAD routing, focus graph, focus ownership, Glider motion/spring/animation timing.
+- Horizontal or vertical Dock/carousel movement, move mode, app ordering or reveal behavior.
+- Popup content order, typography sizes, button/capsule dimensions, anchoring or functional actions.
+- Wallpaper renderer, weather/AQI, Islamic shelf content or prayer timetable.
+- Universal Glass source material identity: gradient, sweep reflection, silver rims and restrained highlights.
+
+## Validation gates
+- Add regression tests for material and geometry invariants.
+- Run exact-head CI on this fresh branch.
+- Inspect the QA APK on Mi TV Stick (1920x1080 / 320dpi) using both bright and dark wallpapers.
+- Capture Home navigation idle/focused and Quick Settings/Wi-Fi popup states.
+- No merge until owner accepts the actual device appearance.
+
+## Root-cause analysis and correction
+### Navigation legibility
+- PR #162 already had the correct shared silver Glider focus and Universal reflection/rim stack. The weak point was the idle navigation capsule relying only on the transparent Universal glass surface while white tab labels sat directly over variable wallpaper luminance.
+- This is a surface/contrast issue, not a DPAD or focus-animation defect. Replacing the Glider with a dark filled focus state would attack the wrong layer and regress the accepted visual language.
+- Correction: add a low-alpha smoked underlay below the unchanged Universal glass surface and a restrained text shadow on the three navigation labels only.
+
+### Popup text bleed
+- The popup shell is a layered translucent composition: a dark shade underneath a translucent Universal glass drawable. The underlying wallpaper/Home pixels therefore remain visible through the panel by design.
+- Quick Settings also explicitly clears `FLAG_DIM_BEHIND` and sets `dimAmount = 0f`. This is an accepted window-level behavior; changing it dims the whole Home screen behind the popup and does not solve transparency inside the popup panel itself.
+- Correction: modestly strengthen the popup's own smoked shade from `0xB31D1D1D` to `0xC21D1D1D`, while keeping the Universal reflection/rims above it. Preserve Quick Settings' original no-dim window behavior. Wi-Fi's existing dim policy remains untouched.
+
+## First implementation pass (fresh PR #162 branch)
+- Navigation capsule now uses a restrained 14% graphite underlay beneath the unchanged UniversalGlassDrawable. It does not touch the moving focus layer.
+- Navigation labels receive a very subtle dark text shadow for bright-wallpaper legibility; typography, bounds, icon positions and Glider remain unchanged.
+- Original silver Glider treatment remains authoritative: `FOCUS_HALO = 0x35DCE5ED`, `FOCUS_BORDER = 0xFFDCE5ED`. No dark focus fill or alternate Glider style was introduced.
+- Popup smoke layer increased modestly from `0xB31D1D1D` to `0xC21D1D1D`; Universal glass reflections/rims remain above it.
+- Quick Settings retains its accepted `dimAmount = 0f` / cleared `FLAG_DIM_BEHIND` behavior; the popup's own smoke layer handles internal wallpaper bleed.
+- Added/updated source-level regression contracts for the original silver focus, nav underlay, popup veil and dim amount.
+
+## Current status
+- Fresh branch is based on exact PR #162 HEAD; PR #164 is stacked on PR #162.
+- No PR #163 code is present on this branch.
+- Root cause is isolated to translucent surface contrast, not focus routing or animation. The correction is committed; exact-head CI and Mi TV Stick visual acceptance are pending.
+- No merge or final visual acceptance is claimed.

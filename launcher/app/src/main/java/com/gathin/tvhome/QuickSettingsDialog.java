@@ -327,6 +327,8 @@ final class QuickSettingsDialog {
                 WindowManager.LayoutParams params = window.getAttributes();
                 params.x = finalPanelLeft;
                 params.y = panelTop;
+                // Keep the accepted no-dim window behavior; popup separation is handled by
+                // the popup's own smoked glass panel, not by dimming the entire Home screen.
                 params.dimAmount = 0f;
                 window.setAttributes(params);
                 window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);

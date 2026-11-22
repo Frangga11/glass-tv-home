@@ -7,6 +7,28 @@ JAVA = ROOT / "launcher/app/src/main/java/com/gathin/tvhome"
 
 
 class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
+    def test_navigation_surface_uses_a_restrained_underlay_without_replacing_universal_glass(self):
+        material = (JAVA / "UniversalGlassMaterial.java").read_text(encoding="utf-8")
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        glider = (JAVA / "Glider.java").read_text(encoding="utf-8")
+        self.assertIn("static Drawable navigationSurface(", material)
+        self.assertIn("tint.setColor(0x24212A33)", material)
+        self.assertIn("new UniversalGlassDrawable(density, radiusDp)", material)
+        self.assertIn("UniversalGlassMaterial.navigationSurface(this, density, 20f,", main)
+        self.assertIn("setShadowLayer(1.0f * density", main)
+        self.assertIn("FOCUS_HALO = 0x35DCE5ED", (JAVA / "TvUiTokens.java").read_text(encoding="utf-8"))
+        self.assertIn("paint.setColor(TvUiTokens.FOCUS_HALO)", glider)
+        self.assertNotIn("NAVIGATION_DARK", glider)
+
+    def test_popup_uses_smoked_panel_density_without_changing_quick_settings_window_dim(self):
+        material = (JAVA / "UniversalGlassMaterial.java").read_text(encoding="utf-8")
+        quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
+        wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
+        self.assertIn("PANEL_SHADE = 0xC21D1D1D", material)
+        self.assertIn("params.dimAmount = 0f", quick)
+        self.assertIn("window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)", quick)
+        self.assertIn("return 0.08f;", wifi)
+
     def test_wifi_popup_uses_universal_panel_material_without_changing_window_contract(self):
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
         self.assertIn("UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,", wifi)
@@ -49,7 +71,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
 
     def test_home_navigation_capsule_uses_universal_surface_but_keeps_shared_glider(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
-        self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", main)
+        self.assertIn("UniversalGlassMaterial.navigationSurface(this, density, 20f,", main)
         self.assertIn("glider.addCompanion(navCapsule)", main)
         self.assertIn("new GliderFocusDrawable(pill, glider)", main)
         self.assertNotIn("Backdrop.watch(navCapsule)", main)
@@ -67,7 +89,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
                       "0x22FFFFFF", "0x08FFFFFF", "0x30FFFFFF"):
             with self.subTest(token=token):
                 self.assertIn(token, glass)
-        self.assertIn("0xB31D1D1D", material)
+        self.assertIn("PANEL_SHADE = 0xC21D1D1D", material)
         self.assertIn('getBoolean("glass_effects_enabled", true)', material)
         self.assertIn("if (!isGlassEnabled(context))", material)
         self.assertIn("0x16FFFFFF", material)
