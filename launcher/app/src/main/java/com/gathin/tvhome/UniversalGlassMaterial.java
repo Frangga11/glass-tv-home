@@ -9,8 +9,8 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.view.View;
 
 /**
  * Universal Home's GlassMenu / GlassControls material recipes, adapted to existing GTVH bounds.
@@ -49,17 +49,13 @@ final class UniversalGlassMaterial {
     }
 
     /** The same dark shade + DockGlassDrawable layer order used by Universal Home GlassMenu. */
-    static Drawable panel(Context context, float density, float radiusDp,
+    static Drawable panel(Context context, View owner, float density, float radiusDp,
                           int fallbackSurfaceColor, int fallbackBorderColor) {
         if (!isGlassEnabled(context)) {
             return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
         }
-        GradientDrawable shade = new GradientDrawable();
-        shade.setCornerRadius(radiusDp * density);
-        shade.setColor(PANEL_SHADE);
-        return new LayerDrawable(new Drawable[]{
-                shade, new UniversalGlassDrawable(density, radiusDp, false, true)
-        });
+        if (owner != null) Backdrop.watch(owner);
+        return new UniversalGlassDrawable(owner, density, radiusDp, false, true);
     }
 
     private static GradientDrawable solidSurface(float density, float radiusDp,
@@ -132,7 +128,7 @@ final class UniversalGlassMaterial {
     }
 
     /** Render the Wi-Fi pointer with the same material as its shell, retaining a solid fallback. */
-    static void drawPointer(Context context, Canvas canvas, Path triangle, Path edges,
+    static void drawPointer(Context context, View owner, Canvas canvas, Path triangle, Path edges,
                             RectF bounds, float density, int fallbackFill, int fallbackBorder) {
         if (!isGlassEnabled(context)) {
             Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -146,6 +142,10 @@ final class UniversalGlassMaterial {
             return;
         }
 
+        if (owner != null) {
+            Backdrop.Fill backdrop = new Backdrop.Fill();
+            backdrop.draw(canvas, owner, bounds, Math.min(bounds.height() / 2f, 12f * density), 1f);
+        }
         Paint shade = new Paint(Paint.ANTI_ALIAS_FLAG);
         shade.setColor(PANEL_SHADE);
         canvas.drawPath(triangle, shade);
