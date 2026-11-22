@@ -215,7 +215,9 @@ public class QuickSettingsDialogTest {
         assertNotNull(content);
         assertEquals(Math.round(340.5f * density), availableHeight);
         assertEquals(Math.round(330f * density), content.getMeasuredHeight());
-        int actualPanelTop = dialog.getWindow().getAttributes().y;
+        int[] contentAt = new int[2];
+        content.getLocationOnScreen(contentAt);
+        int actualPanelTop = contentAt[1] - hostAt[1];
         int actualBottomGap = dockTop - (actualPanelTop + content.getMeasuredHeight());
         assertEquals("Popup lower edge must remain exactly 5dp above the Dock", fiveDp, actualBottomGap);
         assertEquals("The 10.5dp surplus must move the popup down from its minimum top",
@@ -264,7 +266,9 @@ public class QuickSettingsDialogTest {
                     Math.min(Math.round(330f * density), available), content.getMeasuredHeight());
             assertTrue("All action content must remain inside the measured panel",
                     content.getMeasuredHeight() >= Math.round(320f * density));
-            int actualPanelTop = dialog.getWindow().getAttributes().y;
+            int[] contentAt = new int[2];
+            content.getLocationOnScreen(contentAt);
+            int actualPanelTop = contentAt[1] - hostAt[1];
             int actualBottomGap = (dockAt[1] - hostAt[1])
                     - (actualPanelTop + content.getMeasuredHeight());
             assertEquals("Every supported Dock capacity must preserve the exact 5dp lower gap",
