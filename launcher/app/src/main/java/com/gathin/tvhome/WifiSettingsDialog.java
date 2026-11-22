@@ -196,11 +196,11 @@ scanState.setVisibility(View.VISIBLE);
         actions.setOrientation(LinearLayout.VERTICAL);
         actions.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams actionWidth = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 26));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 24));
         actionWidth.bottomMargin = dp(density, 4);
         rescan.setLayoutParams(actionWidth);
         LinearLayout.LayoutParams settingsWidth = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 26));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 24));
         androidSettings.setLayoutParams(settingsWidth);
         actions.addView(permissionAction, compactActionLayout(density, true));
         actions.addView(locationAction, compactActionLayout(density, false));
@@ -749,7 +749,7 @@ scanState.setVisibility(View.VISIBLE);
         view.setFocusableInTouchMode(true);
         view.setClickable(true);
         if (view.getGravity() == 0) view.setGravity(Gravity.CENTER_VERTICAL);
-        view.setMinHeight(dp(density, 26));
+        view.setMinHeight(dp(density, 24));
         view.setPadding(dp(density, 10), dp(density, 4), dp(density, 10), dp(density, 4));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
