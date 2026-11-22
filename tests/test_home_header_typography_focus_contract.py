@@ -48,7 +48,7 @@ class HomeHeaderTypographyFocusContractTest(unittest.TestCase):
             self.assertEqual(self.views[view_id].get(ANDROID + "gravity"), "center")
 
     def test_shared_glider_is_drawn_over_capsules_but_below_icon_and_label(self):
-        self.assertIn("new GliderFocusDrawable(pill, glider, 20f * density)", MAIN)
+        self.assertIn("new GliderFocusDrawable(pill, homeCapsuleGlider, 20f * density)", MAIN)
         self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
         drawable = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/GliderFocusDrawable.java").read_text(encoding="utf-8")
         self.assertIn("canvas.clipRect(getBounds())", drawable)
