@@ -364,8 +364,12 @@ final class QuickSettingsDialog {
         ViewGroup layer = (ViewGroup) decor;
         Glider glider = new Glider(activity, false);
         glider.setStyle(Glider.GLASS);
-        // The glass rim is the single perimeter. Keep the secondary focus stroke hairline-thin.
-        glider.setFocusStrokeWidth(0.5f * density);
+        // The popup renders the shared Glider only in clipped capsule companions. This prevents
+        // the full-window shadow from leaking into the four rounded corners of each capsule.
+        glider.setCompanionOnly(true);
+        // One fine silver/cyan glass rim: no second focus outline layered over it.
+        glider.setSingleGlassRim(true);
+        glider.setGlassRimStrokeWidth(0.75f * density);
         layer.addView(glider, 0, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         decor.setTag(glider);
@@ -403,11 +407,10 @@ final class QuickSettingsDialog {
         glider.getLocationInWindow(gliderAt);
         float left = targetAt[0] - gliderAt[0];
         float top = targetAt[1] - gliderAt[1];
-        // Half of the 1.5dp glass rim sits inside the capsule edge; unlike the old 2dp inset,
-        // this keeps the cursor visually full-width without clipping its stroke.
-        float inset = 0.75f * density;
-        glider.moveTo(left + inset, top + inset,
-                left + view.getWidth() - inset, top + view.getHeight() - inset,
+        // Target the measured capsule bounds exactly. The 0.75dp rim is clipped to the
+        // rounded capsule silhouette, so its visible outer edge lands on the capsule perimeter.
+        glider.moveTo(left, top,
+                left + view.getWidth(), top + view.getHeight(),
                 density * cornerRadiusDp);
     }
 
