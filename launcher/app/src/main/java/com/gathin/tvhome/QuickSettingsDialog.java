@@ -308,7 +308,7 @@ final class QuickSettingsDialog {
         final int panelWidth = width;
         final int panelTop = positionedTop;
         final int finalPanelLeft = panelLeft;
-        content.setLayoutParams(new ViewGroup.LayoutParams(panelWidth, panelHeight));
+        content.setLayoutParams(new android.widget.FrameLayout.LayoutParams(panelWidth, panelHeight));
         content.measure(View.MeasureSpec.makeMeasureSpec(panelWidth, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(panelHeight, View.MeasureSpec.EXACTLY));
 
