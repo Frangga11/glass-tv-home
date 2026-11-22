@@ -70,7 +70,7 @@ final class UniversalGlassDrawable extends Drawable {
         // A cool slate veil preserves contrast for the locked bright-white typography.
         // Quick Settings needs enough body to separate foreground labels from wallpaper.
         // Use a cool slate-silver tint over the existing mild backdrop blur; no white fog wash.
-        popupVeil.setColor(cleanQuickSettings ? 0x78343E48 : 0x68151D25);
+        popupVeil.setColor(cleanQuickSettings ? 0xE8333E48 : 0x68151D25);
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         inner.setStyle(Paint.Style.STROKE);
