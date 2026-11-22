@@ -35,6 +35,24 @@ final class UniversalGlassMaterial {
         return new UniversalGlassDrawable(density, radiusDp);
     }
 
+    /**
+     * Navigation-only smoked underlay beneath the original Universal Glass surface.
+     * It gently stabilizes white-label contrast on bright wallpapers without changing the
+     * Universal reflection/rims or replacing the silver Glider focus treatment.
+     */
+    static Drawable navigationSurface(Context context, float density, float radiusDp,
+                                       int fallbackSurfaceColor, int fallbackBorderColor) {
+        if (!isGlassEnabled(context)) {
+            return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
+        }
+        GradientDrawable tint = new GradientDrawable();
+        tint.setCornerRadius(radiusDp * density);
+        tint.setColor(0x24212A33);
+        return new LayerDrawable(new Drawable[]{
+                tint, new UniversalGlassDrawable(density, radiusDp)
+        });
+    }
+
     /** The same dark shade + DockGlassDrawable layer order used by Universal Home GlassMenu. */
     static Drawable panel(Context context, float density, float radiusDp,
                           int fallbackSurfaceColor, int fallbackBorderColor) {
