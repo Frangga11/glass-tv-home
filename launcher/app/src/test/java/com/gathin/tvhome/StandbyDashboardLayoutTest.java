@@ -41,6 +41,7 @@ public class StandbyDashboardLayoutTest {
         assertNotNull(root.findViewById(R.id.nightstandHijri));
         assertNotNull(root.findViewById(R.id.nightstandClock));
         assertNotNull(root.findViewById(R.id.nightstandDate));
+        assertNotNull(root.findViewById(R.id.nightstandAmPm));
         assertNotNull(root.findViewById(R.id.nightstandWeatherTemp));
         assertNotNull(root.findViewById(R.id.nightstandAqiValue));
         assertNotNull(root.findViewById(R.id.nightstandPrayerScheduleTitle));
