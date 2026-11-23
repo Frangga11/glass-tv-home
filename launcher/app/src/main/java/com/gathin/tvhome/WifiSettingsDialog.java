@@ -119,12 +119,12 @@ final class WifiSettingsDialog {
         content.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(dp(density, 12), dp(density, 5), dp(density, 12), dp(density, 10));
+        content.setPadding(dp(density, 12), dp(density, 5), dp(density, 12), dp(density, 14));
         // Adopt Universal Home's glass material without changing the approved Wi-Fi geometry.
         content.setBackground(UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,
                 TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
         TextView title = text(R.string.wifi, popupTitleSizeSp(), true, density);
-        title.setCompoundDrawablesRelative(sizedDrawable(R.drawable.ic_wifi, 13), null, null, null);
+        title.setCompoundDrawablesRelative(sizedDrawable(R.drawable.ic_wifi, popupTitleIconSizeDp()), null, null, null);
         title.setCompoundDrawablePadding(dp(density, 6));
         
         LinearLayout header = new LinearLayout(activity);
@@ -172,7 +172,7 @@ final class WifiSettingsDialog {
         networkScroll.setFillViewport(false);
         networkScroll.setVerticalScrollBarEnabled(true);
         networkScroll.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
-        networkScroll.setPadding(0, 0, dp(density, 4), 0);
+        networkScroll.setPadding(0, 0, dp(density, networkScrollRightInsetDp()), 0);
         networkScroll.setScrollbarFadingEnabled(false);
         networkScroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
         networkScroll.addView(networkRows, new ScrollView.LayoutParams(
@@ -290,7 +290,12 @@ final class WifiSettingsDialog {
     static int networkStatusIconSizeDp() { return 13; }
     static int networkStatusIconColor() { return Color.rgb(80, 255, 145); }
 
-    static float popupTitleSizeSp() { return 13f; }
+    static float popupTitleSizeSp() { return 12f; }
+    static int popupTitleIconSizeDp() { return 12; }
+    static int networkScrollRightInsetDp() { return 4; }
+    static float capsuleRadiusDp(String tag) {
+        return "wifi_toggle".equals(tag) ? TvUiTokens.ROW_RADIUS_DP : TvUiTokens.ROW_RADIUS_DP - 2f;
+    }
     static float popupSectionSizeSp() { return 11f; }
     static float popupMetaSizeSp() { return 10f; }
     static float popupFooterSizeSp() { return 11f; }
@@ -760,13 +765,14 @@ scanState.setVisibility(View.VISIBLE);
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.topMargin = dp(density, 2);
         view.setLayoutParams(lp);
-        TvFocusIndicator.applyRoundedTextFocus(view, density, TvUiTokens.ROW_RADIUS_DP,
+        float capsuleRadius = capsuleRadiusDp(tag);
+        TvFocusIndicator.applyRoundedTextFocus(view, density, capsuleRadius,
                 TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
                 TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
                 TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
         // Keep TvFocusIndicator's focus routing/text states; use Universal GlassControls surfaces.
         view.setBackground(UniversalGlassMaterial.controlStateBackground(activity, density,
-                TvUiTokens.ROW_RADIUS_DP, TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
+                capsuleRadius, TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
         view.setOnClickListener(v -> {
             if (callback != null) callback.run();
         });
@@ -875,6 +881,8 @@ scanState.setVisibility(View.VISIBLE);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, networkRowHeightDp()));
         params.bottomMargin = dp(density, networkRowGapDp());
+        // Extend only the right edge through the scrollbar gutter; the left edge stays fixed.
+        params.rightMargin = -dp(density, networkScrollRightInsetDp());
         return params;
     }
 
