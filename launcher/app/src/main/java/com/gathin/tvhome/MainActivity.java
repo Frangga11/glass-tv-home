@@ -9505,6 +9505,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         java.util.Calendar cal = java.util.Calendar.getInstance();
         int hour = cal.get(java.util.Calendar.HOUR_OF_DAY);
         boolean isNightMode = (hour >= 22 || hour < 6);
+        StandbyDashboardBinder.updateMetrics(this, screensaverView, isNightMode);
 
         TextView clock = screensaverView.findViewById(R.id.nightstandClock);
         TextView ampm = screensaverView.findViewById(R.id.nightstandAmPm);
@@ -9528,15 +9529,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             if (hint != null) hint.setTextColor(0x55FF453A);
         } else {
-            if (clock != null) clock.setTextColor(0xFFFFFFFF);
-            if (ampm != null) ampm.setTextColor(0xB3FFFFFF);
-            if (date != null) date.setTextColor(0xE6FFFFFF);
+            if (clock != null) clock.setTextColor(0xFF172334);
+            if (ampm != null) ampm.setTextColor(0xCC475569);
+            if (date != null) date.setTextColor(0xFF475569);
             if (hijri != null) hijri.setTextColor(TvUiTokens.TEXT_SECONDARY);
             if (prayer != null) {
-                prayer.setTextColor(0xFFFFFFFF);
-                prayer.setBackgroundResource(R.drawable.pill_bg);
+                prayer.setTextColor(0xFF172334);
+                prayer.setBackgroundResource(R.drawable.bg_standby_metric);
             }
-            if (hint != null) hint.setTextColor(0x4DFFFFFF);
+            if (hint != null) hint.setTextColor(0x66475569);
         }
     }
 
