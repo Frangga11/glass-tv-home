@@ -1891,7 +1891,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         super.onResume();
         activityResumed = true;
         standbyCoordinator = StandbyCoordinator.get(this);
-        standbyCoordinator.bindHome(this, this::showNightstandScreensaver);
+        standbyCoordinator.bindHome(this);
         standbyCoordinator.onHomeResumed();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(packageReceiver, packageFilter, Context.RECEIVER_NOT_EXPORTED);
