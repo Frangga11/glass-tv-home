@@ -12,6 +12,9 @@ class StandbyLifecycleCoordinatorContractTest(unittest.TestCase):
     def test_idle_timeout_is_owned_by_one_coordinator(self):
         source = COORDINATOR.read_text(encoding="utf-8")
         self.assertIn("15L * 60L * 1000L", source)
+        self.assertIn("WeakReference<MainActivity>", source)
+        self.assertNotIn("Runnable showStandby", source)
+        self.assertIn("activity.showNightstandScreensaver()", source)
         self.assertIn("void onUserInteraction()", source)
         self.assertIn("void onHomePaused()", source)
         self.assertIn("void onManualStandbyStarted()", source)
