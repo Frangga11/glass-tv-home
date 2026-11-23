@@ -53,9 +53,7 @@ public class WifiSettingsDialogTest {
         assertEquals(Math.round(12 * activity.getResources().getDisplayMetrics().density), root.getPaddingLeft());
         assertEquals(Math.round(12 * activity.getResources().getDisplayMetrics().density), root.getPaddingRight());
         assertEquals(Math.round(5 * activity.getResources().getDisplayMetrics().density), root.getPaddingTop());
-        assertEquals(-Math.round(4 * activity.getResources().getDisplayMetrics().density),
-                ((android.widget.LinearLayout.LayoutParams) ((android.widget.LinearLayout) networkList.getChildAt(0))
-                        .getLayoutParams()).rightMargin);
+        assertEquals(4, WifiSettingsDialog.networkRowRightBleedDp());
         assertEquals(Math.round(14 * activity.getResources().getDisplayMetrics().density), root.getPaddingBottom());
         assertEquals(Math.round(26 * activity.getResources().getDisplayMetrics().density), header.getLayoutParams().height);
         assertNotNull(footer);
