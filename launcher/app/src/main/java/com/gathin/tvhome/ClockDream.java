@@ -73,6 +73,7 @@ public class ClockDream extends DreamService {
     @Override public void onDreamingStarted() {
         super.onDreamingStarted();
         dreamActive = true;
+        StandbyCoordinator.get(this).onDreamStarted();
         updatePhoto();
         updateDashboard();
         PrayerTimes.syncIfDue(this, this::updateDashboard);
@@ -94,6 +95,7 @@ public class ClockDream extends DreamService {
 
     @Override public void onDreamingStopped() {
         dreamActive = false;
+        StandbyCoordinator.get(this).onDreamStopped();
         handler.removeCallbacks(tick);
         handler.removeCallbacks(photoTick);
         if (photoView != null) photoView.setImageDrawable(null);
@@ -102,6 +104,7 @@ public class ClockDream extends DreamService {
     }
 
     @Override public void onDetachedFromWindow() {
+        if (dreamActive) StandbyCoordinator.get(this).onDreamStopped();
         dreamActive = false;
         handler.removeCallbacks(tick);
         handler.removeCallbacks(photoTick);
