@@ -77,6 +77,13 @@
             android:textColor="#FF475569"
             android:textSize="11sp" />
 
+        <!-- Kept hidden for MainActivity preview compatibility; the clock is intentionally centered without AM/PM. -->
+        <TextView
+            android:id="@+id/nightstandAmPm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/nightstandHijri"
             android:layout_width="match_parent"
