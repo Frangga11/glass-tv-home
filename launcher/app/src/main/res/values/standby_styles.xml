@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="StandbyPrayerLabel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">#FF475569</item>
+        <item name="android:textSize">7sp</item>
+    </style>
+    <style name="StandbyPrayerTime">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">#FF172334</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">8sp</item>
+    </style>
+</resources>
