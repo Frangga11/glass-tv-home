@@ -33,7 +33,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("silverCyanIdentity || brightSilverPopup", drawable)
         self.assertIn("backdropFill.draw(canvas, owner, area, radius, 1f)", drawable)
         self.assertIn("Backdrop.watch(owner)", material)
-        self.assertIn("Backdrop.watch(pointer)", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
+        self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
         self.assertIn("getBoolean(\"glass_effects_enabled\", true)", material)
 
     def test_wifi_and_quick_settings_share_panel_material_without_layout_or_focus_rewire(self):
@@ -44,7 +44,8 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("new GliderFocusDrawable(control, glider, cornerRadiusDp * density)", quick)
         self.assertIn("QuickSettingsFocusGraph.connect(controls)", quick)
         self.assertIn("QuickSettingsFocusGraph", quick)
-        self.assertIn("UniversalGlassMaterial.drawPointer(activity, pointer, canvas, triangle, pointerEdges", wifi)
+        self.assertNotIn("UniversalGlassMaterial.drawPointer(", wifi)
+        self.assertNotIn("pointer.setTag", wifi)
 
     def test_settings_sidebar_uses_one_bounded_focus_cursor_only(self):
         settings = (JAVA / "ModernSettingsDialog.java").read_text(encoding="utf-8")

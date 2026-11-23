@@ -8,7 +8,10 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Gravity;
 import android.os.Looper;
 
@@ -35,13 +38,24 @@ public class WifiSettingsDialogTest {
         assertNotNull(networkList);
         assertTrue(networkList instanceof android.widget.ScrollView);
         assertTrue(((android.widget.ScrollView) networkList).isVerticalScrollBarEnabled());
-        assertEquals(0, networkList.getLayoutParams().height);
-        assertEquals(1f, ((android.widget.LinearLayout.LayoutParams) networkList.getLayoutParams()).weight, 0.001f);
+        assertEquals(View.SCROLLBARS_INSIDE_INSET, ((android.widget.ScrollView) networkList).getScrollBarStyle());
+        // INSIDE_INSET reserves scrollbar width in addition to the explicit 4dp content gutter.
+        assertTrue(networkList.getPaddingRight() >= Math.round(4 * activity.getResources().getDisplayMetrics().density));
+        assertEquals(Math.round(WifiSettingsDialog.networkViewportHeightDp()
+                        * activity.getResources().getDisplayMetrics().density),
+                networkList.getLayoutParams().height);
+        assertEquals(0f, ((android.widget.LinearLayout.LayoutParams) networkList.getLayoutParams()).weight, 0.001f);
         View root = window.getDecorView().findViewWithTag("wifi_popup_root");
         View header = window.getDecorView().findViewWithTag("wifi_popup_header");
         View footer = window.getDecorView().findViewWithTag("wifi_popup_footer");
         assertNotNull(root);
         assertNotNull(header);
+        assertEquals(Math.round(12 * activity.getResources().getDisplayMetrics().density), root.getPaddingLeft());
+        assertEquals(Math.round(12 * activity.getResources().getDisplayMetrics().density), root.getPaddingRight());
+        assertEquals(Math.round(5 * activity.getResources().getDisplayMetrics().density), root.getPaddingTop());
+        assertEquals(4, WifiSettingsDialog.networkRowRightBleedDp());
+        assertEquals(Math.round(14 * activity.getResources().getDisplayMetrics().density), root.getPaddingBottom());
+        assertEquals(Math.round(26 * activity.getResources().getDisplayMetrics().density), header.getLayoutParams().height);
         assertNotNull(footer);
         assertEquals(android.widget.LinearLayout.VERTICAL, ((android.widget.LinearLayout) footer).getOrientation());
         View rescan = window.getDecorView().findViewWithTag("wifi_rescan");
@@ -56,23 +70,73 @@ public class WifiSettingsDialogTest {
     }
 
     @Test public void popupUsesConstrainedWidthAndVerticalFirstLayout() {
-        assertEquals(0.225f, WifiSettingsDialog.popupWidthFraction(), 0.0001f);
-        assertEquals(0.69f, WifiSettingsDialog.popupHeightFraction(), 0.0001f);
-        assertEquals(25f, WifiSettingsDialog.networkTextSizePx(), 0.001f);
-        assertEquals(22, WifiSettingsDialog.networkStatusIconSizeDp());
+        assertEquals(180, WifiSettingsDialog.popupWidthDp());
+        assertEquals(11f, WifiSettingsDialog.networkTextSizeSp(), 0.001f);
+        assertEquals(13, WifiSettingsDialog.networkStatusIconSizeDp());
         assertTrue(WifiSettingsDialog.networkStatusIconColor() != 0);
-        assertEquals(17f, WifiSettingsDialog.popupTitleSizeSp(), 0.001f);
-        assertEquals(13f, WifiSettingsDialog.popupSectionSizeSp(), 0.001f);
-        assertEquals(11f, WifiSettingsDialog.popupMetaSizeSp(), 0.001f);
-        assertEquals(13f, WifiSettingsDialog.popupFooterSizeSp(), 0.001f);
-        assertEquals(4, WifiSettingsDialog.visibleNetworkRowCount());
-        assertEquals(35, WifiSettingsDialog.networkRowHeightDp());
-        assertEquals(35, WifiSettingsDialog.popupHeightReductionDp());
+        assertEquals(12f, WifiSettingsDialog.popupTitleSizeSp(), 0.001f);
+        assertEquals(12, WifiSettingsDialog.popupTitleIconSizeDp());
+        assertEquals(4, WifiSettingsDialog.networkScrollRightInsetDp());
+        assertEquals(14f, WifiSettingsDialog.capsuleRadiusDp("wifi_toggle"), 0.001f);
+        assertEquals(12f, WifiSettingsDialog.capsuleRadiusDp("wifi_rescan"), 0.001f);
+        assertEquals(11f, WifiSettingsDialog.popupSectionSizeSp(), 0.001f);
+        assertEquals(10f, WifiSettingsDialog.popupMetaSizeSp(), 0.001f);
+        assertEquals(11f, WifiSettingsDialog.popupFooterSizeSp(), 0.001f);
+        assertEquals(12f, WifiSettingsDialog.permissionTextSizeSp(), 0.001f);
+        assertEquals(12f, WifiSettingsDialog.locationTextSizeSp(), 0.001f);
+        assertEquals(11f, WifiSettingsDialog.rescanTextSizeSp(), 0.001f);
+        assertEquals(11f, WifiSettingsDialog.androidSettingsTextSizeSp(), 0.001f);
+        assertEquals(11f, WifiSettingsDialog.toggleTextSizeSp(), 0.001f);
+        assertEquals(2, WifiSettingsDialog.visibleNetworkRowCount());
+        assertEquals(24, WifiSettingsDialog.networkRowHeightDp());
         assertEquals(4, WifiSettingsDialog.networkRowGapDp());
+        assertEquals(52, WifiSettingsDialog.networkViewportHeightDp());
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> { });
+        View toggle = dialog.getWindow().getDecorView().findViewWithTag("wifi_toggle");
+        assertNotNull(toggle);
+        assertEquals(11f, ((android.widget.TextView) toggle).getTextSize()
+                / activity.getResources().getDisplayMetrics().scaledDensity, 0.1f);
+        assertEquals(Math.round(41 * activity.getResources().getDisplayMetrics().density),
+                toggle.getLayoutParams().width);
+        assertEquals(Math.round(20 * activity.getResources().getDisplayMetrics().density),
+                toggle.getLayoutParams().height);
+        assertEquals(0, toggle.getPaddingTop());
+        assertEquals(0, toggle.getPaddingBottom());
+        View permission = dialog.getWindow().getDecorView().findViewWithTag("wifi_permission");
+        assertNotNull(permission);
+        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, permission.getLayoutParams().height);
+        assertEquals(2, ((android.widget.TextView) permission).getMaxLines());
+        View location = dialog.getWindow().getDecorView().findViewWithTag("wifi_location_settings");
+        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, location.getLayoutParams().height);
+        assertEquals(2, ((android.widget.TextView) location).getMaxLines());
+        assertEquals(12f, ((android.widget.TextView) permission).getTextSize()
+                / activity.getResources().getDisplayMetrics().scaledDensity, 0.1f);
+        assertEquals(12f, ((android.widget.TextView) location).getTextSize()
+                / activity.getResources().getDisplayMetrics().scaledDensity, 0.1f);
+        View rescan = dialog.getWindow().getDecorView().findViewWithTag("wifi_rescan");
+        assertEquals(Math.round(24 * activity.getResources().getDisplayMetrics().density),
+                rescan.getLayoutParams().height);
+        assertEquals(Math.round(24 * activity.getResources().getDisplayMetrics().density),
+                dialog.getWindow().getDecorView().findViewWithTag("wifi_open_settings").getLayoutParams().height);
+        View settings = dialog.getWindow().getDecorView().findViewWithTag("wifi_open_settings");
+        assertNotNull(settings);
+        assertEquals(permission.getParent(), settings.getParent());
+        assertEquals(Math.round(4 * activity.getResources().getDisplayMetrics().density),
+                ((android.widget.LinearLayout.LayoutParams) permission.getLayoutParams()).bottomMargin);
+        dialog.dismiss();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
 
     @Test public void dialogProvidesPermissionGuidanceAndDpadControls() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        // Revoke the permission for the Activity's actual process identity. This mirrors
+        // Context.checkSelfPermission(pid, uid) instead of changing only Application shadow state.
+        Shadows.shadowOf(activity).denyPermissions(
+                android.os.Process.myPid(), android.os.Process.myUid(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        assertEquals(PackageManager.PERMISSION_DENIED,
+                activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION));
         final int[] returns = {0};
         AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> returns[0]++);
         assertNotNull(dialog);
@@ -86,12 +150,29 @@ public class WifiSettingsDialogTest {
         assertNotNull(rescan);
         assertNotNull(settings);
         assertNotNull(close);
+        View networkList = dialog.getWindow().getDecorView().findViewWithTag("wifi_network_list");
+        assertNotNull(networkList);
+        // Initial visibility must already be correct before the queued onShow callback runs.
+        assertEquals(View.VISIBLE, permission.getVisibility());
+        assertEquals(View.GONE, rescan.getVisibility());
+        assertEquals(View.GONE, networkList.getVisibility());
+
+        // Drain Dialog's posted onShow callback and layout work; the state must remain gated.
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertEquals(View.VISIBLE, permission.getVisibility());
+        assertEquals(View.GONE, rescan.getVisibility());
+        assertEquals(View.GONE, networkList.getVisibility());
         assertTrue(rescan.isFocusable());
         assertTrue(settings.isClickable());
         assertNotEquals(View.NO_ID, rescan.getId());
         assertNotEquals(View.NO_ID, settings.getId());
-        assertTrue(permission.getNextFocusDownId() != 0);
+        assertEquals(settings.getId(), permission.getNextFocusDownId());
         assertTrue(settings.getNextFocusDownId() != 0);
+        // Permission state hides rescan; no DPAD edge may target that hidden control.
+        assertEquals(settings.getId(), settings.getNextFocusLeftId());
+        assertEquals(settings.getId(), settings.getNextFocusRightId());
+        assertEquals(settings.getId(), settings.getNextFocusUpId());
+        assertEquals(settings.getId(), settings.getNextFocusDownId());
         dialog.cancel();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
         assertFalse(dialog.isShowing());
