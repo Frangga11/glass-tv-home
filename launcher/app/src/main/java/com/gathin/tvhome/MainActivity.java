@@ -1029,7 +1029,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (dockAdapter != null && measuredWidth > 0) dockAdapter.setHorizontalViewportWidth(measuredWidth);
             if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
                 homeShelfAnchorReady = false;
-                if (heroShown) updateHomeShelfAnchor();
+                // The Islamic shelf is visible on the first Home frame too; its measured
+                // Dock anchor must not depend on whether a Dock tile has gained focus.
+                updateHomeShelfAnchor();
             }
         });
         applyDockLayout();
@@ -1042,9 +1044,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             updateTopFade();
             if (l != ol || t != ot || r != or || b != ob) {
                 homeShelfAnchorReady = false;
-                if (heroShown) updateHomeShelfAnchor();
+                updateHomeShelfAnchor();
             }
         });
+        // Resolve the bottom anchor during initial layout, before the first Dock focus event.
+        root.post(this::updateHomeShelfAnchor);
         grid.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> updateTopFade());
 
         // Keep the glass glued to its tile while the grid scrolls.
