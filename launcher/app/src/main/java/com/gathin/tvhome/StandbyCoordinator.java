@@ -1,6 +1,5 @@
 package com.gathin.tvhome;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -17,13 +16,13 @@ final class StandbyCoordinator {
 
     private static volatile StandbyCoordinator instance;
 
-    static StandbyCoordinator get(Context context) {
+    static StandbyCoordinator get(android.content.Context context) {
         StandbyCoordinator current = instance;
         if (current == null) {
             synchronized (StandbyCoordinator.class) {
                 current = instance;
                 if (current == null) {
-                    current = new StandbyCoordinator(context.getApplicationContext());
+                    current = new StandbyCoordinator();
                     instance = current;
                 }
             }
@@ -33,7 +32,6 @@ final class StandbyCoordinator {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private WeakReference<MainActivity> home = new WeakReference<>(null);
-    private Runnable showStandby;
     private boolean homeResumed;
     private boolean manualStandbyActive;
     private boolean nativeDreamActive;
@@ -44,29 +42,25 @@ final class StandbyCoordinator {
             pendingIdleTransition = null;
             if (!homeResumed || manualStandbyActive || nativeDreamActive) return;
             MainActivity activity = home.get();
-            Runnable action = showStandby;
-            if (activity == null || activity.isFinishing() || activity.isDestroyed()
-                    || action == null) return;
+            if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
             manualStandbyActive = true;
-            action.run();
+            activity.showNightstandScreensaver();
         }
     };
 
-    private StandbyCoordinator(Context context) {
-        // Retain application-scoped ownership only; no Activity context is stored here.
+    private StandbyCoordinator() {
+        // The coordinator stores only a weak reference to the Home Activity.
     }
 
-    void bindHome(MainActivity activity, Runnable showAction) {
+    void bindHome(MainActivity activity) {
         if (activity == null) return;
         home = new WeakReference<>(activity);
-        showStandby = showAction;
     }
 
     void unbindHome(MainActivity activity) {
         if (home.get() != activity) return;
         onHomePaused();
         home.clear();
-        showStandby = null;
     }
 
     void onHomeResumed() {
@@ -105,7 +99,7 @@ final class StandbyCoordinator {
 
     private void scheduleIfEligible() {
         if (!homeResumed || manualStandbyActive || nativeDreamActive
-                || showStandby == null || home.get() == null) return;
+                || home.get() == null) return;
         stopTimer();
         pendingIdleTransition = idleTransition;
         handler.postDelayed(pendingIdleTransition, IDLE_TIMEOUT_MS);
