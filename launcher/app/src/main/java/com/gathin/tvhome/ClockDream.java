@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.Random;
 
 /** Compact family standby dashboard; prayer/weather data remain owned by their existing modules. */
