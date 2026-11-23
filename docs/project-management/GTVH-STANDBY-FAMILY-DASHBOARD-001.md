@@ -28,6 +28,7 @@ Replace the black OLED nightstand-only standby presentation with the owner-appro
 
 - Reuse `PrayerTimes` for next prayer, Hijri date, and today's prayer times.
 - Reuse `WeatherAirQuality` for weather/AQI cache and its existing refresh lifecycle.
+- Share `StandbyDashboardBinder` between `ClockDream` and the `MainActivity` standby preview so both entry paths render identical metrics.
 - Preserve the existing user-uploaded StandBy photo overlay and rotation through `StandbyPhotoStore`.
 - Do not modify Home, Dock, navigation, DPAD/focus, Glider, Quick Settings, Wi-Fi, popup geometry, prayer engine, weather engine, or storage schemas.
 - No new network endpoint, preference store, or duplicate timetable implementation.
@@ -35,6 +36,8 @@ Replace the black OLED nightstand-only standby presentation with the owner-appro
 ## Files in scope
 
 - `ClockDream.java`
+- `StandbyDashboardBinder.java`
+- The focused `MainActivity.updateNightstandScreensaver()` path
 - `view_nightstand.xml`
 - Standby-only drawable and localized string resources.
 - Standby layout/contract tests.
