@@ -9502,7 +9502,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
 
         // iPhone StandBy Wind Down Mode: 10:00 PM (22:00) to 6:00 AM (06:00) -> Red Monochrome
-        java.util.Calendar cal = java.util.Calendar.getInstance();
+        java.util.Calendar cal = PrayerTimes.calendar(this);
         int hour = cal.get(java.util.Calendar.HOUR_OF_DAY);
         boolean isNightMode = (hour >= 22 || hour < 6);
         StandbyDashboardBinder.updateMetrics(this, screensaverView, isNightMode);
