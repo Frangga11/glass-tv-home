@@ -15,6 +15,7 @@ class StandbyLifecycleCoordinatorContractTest(unittest.TestCase):
         self.assertIn("WeakReference<MainActivity>", source)
         self.assertNotIn("Runnable showStandby", source)
         self.assertIn("activity.showNightstandScreensaver()", source)
+        self.assertIn("manualStandbyActive = false;", source)
         self.assertIn("void onUserInteraction()", source)
         self.assertIn("void onHomePaused()", source)
         self.assertIn("void onManualStandbyStarted()", source)
