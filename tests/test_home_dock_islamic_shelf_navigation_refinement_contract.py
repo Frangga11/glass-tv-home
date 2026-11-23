@@ -110,6 +110,12 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("updateHomeShelfAnchor();", grid_listener)
         self.assertNotIn("if (heroShown)", grid_listener)
         self.assertIn("root.post(this::updateHomeShelfAnchor);", MAIN)
+        anchor_start = MAIN.index("private void updateHomeShelfAnchor()")
+        anchor_end = MAIN.index("private int horizontalDockTrayTopInRoot()", anchor_start)
+        anchor = MAIN[anchor_start:anchor_end]
+        self.assertIn("homeShelfAnchorRetryCount < 8", anchor)
+        self.assertIn("if (!homeShelfAnchorReady) updateHomeShelfAnchor();", anchor)
+        self.assertNotIn("heroShown && !homeShelfAnchorReady", anchor)
 
     def test_row_navigation_uses_decorated_geometry_and_real_scroll(self):
         self.assertIn("manager.getDecoratedBoundsWithMargins(firstView, rowBounds)", MAIN)
