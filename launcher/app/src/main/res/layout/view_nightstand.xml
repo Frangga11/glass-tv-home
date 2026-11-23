@@ -87,7 +87,7 @@
             android:gravity="center"
             android:includeFontPadding="false"
             android:maxLines="1"
-            android:textColor="#FF64748B"
+            android:textColor="@color/tv_ui_text_secondary"
             android:textSize="8sp" />
 
         <TextClock
