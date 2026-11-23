@@ -97,6 +97,20 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertNotIn("setY(", hide)
         self.assertNotIn("translationY(", hide)
 
+    def test_islamic_shelf_anchor_is_resolved_on_initial_layout_without_dock_focus(self):
+        dock_start = MAIN.index("dockRecycler.addOnLayoutChangeListener")
+        dock_end = MAIN.index("applyDockLayout();", dock_start)
+        dock_listener = MAIN[dock_start:dock_end]
+        self.assertIn("updateHomeShelfAnchor();", dock_listener)
+        self.assertNotIn("if (heroShown)", dock_listener)
+
+        grid_start = MAIN.index("gridWrap.addOnLayoutChangeListener")
+        grid_end = MAIN.index("grid.addOnLayoutChangeListener", grid_start)
+        grid_listener = MAIN[grid_start:grid_end]
+        self.assertIn("updateHomeShelfAnchor();", grid_listener)
+        self.assertNotIn("if (heroShown)", grid_listener)
+        self.assertIn("root.post(this::updateHomeShelfAnchor);", MAIN)
+
     def test_row_navigation_uses_decorated_geometry_and_real_scroll(self):
         self.assertIn("manager.getDecoratedBoundsWithMargins(firstView, rowBounds)", MAIN)
         self.assertIn("manager.getDecoratedBoundsWithMargins(targetView, targetBounds)", MAIN)
