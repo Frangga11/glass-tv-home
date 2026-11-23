@@ -60,6 +60,7 @@ final class StandbyCoordinator {
     void unbindHome(MainActivity activity) {
         if (home.get() != activity) return;
         onHomePaused();
+        manualStandbyActive = false;
         home.clear();
     }
 
