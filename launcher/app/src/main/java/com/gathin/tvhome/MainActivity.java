@@ -241,6 +241,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** Stable bottom edge for the Islamic shelf; focus changes only animate visibility, never position. */
     private float islamicShelfBottomAnchor = Float.NaN;
     private boolean homeShelfAnchorReady;
+    private int homeShelfAnchorRetryCount;
     private View btnInputs;
     private TextView btnWifi;
     private View btnAssistant;
@@ -2655,9 +2656,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             int trayTop = horizontalDockTrayTopInRoot();
             if (trayTop == Integer.MIN_VALUE) {
                 homeShelfAnchorReady = false;
-                if (dockRecycler != null) {
+                // Decoration geometry can become available on the next draw after the
+                // RecyclerView's first measure. Retry a bounded number of frames even when
+                // the user has not focused a Dock tile yet.
+                if (dockRecycler != null && homeShelfAnchorRetryCount < 8) {
+                    homeShelfAnchorRetryCount++;
                     dockRecycler.postOnAnimation(() -> {
-                        if (heroShown && !homeShelfAnchorReady) updateHomeShelfAnchor();
+                        if (!homeShelfAnchorReady) updateHomeShelfAnchor();
                     });
                 }
                 return;
@@ -2669,6 +2674,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             heroBottom = trayTop - shelfGapPx;
             islamicShelfBottomAnchor = heroBottom + islamicShelfVisualBottomOffsetPx();        }
 
+        homeShelfAnchorRetryCount = 0;
         homeShelfAnchorReady = true;
         applyIslamicShelfPosition();
         if (heroShown && heroShelf != null) heroShelf.setY(heroBottom - heroShelf.getHeight());
