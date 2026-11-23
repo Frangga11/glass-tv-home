@@ -293,6 +293,7 @@ final class WifiSettingsDialog {
     static float popupTitleSizeSp() { return 12f; }
     static int popupTitleIconSizeDp() { return 12; }
     static int networkScrollRightInsetDp() { return 4; }
+    static int networkRowRightBleedDp() { return networkScrollRightInsetDp(); }
     static float capsuleRadiusDp(String tag) {
         return "wifi_toggle".equals(tag) ? TvUiTokens.ROW_RADIUS_DP : TvUiTokens.ROW_RADIUS_DP - 2f;
     }
