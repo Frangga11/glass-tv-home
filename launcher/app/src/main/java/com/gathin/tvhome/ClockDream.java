@@ -221,7 +221,7 @@ public class ClockDream extends DreamService {
         weatherIcon.setText(weather.weatherAvailable && weather.icon != null && !weather.icon.isEmpty()
                 ? weather.icon : "—");
         weatherTemp.setText(weather.weatherAvailable ? weather.temp + "°" : "—");
-        weatherRange.setText(weather.weatherAvailable && weather.highTemp >= 0 && weather.lowTemp >= 0
+        weatherRange.setText(weather.weatherAvailable && weather.highTemp != -1 && weather.lowTemp != -1
                 ? "H:" + weather.highTemp + "°  L:" + weather.lowTemp + "°" : "");
         aqiValue.setText(weather.aqiAvailable ? "AQI " + weather.aqi : "AQI —");
         aqiStatus.setText(weather.aqiAvailable ? weather.aqiStatus : "—");
