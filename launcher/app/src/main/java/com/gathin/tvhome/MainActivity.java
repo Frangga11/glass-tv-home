@@ -336,6 +336,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean placesMode;
     private volatile boolean placesRefreshRunning;
     private boolean screensaverActive = false;
+    private StandbyCoordinator standbyCoordinator;
     private View screensaverView;
     private String standbyPhotoUriShown = "";
     private final Runnable standbyPhotoTick = new Runnable() {
@@ -1889,6 +1890,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     protected void onResume() {
         super.onResume();
         activityResumed = true;
+        standbyCoordinator = StandbyCoordinator.get(this);
+        standbyCoordinator.bindHome(this, this::showNightstandScreensaver);
+        standbyCoordinator.onHomeResumed();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(packageReceiver, packageFilter, Context.RECEIVER_NOT_EXPORTED);
         } else {
@@ -2119,6 +2123,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     @Override
     protected void onPause() {
+        if (standbyCoordinator != null) standbyCoordinator.onHomePaused();
         super.onPause();
         // Invalidate focus work queued before Home yielded the window to another Activity.
         gridFocusRequestGeneration++;
@@ -2170,6 +2175,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     @Override
     protected void onDestroy() {
+        if (standbyCoordinator != null) standbyCoordinator.unbindHome(this);
         if (quickSettingsDialog != null) {
             quickSettingsDialog.dismiss();
             quickSettingsDialog = null;
@@ -3847,6 +3853,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
+        if (standbyCoordinator != null) standbyCoordinator.onUserInteraction();
     }
 
     @Override
@@ -9466,6 +9473,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             setWallpaperFullscreen(false);
         }
         screensaverActive = true;
+        if (standbyCoordinator != null) standbyCoordinator.onManualStandbyStarted();
         updateHomeTabIndicator();
         if (screensaverView == null) {
             screensaverView = getLayoutInflater().inflate(R.layout.view_nightstand, root, false);
@@ -9587,6 +9595,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void dismissScreensaver() {
         if (!screensaverActive || screensaverView == null) return;
         screensaverActive = false;
+        if (standbyCoordinator != null) standbyCoordinator.onManualStandbyDismissed();
         updateHomeTabIndicator();
         handler.removeCallbacks(standbyPhotoTick);
         screensaverView.animate().alpha(0f).setDuration(350).withEndAction(() -> {
