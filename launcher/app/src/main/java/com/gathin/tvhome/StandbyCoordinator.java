@@ -37,18 +37,16 @@ final class StandbyCoordinator {
     private boolean homeResumed;
     private boolean manualStandbyActive;
     private boolean nativeDreamActive;
-    private long generation;
+    private Runnable pendingIdleTransition;
 
     private final Runnable idleTransition = new Runnable() {
         @Override public void run() {
+            pendingIdleTransition = null;
             if (!homeResumed || manualStandbyActive || nativeDreamActive) return;
             MainActivity activity = home.get();
             Runnable action = showStandby;
             if (activity == null || activity.isFinishing() || activity.isDestroyed()
-                    || action == null) {
-                stopTimer();
-                return;
-            }
+                    || action == null) return;
             manualStandbyActive = true;
             action.run();
         }
@@ -109,15 +107,14 @@ final class StandbyCoordinator {
         if (!homeResumed || manualStandbyActive || nativeDreamActive
                 || showStandby == null || home.get() == null) return;
         stopTimer();
-        long token = ++generation;
-        handler.postDelayed(() -> {
-            if (token == generation) idleTransition.run();
-        }, IDLE_TIMEOUT_MS);
+        pendingIdleTransition = idleTransition;
+        handler.postDelayed(pendingIdleTransition, IDLE_TIMEOUT_MS);
     }
 
     private void stopTimer() {
-        generation++;
-        handler.removeCallbacks(idleTransition);
-        // The generation-guarded lambda is also invalidated by generation changes.
+        if (pendingIdleTransition != null) {
+            handler.removeCallbacks(pendingIdleTransition);
+            pendingIdleTransition = null;
+        }
     }
 }
