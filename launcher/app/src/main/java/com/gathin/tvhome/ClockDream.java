@@ -22,8 +22,7 @@ public class ClockDream extends DreamService {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
     private View content;
-    private TextView nextPrayer, hijri, weatherIcon, weatherTemp, weatherRange, aqiValue, aqiStatus, hint;
-    private TextView[] prayerLabels, prayerTimes;
+    private TextView nextPrayer, hijri, hint;
     private ImageView photoView;
     private View photoScrim;
     private String photoUriShown = "";
@@ -42,8 +41,8 @@ public class ClockDream extends DreamService {
         @Override public void run() {
             if (!dreamActive) return;
             updateDashboard();
-            PrayerTimes.syncIfDue(ClockDream.this, ClockDream.this::updatePrayerData);
-            WeatherAirQuality.syncIfDue(ClockDream.this, ClockDream.this::updateWeather);
+            PrayerTimes.syncIfDue(ClockDream.this, ClockDream.this::updateDashboard);
+            WeatherAirQuality.syncIfDue(ClockDream.this, ClockDream.this::updateDashboard);
             moveClock();
             handler.postDelayed(this, MOVE_MS);
         }
@@ -65,21 +64,6 @@ public class ClockDream extends DreamService {
         content = findViewById(R.id.nightstandContent);
         nextPrayer = findViewById(R.id.nightstandPrayer);
         hijri = findViewById(R.id.nightstandHijri);
-        weatherIcon = findViewById(R.id.nightstandWeatherIcon);
-        weatherTemp = findViewById(R.id.nightstandWeatherTemp);
-        weatherRange = findViewById(R.id.nightstandWeatherRange);
-        aqiValue = findViewById(R.id.nightstandAqiValue);
-        aqiStatus = findViewById(R.id.nightstandAqiStatus);
-        prayerLabels = new TextView[] {
-                findViewById(R.id.nightstandFajrLabel), findViewById(R.id.nightstandDhuhrLabel),
-                findViewById(R.id.nightstandAsrLabel), findViewById(R.id.nightstandMaghribLabel),
-                findViewById(R.id.nightstandIshaLabel)
-        };
-        prayerTimes = new TextView[] {
-                findViewById(R.id.nightstandFajrTime), findViewById(R.id.nightstandDhuhrTime),
-                findViewById(R.id.nightstandAsrTime), findViewById(R.id.nightstandMaghribTime),
-                findViewById(R.id.nightstandIshaTime)
-        };
         hint = findViewById(R.id.nightstandHint);
         photoView = findViewById(R.id.nightstandPhoto);
         photoScrim = findViewById(R.id.nightstandPhotoScrim);
@@ -92,8 +76,8 @@ public class ClockDream extends DreamService {
         dreamActive = true;
         updatePhoto();
         updateDashboard();
-        PrayerTimes.syncIfDue(this, this::updatePrayerData);
-        WeatherAirQuality.syncIfDue(this, this::updateWeather);
+        PrayerTimes.syncIfDue(this, this::updateDashboard);
+        WeatherAirQuality.syncIfDue(this, this::updateDashboard);
         if (content != null) {
             content.setAlpha(0f);
             content.post(() -> {
@@ -180,71 +164,26 @@ public class ClockDream extends DreamService {
     private void updateDashboard() {
         if (content == null) return;
         updatePrayerData();
-        updateWeather();
+        StandbyDashboardBinder.updateMetrics(this, content, isWindDown());
         applyNightMode();
     }
 
     private void updatePrayerData() {
         if (nextPrayer != null) nextPrayer.setText("🕌  " + PrayerTimes.getNextPrayerSummary(this));
         if (hijri != null) hijri.setText(PrayerTimes.getHijriDate());
-        if (prayerTimes == null || prayerLabels == null) return;
-
-        PrayerTimes.Day day = PrayerTimes.day(this, null, PrayerTimes.calendar(this));
-        int[] indices = {0, 2, 3, 4, 5}; // Fajr, Dhuhr, Asr, Maghrib, Isha; omit sunrise.
-        boolean english = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
-        String[] names = english
-                ? new String[] {"Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"}
-                : new String[] {"Subuh", "Dzuhur", "Ashar", "Maghrib", "Isya"};
-        for (int i = 0; i < indices.length; i++) {
-            prayerLabels[i].setText(names[i]);
-            prayerTimes[i].setText(day == null ? "—" : formatPrayerTime(day.minutes[indices[i]]));
-        }
     }
 
-    private static String formatPrayerTime(int minuteOfDay) {
-        if (minuteOfDay < 0 || minuteOfDay >= 1440) return "—";
-        return String.format(Locale.ROOT, "%02d:%02d", minuteOfDay / 60, minuteOfDay % 60);
-    }
-
-    private void updateWeather() {
-        if (weatherTemp == null || aqiValue == null) return;
-        WeatherAirQuality.FullWeather weather = WeatherAirQuality.getFullWeather(this);
-        if (weather == null) {
-            weatherIcon.setText("—");
-            weatherTemp.setText("—");
-            weatherRange.setText("");
-            aqiValue.setText("AQI —");
-            aqiStatus.setText("—");
-            aqiStatus.setTag(0xFF64748B);
-            return;
-        }
-        weatherIcon.setText(weather.weatherAvailable && weather.icon != null && !weather.icon.isEmpty()
-                ? weather.icon : "—");
-        weatherTemp.setText(weather.weatherAvailable ? weather.temp + "°" : "—");
-        weatherRange.setText(weather.weatherAvailable && weather.highTemp != -1 && weather.lowTemp != -1
-                ? "H:" + weather.highTemp + "°  L:" + weather.lowTemp + "°" : "");
-        aqiValue.setText(weather.aqiAvailable ? "AQI " + weather.aqi : "AQI —");
-        aqiStatus.setText(weather.aqiAvailable ? weather.aqiStatus : "—");
-        aqiStatus.setTag(weather.aqiAvailable ? weather.aqiColor : 0xFF64748B);
+    private boolean isWindDown() {
+        int hour = PrayerTimes.calendar(this).get(Calendar.HOUR_OF_DAY);
+        return hour >= 22 || hour < 6;
     }
 
     private void applyNightMode() {
-        int hour = PrayerTimes.calendar(this).get(Calendar.HOUR_OF_DAY);
-        boolean windDown = hour >= 22 || hour < 6;
+        boolean windDown = isWindDown();
         int primary = windDown ? 0xFFFF453A : 0xFF172334;
         int secondary = windDown ? 0xCCFF453A : 0xFF475569;
         if (nextPrayer != null) nextPrayer.setTextColor(primary);
         if (hijri != null) hijri.setTextColor(secondary);
-        if (weatherIcon != null) weatherIcon.setTextColor(primary);
-        if (weatherTemp != null) weatherTemp.setTextColor(primary);
-        if (weatherRange != null) weatherRange.setTextColor(secondary);
-        if (aqiValue != null) aqiValue.setTextColor(primary);
-        if (aqiStatus != null) {
-            Object color = aqiStatus.getTag();
-            aqiStatus.setTextColor(windDown || !(color instanceof Integer) ? primary : (Integer) color);
-        }
-        if (prayerLabels != null) for (TextView label : prayerLabels) if (label != null) label.setTextColor(secondary);
-        if (prayerTimes != null) for (TextView time : prayerTimes) if (time != null) time.setTextColor(primary);
         TextView clock = findViewById(R.id.nightstandClock);
         TextView date = findViewById(R.id.nightstandDate);
         if (clock != null) clock.setTextColor(primary);
