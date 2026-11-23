@@ -1,7 +1,7 @@
 # GTVH — Standby Family Dashboard 001
 
 **Date:** 23 November 2026  
-**Status:** Isolated implementation prepared; CI and device validation pending.
+**Status:** Standby code and regression validation passed on CI run #2887; original wallpaper asset import and physical-device visual QA remain pending.
 
 ## Objective
 
@@ -55,5 +55,12 @@ The original 16:9 family image remains the approved wallpaper source. The curren
 4. Exact-head CI on the PR head.
 5. Visual QA at 1920×1080 on the target Mi TV Stick; verify panel proportion/readability, weather/AQI cache fallback, prayer schedule updates, custom photo overlay, wake behavior, and OLED drift.
 6. Record device acceptance separately; CI is not physical-device proof.
+
+## Validation record
+
+- CI run #2887: **SUCCESS** — Launcher build and unit tests, Lists/tools/docs.
+- CI run #2886: **SUCCESS** — duplicate validation run on the same tested code head.
+- Release build and unit-test tasks completed successfully; no claim of Mi TV Stick visual acceptance.
+- The current wallpaper resource is still a temporary Silver-Cyan fallback. Import the exact owner-approved family image before visual acceptance and before treating this as final.
 
 No APK installation or physical Mi TV Stick acceptance is claimed by this checkpoint.
