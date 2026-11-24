@@ -9487,11 +9487,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             content.setLayoutParams(lp);
         }
         android.graphics.drawable.GradientDrawable panel =
-                new android.graphics.drawable.GradientDrawable();
+                new android.graphics.drawable.GradientDrawable(
+                        android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+                        new int[]{0xEAF8FFFF, 0xDDEAF7FF, 0xD3DCEBFA});
         panel.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
-        panel.setColor(0xDDF1F6FA);
-        panel.setStroke(Math.max(1, Math.round(density)), 0x6680C8E8);
-        float radius = shape.equals("square") ? 8f : shape.equals("rounded") ? 18f : 26f;
+        panel.setStroke(Math.max(1, Math.round(density)), 0xEFFFFFFF);
+        float radius = shape.equals("square") ? 8f : shape.equals("rounded") ? 18f : 20f;
         panel.setCornerRadius(radius * density);
         content.setBackground(panel);
     }
