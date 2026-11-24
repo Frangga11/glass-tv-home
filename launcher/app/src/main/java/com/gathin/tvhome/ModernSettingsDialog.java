@@ -1263,12 +1263,6 @@ public final class ModernSettingsDialog {
                             (int) (3 * density), (int) (5 * density));
                     tabView.setContentDescription(subtabLabels[i]);
                     tabView.setId(View.generateViewId());
-                    GradientDrawable idle = new GradientDrawable();
-                    idle.setColor(Color.TRANSPARENT);
-                    idle.setCornerRadius(6 * density);
-                    GradientDrawable focused = new GradientDrawable();
-                    focused.setColor(TvUiTokens.SURFACE_FOCUSED);
-                    focused.setCornerRadius(6 * density);
                     tabView.setBackground(TvFocusIndicator.createRoundedStateBackground(
                             density, 6f, Color.TRANSPARENT, TvUiTokens.SURFACE_FOCUSED,
                             Color.TRANSPARENT, TvUiTokens.FOCUS_BORDER));
