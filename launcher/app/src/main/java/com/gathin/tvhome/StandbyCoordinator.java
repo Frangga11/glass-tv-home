@@ -74,6 +74,11 @@ final class StandbyCoordinator {
         stopTimer();
     }
 
+    void onStandbySettingChanged() {
+        stopTimer();
+        if (isStandbyEnabled()) scheduleIfEligible();
+    }
+
     void onUserInteraction() {
         if (!manualStandbyActive) scheduleIfEligible();
     }
