@@ -1661,6 +1661,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         handler.postDelayed(wallTick, Math.max(RETURN_SETTLE_MS, wallpaperIntervalMs - waited));
     }
 
+    void onStandbyEnabledChanged() {
+        if (standbyCoordinator != null) standbyCoordinator.onStandbySettingChanged();
+    }
+
     int getStandbyPhotoCount() {
         return StandbyPhotoStore.getPhotoCount(this);
     }
