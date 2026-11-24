@@ -184,6 +184,32 @@ public final class ModernSettingsDialog {
                 || signature.equals(legacyFocusSignature(current))) ? current : null;
     }
 
+    private static View findFirstFocusableAfter(ViewGroup parent, View after) {
+        if (parent == null || after == null) return null;
+        boolean pastAnchor = false;
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child == after) { pastAnchor = true; continue; }
+            if (!pastAnchor) continue;
+            View found = findFirstFocusable(child);
+            if (found != null) return found;
+        }
+        return null;
+    }
+
+    private static View findFirstFocusable(View view) {
+        if (view == null || view.getVisibility() != View.VISIBLE || !view.isEnabled()) return null;
+        if (view.isFocusable()) return view;
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View found = findFirstFocusable(group.getChildAt(i));
+                if (found != null) return found;
+            }
+        }
+        return null;
+    }
+
     private static boolean focusRightPane(ViewGroup container) {
         if (container == null) return false;
         for (int i = 0; i < container.getChildCount(); i++) {
@@ -1194,34 +1220,98 @@ public final class ModernSettingsDialog {
                 LinearLayout subtabBar = new LinearLayout(activity);
                 subtabBar.setOrientation(LinearLayout.HORIZONTAL);
                 subtabBar.setGravity(Gravity.CENTER_VERTICAL);
-                subtabBar.setPadding(0, (int) (4 * density), 0, (int) (12 * density));
-                String[] subtabLabels = {"Umum", "Foto", "Tata Letak", "Sinkronisasi"};
+                subtabBar.setPadding(0, (int) (2 * density), 0, (int) (8 * density));
+                subtabBar.setClipChildren(false);
+                subtabBar.setClipToPadding(false);
+                String[] subtabLabels = {"Umum", "Foto", "Tata Letak", "Sinkron."};
+                TextView[] subtabViews = new TextView[subtabLabels.length];
                 for (int i = 0; i < subtabLabels.length; i++) {
                     final int target = i;
-                    TextView chip = new TextView(activity);
-                    chip.setText(subtabLabels[i]);
-                    chip.setTextSize(11);
-                    chip.setTypeface(outfit, Typeface.BOLD);
-                    chip.setGravity(Gravity.CENTER);
-                    chip.setFocusable(true);
-                    chip.setClickable(true);
-                    chip.setPadding((int)(10*density),(int)(9*density),(int)(10*density),(int)(9*density));
-                    GradientDrawable chipBg = new GradientDrawable();
-                    chipBg.setColor(standbySubtab[0] == i ? TvUiTokens.SURFACE_SELECTED : TvUiTokens.SURFACE);
-                    chipBg.setCornerRadius(12*density);
-                    chipBg.setStroke(Math.max(1,(int)density), standbySubtab[0] == i ? TvUiTokens.FOCUS_BORDER : TvUiTokens.BORDER);
-                    chip.setBackground(chipBg);
-                    LinearLayout.LayoutParams chipLp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-                    chipLp.setMarginEnd((int)(5*density));
-                    subtabBar.addView(chip, chipLp);
-                    chip.setOnClickListener(v -> {
+                    TextView tabView = new TextView(activity);
+                    subtabViews[i] = tabView;
+                    tabView.setText(subtabLabels[i]);
+                    tabView.setTextSize(10.5f);
+                    tabView.setTypeface(outfit, Typeface.BOLD);
+                    tabView.setGravity(Gravity.CENTER);
+                    tabView.setSingleLine(true);
+                    tabView.setFocusable(true);
+                    tabView.setClickable(true);
+                    tabView.setMinHeight((int) (34 * density));
+                    tabView.setPadding((int) (3 * density), (int) (5 * density),
+                            (int) (3 * density), (int) (5 * density));
+                    tabView.setContentDescription(subtabLabels[i]);
+                    GradientDrawable idle = new GradientDrawable();
+                    idle.setColor(Color.TRANSPARENT);
+                    idle.setCornerRadius(6 * density);
+                    GradientDrawable focused = new GradientDrawable();
+                    focused.setColor(TvUiTokens.SURFACE_FOCUSED);
+                    focused.setCornerRadius(6 * density);
+                    tabView.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                            density, 6f, Color.TRANSPARENT, TvUiTokens.SURFACE_FOCUSED,
+                            Color.TRANSPARENT, TvUiTokens.FOCUS_BORDER));
+                    tabView.setTextColor(standbySubtab[0] == i
+                            ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
+                    LinearLayout.LayoutParams tabLp = new LinearLayout.LayoutParams(
+                            0, (int) (34 * density), 1f);
+                    subtabBar.addView(tabView, tabLp);
+                    tabView.setOnFocusChangeListener((v, hasFocus) -> {
+                        tabView.setTextColor(hasFocus || standbySubtab[0] == target
+                                ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
+                    });
+                    tabView.setOnKeyListener((v, keyCode, event) -> {
+                        if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+                        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && target > 0) {
+                            subtabViews[target - 1].requestFocus();
+                            return true;
+                        }
+                        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && target < subtabViews.length - 1) {
+                            subtabViews[target + 1].requestFocus();
+                            return true;
+                        }
+                        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                            View first = findFirstFocusableAfter(rightContent, subtabBar);
+                            if (first != null) { first.requestFocus(); return true; }
+                        }
+                        if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                            if (activeSidebarView[0] != null) {
+                                activeSidebarView[0].requestFocus();
+                                return true;
+                            }
+                        }
+                        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
+                            tabView.performClick();
+                            return true;
+                        }
+                        return false;
+                    });
+                    tabView.setOnClickListener(v -> {
                         standbySubtab[0] = target;
                         activity.getSharedPreferences("standby_prefs", Context.MODE_PRIVATE).edit()
                                 .putInt("settings_subtab", target).apply();
                         if (renderRightPane[0] != null) renderRightPane[0].run();
+                        rightContent.post(() -> {
+                            View selected = subtabBar.getChildAt(target);
+                            if (selected != null) selected.requestFocus();
+                        });
                     });
                 }
-                rightContent.addView(subtabBar);
+                View tabUnderline = new View(activity);
+                tabUnderline.setBackgroundColor(TvUiTokens.FOCUS_BORDER);
+                LinearLayout.LayoutParams underlineLp = new LinearLayout.LayoutParams(
+                        Math.max(1, Math.round(2 * density)), Math.max(1, Math.round(2 * density)));
+                underlineLp.gravity = Gravity.BOTTOM;
+                // A restrained active marker replaces the oversized rounded chips.
+                FrameLayout tabStrip = new FrameLayout(activity);
+                tabStrip.setClipChildren(false);
+                tabStrip.addView(subtabBar, new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                rightContent.addView(tabStrip);
+                View divider = new View(activity);
+                divider.setBackgroundColor(TvUiTokens.BORDER);
+                rightContent.addView(divider, new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, Math.max(1, Math.round(density))));
+                subtabViews[standbySubtab[0] >= 0 && standbySubtab[0] < subtabViews.length
+                        ? standbySubtab[0] : 0].setTextColor(TvUiTokens.TEXT_PRIMARY);
 
                 int photoCount = activity.getStandbyPhotoCount();
                 boolean photoMode = activity.isStandbyPhotoMode();
