@@ -9460,6 +9460,33 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
+    private void applyStandbyPanelPreferences() {
+        if (screensaverView == null) return;
+        View content = screensaverView.findViewById(R.id.nightstandContent);
+        if (content == null) return;
+        android.content.SharedPreferences prefs = getSharedPreferences("standby_prefs", MODE_PRIVATE);
+        String position = prefs.getString("widget_position", "left");
+        String shape = prefs.getString("widget_shape", "soft");
+        if (content.getLayoutParams() instanceof FrameLayout.LayoutParams) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) content.getLayoutParams();
+            lp.gravity = (position.equals("right") ? Gravity.END
+                    : position.equals("center") ? Gravity.CENTER_HORIZONTAL : Gravity.START)
+                    | Gravity.CENTER_VERTICAL;
+            int edge = Math.round(42 * density);
+            lp.leftMargin = position.equals("left") ? edge : 0;
+            lp.rightMargin = position.equals("right") ? edge : 0;
+            content.setLayoutParams(lp);
+        }
+        android.graphics.drawable.GradientDrawable panel =
+                new android.graphics.drawable.GradientDrawable();
+        panel.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+        panel.setColor(0xDDF1F6FA);
+        panel.setStroke(Math.max(1, Math.round(density)), 0x6680C8E8);
+        float radius = shape.equals("square") ? 8f : shape.equals("rounded") ? 18f : 26f;
+        panel.setCornerRadius(radius * density);
+        content.setBackground(panel);
+    }
+
     /** Refreshes only the manually opened in-launcher nightstand; Android owns idle transitions. */
     private void refreshManualNightstand() {
         if (screensaverActive && screensaverView != null && !isFinishing() && !isDestroyed()) {
@@ -9482,6 +9509,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
 
+        applyStandbyPanelPreferences();
         updateNightstandScreensaver();
         handler.removeCallbacks(standbyPhotoTick);
         handler.postDelayed(standbyPhotoTick, StandbyPhotoStore.ROTATION_INTERVAL_MS);
