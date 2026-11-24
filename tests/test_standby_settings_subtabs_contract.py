@@ -36,6 +36,18 @@ class StandbySettingsSubtabsContractTest(unittest.TestCase):
         self.assertIn("Gravity.TOP", main)
         self.assertIn("Gravity.BOTTOM", main)
 
+    def test_subtabs_are_compact_and_dpad_navigation_is_explicit(self):
+        settings = SETTINGS.read_text(encoding="utf-8")
+        self.assertIn('setMinHeight((int) (34 * density))', settings)
+        self.assertIn('setTextSize(10.5f)', settings)
+        self.assertIn('KEYCODE_DPAD_LEFT && target > 0', settings)
+        self.assertIn('KEYCODE_DPAD_RIGHT && target < subtabViews.length - 1', settings)
+        self.assertIn('KEYCODE_DPAD_DOWN', settings)
+        self.assertIn('KEYCODE_DPAD_UP', settings)
+        self.assertIn('findFirstFocusableAfter(rightContent, tabStrip)', settings)
+        self.assertIn('firstStandbyControl.setNextFocusUpId', settings)
+        self.assertIn('subtabViews[selectedIndex].setNextFocusDownId', settings)
+
     def test_qr_server_stores_photo_before_reporting_success(self):
         upload = UPLOAD.read_text(encoding="utf-8")
         self.assertIn("handleStandbyUpload(client, in, out, lines)", upload)
