@@ -1272,13 +1272,26 @@ public final class ModernSettingsDialog {
                     String[] positionValues = {"left", "right", "center"};
                     String currentPosition = standbyPrefs.getString("widget_position", "left");
                     rightContent.addView(buildCardRow(activity, density, outfit,
-                            "Posisi panel", "Saat ini: " + (currentPosition.equals("right") ? "Kanan" : currentPosition.equals("center") ? "Tengah" : "Kiri"),
+                            "Posisi horizontal", "Saat ini: " + (currentPosition.equals("right") ? "Kanan" : currentPosition.equals("center") ? "Tengah" : "Kiri"),
                             () -> new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                                    .setTitle("Posisi panel")
+                                    .setTitle("Posisi horizontal")
                                     .setSingleChoiceItems(positions, Math.max(0, java.util.Arrays.asList(positionValues).indexOf(currentPosition)), (d,w) -> {
                                         standbyPrefs.edit().putString("widget_position", positionValues[w]).apply();
                                         d.dismiss();
-                                        TvFeedback.show(activity, "Posisi disimpan. Terapkan pada pratinjau berikutnya.", Toast.LENGTH_SHORT);
+                                        TvFeedback.show(activity, "Posisi disimpan.", Toast.LENGTH_SHORT);
+                                        if (renderRightPane[0] != null) renderRightPane[0].run();
+                                    }).setNegativeButton(android.R.string.cancel, null).show()));
+                    String[] verticalPositions = {"Atas", "Tengah", "Bawah"};
+                    String[] verticalValues = {"top", "center", "bottom"};
+                    String currentVertical = standbyPrefs.getString("widget_vertical_position", "center");
+                    rightContent.addView(buildCardRow(activity, density, outfit,
+                            "Posisi vertikal", "Saat ini: " + (currentVertical.equals("top") ? "Atas" : currentVertical.equals("bottom") ? "Bawah" : "Tengah"),
+                            () -> new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                                    .setTitle("Posisi vertikal")
+                                    .setSingleChoiceItems(verticalPositions, Math.max(0, java.util.Arrays.asList(verticalValues).indexOf(currentVertical)), (d,w) -> {
+                                        standbyPrefs.edit().putString("widget_vertical_position", verticalValues[w]).apply();
+                                        d.dismiss();
+                                        TvFeedback.show(activity, "Posisi disimpan.", Toast.LENGTH_SHORT);
                                         if (renderRightPane[0] != null) renderRightPane[0].run();
                                     }).setNegativeButton(android.R.string.cancel, null).show()));
                     String[] shapes = {"Kapsul lembut", "Sudut membulat", "Persegi"};
