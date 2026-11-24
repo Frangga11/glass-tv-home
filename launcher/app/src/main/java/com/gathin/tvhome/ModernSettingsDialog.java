@@ -1240,6 +1240,7 @@ public final class ModernSettingsDialog {
                     tabView.setPadding((int) (3 * density), (int) (5 * density),
                             (int) (3 * density), (int) (5 * density));
                     tabView.setContentDescription(subtabLabels[i]);
+                    tabView.setId(View.generateViewId());
                     GradientDrawable idle = new GradientDrawable();
                     idle.setColor(Color.TRANSPARENT);
                     idle.setCornerRadius(6 * density);
@@ -1269,7 +1270,7 @@ public final class ModernSettingsDialog {
                             return true;
                         }
                         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                            View first = findFirstFocusableAfter(rightContent, subtabBar);
+                            View first = findFirstFocusableAfter(rightContent, tabStrip);
                             if (first != null) { first.requestFocus(); return true; }
                         }
                         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
@@ -1295,11 +1296,6 @@ public final class ModernSettingsDialog {
                         });
                     });
                 }
-                View tabUnderline = new View(activity);
-                tabUnderline.setBackgroundColor(TvUiTokens.FOCUS_BORDER);
-                LinearLayout.LayoutParams underlineLp = new LinearLayout.LayoutParams(
-                        Math.max(1, Math.round(2 * density)), Math.max(1, Math.round(2 * density)));
-                underlineLp.gravity = Gravity.BOTTOM;
                 // A restrained active marker replaces the oversized rounded chips.
                 FrameLayout tabStrip = new FrameLayout(activity);
                 tabStrip.setClipChildren(false);
@@ -1310,6 +1306,16 @@ public final class ModernSettingsDialog {
                 divider.setBackgroundColor(TvUiTokens.BORDER);
                 rightContent.addView(divider, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, Math.max(1, Math.round(density))));
+                LinearLayout activeMarker = new LinearLayout(activity);
+                activeMarker.setOrientation(LinearLayout.HORIZONTAL);
+                for (int i = 0; i < subtabViews.length; i++) {
+                    View marker = new View(activity);
+                    marker.setBackgroundColor(i == standbySubtab[0]
+                            ? TvUiTokens.FOCUS_BORDER : Color.TRANSPARENT);
+                    activeMarker.addView(marker, new LinearLayout.LayoutParams(
+                            0, Math.max(1, Math.round(2 * density)), 1f));
+                }
+                rightContent.addView(activeMarker);
                 subtabViews[standbySubtab[0] >= 0 && standbySubtab[0] < subtabViews.length
                         ? standbySubtab[0] : 0].setTextColor(TvUiTokens.TEXT_PRIMARY);
 
@@ -1411,6 +1417,13 @@ public final class ModernSettingsDialog {
                                 try { activity.startActivity(intent); }
                                 catch (Exception e) { TvFeedback.show(activity, "Pengaturan screensaver Android tidak dapat dibuka.", Toast.LENGTH_LONG); }
                             }));
+                }
+                View firstStandbyControl = findFirstFocusableAfter(rightContent, tabStrip);
+                if (firstStandbyControl != null) {
+                    int selectedIndex = standbySubtab[0] >= 0 && standbySubtab[0] < subtabViews.length
+                            ? standbySubtab[0] : 0;
+                    subtabViews[selectedIndex].setNextFocusDownId(firstStandbyControl.getId());
+                    firstStandbyControl.setNextFocusUpId(subtabViews[selectedIndex].getId());
                 }
 
             } else if (tab == TAB_DEVICE_SETTINGS) {
