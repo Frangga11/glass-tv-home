@@ -11,7 +11,7 @@ UPLOAD = ROOT / "launcher/app/src/main/java/com/gathin/tvhome/WallpaperUploadSer
 class StandbySettingsSubtabsContractTest(unittest.TestCase):
     def test_four_subtabs_and_qr_upload_are_wired(self):
         settings = SETTINGS.read_text(encoding="utf-8")
-        for label in ('"Umum"', '"Foto"', '"Tata Letak"', '"Sinkronisasi"'):
+        for label in ('"Umum"', '"Foto"', '"Tata Letak"', '"Sinkron."'):
             self.assertIn(label, settings)
         self.assertIn("activity::showStandbyUploadQrDialog", settings)
         self.assertNotIn("activity::pickStandbyPhotos", settings)
@@ -45,8 +45,9 @@ class StandbySettingsSubtabsContractTest(unittest.TestCase):
         self.assertIn('KEYCODE_DPAD_DOWN', settings)
         self.assertIn('KEYCODE_DPAD_UP', settings)
         self.assertIn('findFirstFocusableAfter(rightContent, tabStrip)', settings)
-        self.assertIn('firstStandbyControl.setNextFocusUpId', settings)
+        self.assertIn('control.setNextFocusUpId', settings)
         self.assertIn('subtabViews[selectedIndex].setNextFocusDownId', settings)
+        self.assertIn('collectFocusableAfter(rightContent, tabStrip, standbyControls)', settings)
 
     def test_qr_server_stores_photo_before_reporting_success(self):
         upload = UPLOAD.read_text(encoding="utf-8")
