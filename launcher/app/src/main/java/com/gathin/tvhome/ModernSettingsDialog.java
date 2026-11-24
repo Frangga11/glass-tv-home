@@ -1224,6 +1224,7 @@ public final class ModernSettingsDialog {
                 subtabBar.setClipChildren(false);
                 subtabBar.setClipToPadding(false);
                 String[] subtabLabels = {"Umum", "Foto", "Tata Letak", "Sinkron."};
+                FrameLayout tabStrip = new FrameLayout(activity);
                 TextView[] subtabViews = new TextView[subtabLabels.length];
                 for (int i = 0; i < subtabLabels.length; i++) {
                     final int target = i;
@@ -1291,13 +1292,18 @@ public final class ModernSettingsDialog {
                                 .putInt("settings_subtab", target).apply();
                         if (renderRightPane[0] != null) renderRightPane[0].run();
                         rightContent.post(() -> {
-                            View selected = subtabBar.getChildAt(target);
-                            if (selected != null) selected.requestFocus();
+                            View currentStrip = rightContent.getChildAt(1);
+                            if (currentStrip instanceof ViewGroup) {
+                                View currentTabs = ((ViewGroup) currentStrip).getChildAt(0);
+                                if (currentTabs instanceof ViewGroup) {
+                                    View selected = ((ViewGroup) currentTabs).getChildAt(target);
+                                    if (selected != null) selected.requestFocus();
+                                }
+                            }
                         });
                     });
                 }
                 // A restrained active marker replaces the oversized rounded chips.
-                FrameLayout tabStrip = new FrameLayout(activity);
                 tabStrip.setClipChildren(false);
                 tabStrip.addView(subtabBar, new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
