@@ -9473,12 +9473,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         String shape = prefs.getString("widget_shape", "soft");
         if (content.getLayoutParams() instanceof FrameLayout.LayoutParams) {
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) content.getLayoutParams();
-            lp.gravity = (position.equals("right") ? Gravity.END
-                    : position.equals("center") ? Gravity.CENTER_HORIZONTAL : Gravity.START)
-                    | Gravity.CENTER_VERTICAL;
+            String verticalPosition = prefs.getString("widget_vertical_position", "center");
+            int horizontalGravity = position.equals("right") ? Gravity.END
+                    : position.equals("center") ? Gravity.CENTER_HORIZONTAL : Gravity.START;
+            int verticalGravity = verticalPosition.equals("top") ? Gravity.TOP
+                    : verticalPosition.equals("bottom") ? Gravity.BOTTOM : Gravity.CENTER_VERTICAL;
+            lp.gravity = horizontalGravity | verticalGravity;
             int edge = Math.round(42 * density);
             lp.leftMargin = position.equals("left") ? edge : 0;
             lp.rightMargin = position.equals("right") ? edge : 0;
+            lp.topMargin = verticalPosition.equals("top") ? edge : 0;
+            lp.bottomMargin = verticalPosition.equals("bottom") ? edge : 0;
             content.setLayoutParams(lp);
         }
         android.graphics.drawable.GradientDrawable panel =
