@@ -1661,6 +1661,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         handler.postDelayed(wallTick, Math.max(RETURN_SETTLE_MS, wallpaperIntervalMs - waited));
     }
 
+    void onStandbyEnabledChanged() {
+        if (standbyCoordinator != null) standbyCoordinator.onStandbySettingChanged();
+    }
+
     int getStandbyPhotoCount() {
         return StandbyPhotoStore.getPhotoCount(this);
     }
@@ -9460,6 +9464,39 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
+    private void applyStandbyPanelPreferences() {
+        if (screensaverView == null) return;
+        View content = screensaverView.findViewById(R.id.nightstandContent);
+        if (content == null) return;
+        android.content.SharedPreferences prefs = getSharedPreferences("standby_prefs", MODE_PRIVATE);
+        String position = prefs.getString("widget_position", "left");
+        String shape = prefs.getString("widget_shape", "soft");
+        if (content.getLayoutParams() instanceof FrameLayout.LayoutParams) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) content.getLayoutParams();
+            String verticalPosition = prefs.getString("widget_vertical_position", "center");
+            int horizontalGravity = position.equals("right") ? Gravity.END
+                    : position.equals("center") ? Gravity.CENTER_HORIZONTAL : Gravity.START;
+            int verticalGravity = verticalPosition.equals("top") ? Gravity.TOP
+                    : verticalPosition.equals("bottom") ? Gravity.BOTTOM : Gravity.CENTER_VERTICAL;
+            lp.gravity = horizontalGravity | verticalGravity;
+            int edge = Math.round(42 * density);
+            lp.leftMargin = position.equals("left") ? edge : 0;
+            lp.rightMargin = position.equals("right") ? edge : 0;
+            lp.topMargin = verticalPosition.equals("top") ? edge : 0;
+            lp.bottomMargin = verticalPosition.equals("bottom") ? edge : 0;
+            content.setLayoutParams(lp);
+        }
+        android.graphics.drawable.GradientDrawable panel =
+                new android.graphics.drawable.GradientDrawable(
+                        android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+                        new int[]{0xEAF8FFFF, 0xDDEAF7FF, 0xD3DCEBFA});
+        panel.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+        panel.setStroke(Math.max(1, Math.round(density)), 0xEFFFFFFF);
+        float radius = shape.equals("square") ? 6f : shape.equals("rounded") ? 14f : 26f;
+        panel.setCornerRadius(radius * density);
+        content.setBackground(panel);
+    }
+
     /** Refreshes only the manually opened in-launcher nightstand; Android owns idle transitions. */
     private void refreshManualNightstand() {
         if (screensaverActive && screensaverView != null && !isFinishing() && !isDestroyed()) {
@@ -9482,6 +9519,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
 
+        applyStandbyPanelPreferences();
         updateNightstandScreensaver();
         handler.removeCallbacks(standbyPhotoTick);
         handler.postDelayed(standbyPhotoTick, StandbyPhotoStore.ROTATION_INTERVAL_MS);

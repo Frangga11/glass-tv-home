@@ -40,7 +40,7 @@ final class StandbyCoordinator {
     private final Runnable idleTransition = new Runnable() {
         @Override public void run() {
             pendingIdleTransition = null;
-            if (!homeResumed || manualStandbyActive || nativeDreamActive) return;
+            if (!homeResumed || manualStandbyActive || nativeDreamActive || !isStandbyEnabled()) return;
             MainActivity activity = home.get();
             if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
             manualStandbyActive = true;
@@ -74,6 +74,11 @@ final class StandbyCoordinator {
         stopTimer();
     }
 
+    void onStandbySettingChanged() {
+        stopTimer();
+        if (isStandbyEnabled()) scheduleIfEligible();
+    }
+
     void onUserInteraction() {
         if (!manualStandbyActive) scheduleIfEligible();
     }
@@ -100,10 +105,16 @@ final class StandbyCoordinator {
 
     private void scheduleIfEligible() {
         if (!homeResumed || manualStandbyActive || nativeDreamActive
-                || home.get() == null) return;
+                || home.get() == null || !isStandbyEnabled()) return;
         stopTimer();
         pendingIdleTransition = idleTransition;
         handler.postDelayed(pendingIdleTransition, IDLE_TIMEOUT_MS);
+    }
+
+    private boolean isStandbyEnabled() {
+        MainActivity activity = home.get();
+        return activity != null && activity.getSharedPreferences("standby_prefs",
+                android.content.Context.MODE_PRIVATE).getBoolean("standby_enabled", true);
     }
 
     private void stopTimer() {

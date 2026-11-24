@@ -64,3 +64,26 @@ The original 16:9 family image remains the approved wallpaper source. The curren
 - The current wallpaper resource is still a temporary Silver-Cyan fallback. Import the exact owner-approved family image before visual acceptance and before treating this as final.
 
 No APK installation or physical Mi TV Stick acceptance is claimed by this checkpoint.
+
+
+## Layar Siaga settings completion work — PR #184
+
+- Added four settings subtabs: **Umum**, **Foto**, **Tata Letak**, and **Sinkronisasi**.
+- **Umum:** enable/disable the launcher's 15-minute idle presentation and show the agreed 15/30/60-minute timeline.
+- **Foto:** QR upload is the user-facing intake route; the existing local upload server and StandbyPhotoStore remain the storage owners. No photo picker or photo-library manager is exposed in this tab.
+- **Tata Letak:** horizontal position (left/center/right), vertical position (top/center/bottom), and panel corner shape (soft/rounded/square) are persisted and applied to the standby panel. Frosted Silver-Cyan gradient and border are preserved.
+- **Sinkronisasi:** provides the Android screensaver settings entry point and documents that Google Backdrop and Android power timing remain system-owned.
+- The idle coordinator now respects the enable switch and is rescheduled when that setting changes.
+- Added tests/test_standby_settings_subtabs_contract.py for source-level integration contracts.
+
+**Validation status:** source-level implementation committed on the isolated completion branch. CI/build and physical TV validation have not yet been recorded for PR #184. Do not treat this as accepted or release-ready until both code validation and the separate Mi TV Stick checks are complete.
+
+
+## UI and DPAD refinement — follow-up
+
+- Replaced oversized filled subtab chips with a compact 34dp text-tab strip, equal-width alignment, restrained active underline, and consistent Silver-Cyan focus treatment.
+- Added explicit horizontal DPAD movement between the four subtabs, DPAD DOWN entry into the first actionable control, and DPAD UP return to the selected subtab.
+- Added deterministic vertical DPAD order for every focusable action in the active Layar Siaga subtab. The control list is rebuilt with the active subtab, and focus is restored to the selected tab after switching.
+- Invalid persisted subtab indexes fall back to **Umum**.
+- Added source-contract checks for compact tab dimensions and DPAD routing.
+- Awaiting CI for the final refinement commit and physical Mi TV Stick verification; no merge or release is implied.
