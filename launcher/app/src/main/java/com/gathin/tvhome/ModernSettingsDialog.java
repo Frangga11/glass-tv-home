@@ -1245,6 +1245,7 @@ public final class ModernSettingsDialog {
                 subtabBar.setClipChildren(false);
                 subtabBar.setClipToPadding(false);
                 String[] subtabLabels = {"Umum", "Foto", "Tata Letak", "Sinkron."};
+                if (standbySubtab[0] < 0 || standbySubtab[0] >= subtabLabels.length) standbySubtab[0] = 0;
                 FrameLayout tabStrip = new FrameLayout(activity);
                 TextView[] subtabViews = new TextView[subtabLabels.length];
                 for (int i = 0; i < subtabLabels.length; i++) {
