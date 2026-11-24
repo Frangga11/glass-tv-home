@@ -9492,7 +9492,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                         new int[]{0xEAF8FFFF, 0xDDEAF7FF, 0xD3DCEBFA});
         panel.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
         panel.setStroke(Math.max(1, Math.round(density)), 0xEFFFFFFF);
-        float radius = shape.equals("square") ? 8f : shape.equals("rounded") ? 18f : 20f;
+        float radius = shape.equals("square") ? 6f : shape.equals("rounded") ? 14f : 26f;
         panel.setCornerRadius(radius * density);
         content.setBackground(panel);
     }
