@@ -1233,6 +1233,7 @@ public final class ModernSettingsDialog {
                             "Aktifkan Layar Siaga", "Tampilkan layar siaga Glass TV Home setelah 15 menit tanpa interaksi",
                             standbyEnabled, checked -> {
                                 standbyPrefs.edit().putBoolean("standby_enabled", checked).commit();
+                                activity.onStandbyEnabledChanged();
                                 if (renderRightPane[0] != null) renderRightPane[0].run();
                             }));
                     rightContent.addView(buildInfoCard(activity, density, outfit,
