@@ -224,6 +224,8 @@ public final class ModernSettingsDialog {
         AlertDialog[] dialogHolder = new AlertDialog[1];
         android.content.SharedPreferences navigationPrefs = activity.getSharedPreferences(NavigationState.PREFS, Context.MODE_PRIVATE);
         int[] activeTab = new int[]{NavigationState.normalizeSettingsTab(navigationPrefs.getInt(NavigationState.SETTINGS_TAB, TAB_PROFILE))};
+        int[] standbySubtab = new int[]{activity.getSharedPreferences("standby_prefs", Context.MODE_PRIVATE)
+                .getInt("settings_subtab", 0)};
 
         // Main Horizontal Container (2 Columns)
         LinearLayout root = new LinearLayout(activity);
@@ -1187,46 +1189,125 @@ public final class ModernSettingsDialog {
                         }));
 
             } else if (tab == TAB_STANDBY) {
-                // === TAB: STANDBY / PERSONAL PHOTO SCREENSAVER ===
                 addHeader(rightContent, outfit, AppLanguage.strStandByMode(activity));
+
+                LinearLayout subtabBar = new LinearLayout(activity);
+                subtabBar.setOrientation(LinearLayout.HORIZONTAL);
+                subtabBar.setGravity(Gravity.CENTER_VERTICAL);
+                subtabBar.setPadding(0, (int) (4 * density), 0, (int) (12 * density));
+                String[] subtabLabels = {"Umum", "Foto", "Tata Letak", "Sinkronisasi"};
+                for (int i = 0; i < subtabLabels.length; i++) {
+                    final int target = i;
+                    TextView chip = new TextView(activity);
+                    chip.setText(subtabLabels[i]);
+                    chip.setTextSize(11);
+                    chip.setTypeface(outfit, Typeface.BOLD);
+                    chip.setGravity(Gravity.CENTER);
+                    chip.setFocusable(true);
+                    chip.setClickable(true);
+                    chip.setPadding((int)(10*density),(int)(9*density),(int)(10*density),(int)(9*density));
+                    GradientDrawable chipBg = new GradientDrawable();
+                    chipBg.setColor(standbySubtab[0] == i ? TvUiTokens.SURFACE_SELECTED : TvUiTokens.SURFACE);
+                    chipBg.setCornerRadius(12*density);
+                    chipBg.setStroke(Math.max(1,(int)density), standbySubtab[0] == i ? TvUiTokens.FOCUS_BORDER : TvUiTokens.BORDER);
+                    chip.setBackground(chipBg);
+                    LinearLayout.LayoutParams chipLp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                    chipLp.setMarginEnd((int)(5*density));
+                    subtabBar.addView(chip, chipLp);
+                    chip.setOnClickListener(v -> {
+                        standbySubtab[0] = target;
+                        activity.getSharedPreferences("standby_prefs", Context.MODE_PRIVATE).edit()
+                                .putInt("settings_subtab", target).apply();
+                        if (renderRightPane[0] != null) renderRightPane[0].run();
+                    });
+                }
+                rightContent.addView(subtabBar);
 
                 int photoCount = activity.getStandbyPhotoCount();
                 boolean photoMode = activity.isStandbyPhotoMode();
-                rightContent.addView(buildInfoCard(activity, density, outfit,
-                        activity.getString(R.string.standby_collection_title), activity.getString(R.string.standby_collection_summary, photoCount)));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.standby_upload_title),
-                        activity.getString(R.string.standby_upload_summary),
-                        activity::showStandbyUploadQrDialog));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.standby_pick_title),
-                        activity.getString(R.string.standby_pick_summary),
-                        activity::pickStandbyPhotos));
-
-                rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        activity.getString(R.string.standby_use_photos_title),
-                        activity.getString(R.string.standby_use_photos_summary),
-                        photoMode, isChecked -> {
-                            activity.setStandbyPhotoMode(isChecked);
-                            if (renderRightPane[0] != null) renderRightPane[0].run();
-                        }));
-
-                if (photoCount > 0) {
-                    rightContent.addView(buildCardRow(activity, density, outfit,
-                            activity.getString(R.string.standby_clear_title),
-                            activity.getString(R.string.standby_clear_summary),
-                            () -> {
-                                activity.clearStandbyPhotos();
+                android.content.SharedPreferences standbyPrefs = activity.getSharedPreferences("standby_prefs", Context.MODE_PRIVATE);
+                boolean standbyEnabled = standbyPrefs.getBoolean("standby_enabled", true);
+                if (standbySubtab[0] == 0) {
+                    addSectionHeader(rightContent, outfit, "Status Layar Siaga");
+                    rightContent.addView(buildSwitchRow(activity, density, outfit,
+                            "Aktifkan Layar Siaga", "Tampilkan layar siaga Glass TV Home setelah 15 menit tanpa interaksi",
+                            standbyEnabled, checked -> {
+                                standbyPrefs.edit().putBoolean("standby_enabled", checked).commit();
                                 if (renderRightPane[0] != null) renderRightPane[0].run();
                             }));
+                    rightContent.addView(buildInfoCard(activity, density, outfit,
+                            "Jadwal kerja", "Home aktif: 0–15 menit  •  Layar Siaga: menit ke-15  •  Google Backdrop: menit ke-30  •  Tidur perangkat: menit ke-60"));
+                    rightContent.addView(buildCardRow(activity, density, outfit,
+                            "Pratinjau Layar Siaga", "Buka tampilan aktual untuk memeriksa komposisi dashboard",
+                            activity::showNightstandScreensaver));
+                } else if (standbySubtab[0] == 1) {
+                    addSectionHeader(rightContent, outfit, "Foto Layar Siaga");
+                    rightContent.addView(buildInfoCard(activity, density, outfit,
+                            "Foto tersimpan", activity.getString(R.string.standby_collection_summary, photoCount)));
+                    rightContent.addView(buildCardRow(activity, density, outfit,
+                            "Upload melalui QR", "Pindai QR dengan ponsel yang terhubung ke jaringan yang sama",
+                            activity::showStandbyUploadQrDialog));
+                    rightContent.addView(buildSwitchRow(activity, density, outfit,
+                            "Gunakan foto upload", "Tampilkan foto yang diunggah sebagai latar Layar Siaga",
+                            photoMode, checked -> {
+                                activity.setStandbyPhotoMode(checked);
+                                if (renderRightPane[0] != null) renderRightPane[0].run();
+                            }));
+                    if (photoCount > 0) {
+                        rightContent.addView(buildCardRow(activity, density, outfit,
+                                "Hapus foto tersimpan", "Hapus seluruh foto Layar Siaga dari penyimpanan aplikasi",
+                                () -> new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                                        .setTitle("Hapus foto Layar Siaga?")
+                                        .setMessage("Semua foto yang diunggah akan dihapus.")
+                                        .setNegativeButton(android.R.string.cancel, null)
+                                        .setPositiveButton("Hapus", (d,w) -> {
+                                            activity.clearStandbyPhotos();
+                                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                                        }).show()));
+                    }
+                } else if (standbySubtab[0] == 2) {
+                    addSectionHeader(rightContent, outfit, "Posisi dan Bentuk Widget");
+                    String[] positions = {"Kiri", "Kanan", "Tengah"};
+                    String[] positionValues = {"left", "right", "center"};
+                    String currentPosition = standbyPrefs.getString("widget_position", "left");
+                    rightContent.addView(buildCardRow(activity, density, outfit,
+                            "Posisi panel", "Saat ini: " + (currentPosition.equals("right") ? "Kanan" : currentPosition.equals("center") ? "Tengah" : "Kiri"),
+                            () -> new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                                    .setTitle("Posisi panel")
+                                    .setSingleChoiceItems(positions, Math.max(0, java.util.Arrays.asList(positionValues).indexOf(currentPosition)), (d,w) -> {
+                                        standbyPrefs.edit().putString("widget_position", positionValues[w]).apply();
+                                        d.dismiss();
+                                        TvFeedback.show(activity, "Posisi disimpan. Terapkan pada pratinjau berikutnya.", Toast.LENGTH_SHORT);
+                                        if (renderRightPane[0] != null) renderRightPane[0].run();
+                                    }).setNegativeButton(android.R.string.cancel, null).show()));
+                    String[] shapes = {"Kapsul lembut", "Sudut membulat", "Persegi"};
+                    String[] shapeValues = {"soft", "rounded", "square"};
+                    String currentShape = standbyPrefs.getString("widget_shape", "soft");
+                    rightContent.addView(buildCardRow(activity, density, outfit,
+                            "Bentuk panel", "Saat ini: " + (currentShape.equals("square") ? "Persegi" : currentShape.equals("rounded") ? "Sudut membulat" : "Kapsul lembut"),
+                            () -> new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                                    .setTitle("Bentuk panel")
+                                    .setSingleChoiceItems(shapes, Math.max(0, java.util.Arrays.asList(shapeValues).indexOf(currentShape)), (d,w) -> {
+                                        standbyPrefs.edit().putString("widget_shape", shapeValues[w]).apply();
+                                        d.dismiss();
+                                        TvFeedback.show(activity, "Bentuk disimpan. Terapkan pada pratinjau berikutnya.", Toast.LENGTH_SHORT);
+                                        if (renderRightPane[0] != null) renderRightPane[0].run();
+                                    }).setNegativeButton(android.R.string.cancel, null).show()));
+                    rightContent.addView(buildCardRow(activity, density, outfit,
+                            "Pratinjau", "Lihat hasil tampilan Layar Siaga", activity::showNightstandScreensaver));
+                } else {
+                    addSectionHeader(rightContent, outfit, "Sinkronisasi Android");
+                    rightContent.addView(buildInfoCard(activity, density, outfit,
+                            "Jadwal perangkat", "Google Backdrop tetap dipilih di pengaturan Android. Layar Siaga Glass TV Home muncul pada menit ke-15, Android screensaver mulai pada menit ke-30, dan tidur perangkat pada menit ke-60."));
+                    rightContent.addView(buildCardRow(activity, density, outfit,
+                            "Pengaturan screensaver Android", "Buka pengaturan sistem untuk memeriksa pilihan Backdrop dan waktu mulai 30 menit",
+                            () -> {
+                                Intent intent = new Intent(Settings.ACTION_DREAM_SETTINGS);
+                                if (intent.resolveActivity(activity.getPackageManager()) == null) intent = new Intent(Settings.ACTION_DISPLAY_SETTINGS);
+                                try { activity.startActivity(intent); }
+                                catch (Exception e) { TvFeedback.show(activity, "Pengaturan screensaver Android tidak dapat dibuka.", Toast.LENGTH_LONG); }
+                            }));
                 }
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.standby_preview_title),
-                        activity.getString(R.string.standby_preview_summary),
-                        activity::showNightstandScreensaver));
 
             } else if (tab == TAB_DEVICE_SETTINGS) {
                 // === TAB: DEVICE SETTINGS (GENERAL + REMOTE + ACCESSIBILITY + TV) ===
