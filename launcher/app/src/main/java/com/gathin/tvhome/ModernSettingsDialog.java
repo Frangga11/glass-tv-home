@@ -184,6 +184,27 @@ public final class ModernSettingsDialog {
                 || signature.equals(legacyFocusSignature(current))) ? current : null;
     }
 
+    private static void collectFocusableAfter(ViewGroup parent, View after, List<View> result) {
+        if (parent == null || after == null || result == null) return;
+        boolean pastAnchor = false;
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child == after) { pastAnchor = true; continue; }
+            if (pastAnchor) collectFocusable(child, result);
+        }
+    }
+
+    private static void collectFocusable(View view, List<View> result) {
+        if (view == null || view.getVisibility() != View.VISIBLE || !view.isEnabled()) return;
+        if (view.isFocusable()) { result.add(view); return; }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                collectFocusable(group.getChildAt(i), result);
+            }
+        }
+    }
+
     private static View findFirstFocusableAfter(ViewGroup parent, View after) {
         if (parent == null || after == null) return null;
         boolean pastAnchor = false;
@@ -1424,12 +1445,20 @@ public final class ModernSettingsDialog {
                                 catch (Exception e) { TvFeedback.show(activity, "Pengaturan screensaver Android tidak dapat dibuka.", Toast.LENGTH_LONG); }
                             }));
                 }
-                View firstStandbyControl = findFirstFocusableAfter(rightContent, tabStrip);
-                if (firstStandbyControl != null) {
-                    int selectedIndex = standbySubtab[0] >= 0 && standbySubtab[0] < subtabViews.length
-                            ? standbySubtab[0] : 0;
-                    subtabViews[selectedIndex].setNextFocusDownId(firstStandbyControl.getId());
-                    firstStandbyControl.setNextFocusUpId(subtabViews[selectedIndex].getId());
+                int selectedIndex = standbySubtab[0] >= 0 && standbySubtab[0] < subtabViews.length
+                        ? standbySubtab[0] : 0;
+                ArrayList<View> standbyControls = new ArrayList<>();
+                collectFocusableAfter(rightContent, tabStrip, standbyControls);
+                if (!standbyControls.isEmpty()) {
+                    subtabViews[selectedIndex].setNextFocusDownId(standbyControls.get(0).getId());
+                    for (int i = 0; i < standbyControls.size(); i++) {
+                        View control = standbyControls.get(i);
+                        if (i > 0) control.setNextFocusUpId(standbyControls.get(i - 1).getId());
+                        else control.setNextFocusUpId(subtabViews[selectedIndex].getId());
+                        if (i + 1 < standbyControls.size()) {
+                            control.setNextFocusDownId(standbyControls.get(i + 1).getId());
+                        }
+                    }
                 }
 
             } else if (tab == TAB_DEVICE_SETTINGS) {
