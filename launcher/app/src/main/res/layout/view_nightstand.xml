@@ -75,7 +75,7 @@
             android:includeFontPadding="false"
             android:maxLines="1"
             android:textColor="#FF475569"
-            android:textSize="11sp" />
+            android:textSize="12sp" />
 
         <!-- Kept hidden for MainActivity preview compatibility; the clock is intentionally centered without AM/PM. -->
         <TextView
@@ -95,7 +95,7 @@
             android:includeFontPadding="false"
             android:maxLines="1"
             android:textColor="@color/tv_ui_text_secondary"
-            android:textSize="8sp" />
+            android:textSize="9sp" />
 
         <TextClock
             android:id="@+id/nightstandClock"
@@ -168,7 +168,7 @@
                         android:fontVariationSettings="'wght' 500"
                         android:includeFontPadding="false"
                         android:textColor="#FF475569"
-                        android:textSize="7sp" />
+                        android:textSize="8sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -206,7 +206,7 @@
                     android:includeFontPadding="false"
                     android:maxLines="1"
                     android:text="—"
-                    android:textSize="7sp" />
+                    android:textSize="8sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -221,7 +221,7 @@
             android:includeFontPadding="false"
             android:text="@string/standby_prayer_schedule_title"
             android:textColor="#FF172334"
-            android:textSize="9sp" />
+            android:textSize="10sp" />
 
         <LinearLayout
             android:id="@+id/nightstandPrayerSchedule"
