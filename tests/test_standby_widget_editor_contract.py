@@ -33,7 +33,8 @@ class StandbyWidgetEditorContractTest(unittest.TestCase):
         self.assertIn("StandbyPreviewWindow.show", main)
         self.assertIn("standbyPhotoUriLoading", main)
         self.assertIn("boolean stillCurrent", main)
-        self.assertNotIn("if (!screensaverActive || screensaverView == null", main)
+        photo_loader = main.split("    private void updateNightstandPhoto() {", 1)[1].split("    private void dismissScreensaver()", 1)[0]
+        self.assertNotIn("!screensaverActive", photo_loader)
         preview = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/StandbyPreviewWindow.java").read_text(encoding="utf-8")
         self.assertIn("KEYCODE_DPAD_LEFT", preview)
         self.assertIn("KEYCODE_DPAD_RIGHT", preview)
