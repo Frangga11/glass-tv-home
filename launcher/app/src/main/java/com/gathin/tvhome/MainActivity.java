@@ -3961,14 +3961,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (inDock && horizontalCarouselMode) alignHorizontalCarousel(position, false);
         RecyclerView.ViewHolder holder = recycler.findViewHolderForAdapterPosition(position);
         if (holder == null) {
-            if (!inDock && !dockVertical && horizontalGridExpanded) {
+            if (!inDock && !classicHomeHostActive && !dockVertical && horizontalGridExpanded) {
                 // A moved app may have crossed the visible viewport. Bring its stable identity
                 // into layout; the Grid scroll listener moves the Dock by the exact same pixels.
                 alignHorizontalGridRowToGlass(position);
             }
             if (attemptsRemaining > 0) {
                 recycler.postOnAnimation(() -> restoreMovingTile(inDock, key, position, previousCard, attemptsRemaining - 1));
-            } else if (!inDock && !dockVertical && adapter != null && adapter.positionOf(key) >= 0) {
+            } else if (!inDock && !classicHomeHostActive && !dockVertical && adapter != null && adapter.positionOf(key) >= 0) {
                 // Keep Move Mode alive while RecyclerView completes a delayed layout. Resolve
                 // the selected app again by stable identity; never drop the mode on a scroll miss.
                 int resolved = adapter.positionOf(key);
@@ -4561,7 +4561,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             focusTile(0);
             return;
         }
-        if (!dockVertical && horizontalGridExpanded && !horizontalDockCollapseInProgress) {
+        if (!classicHomeHostActive && !dockVertical && horizontalGridExpanded && !horizontalDockCollapseInProgress) {
             collapseHorizontalOverflowToDock(position);
             return;
         }
