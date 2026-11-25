@@ -3777,6 +3777,50 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
 
+        if (!horizontalCarouselMode) {
+            // Classic Home Universal moves one ordered inventory. Dock/Grid membership is
+            // recalculated from the first COLUMNS entries after every preview move.
+            List<AppAdapter.Entry> ordered = adapter.allEntriesSnapshot();
+            int currentIndex = -1;
+            int movableCount = ordered.size();
+            while (movableCount > 0
+                    && ordered.get(movableCount - 1).kind == AppAdapter.Entry.HOME_SETTINGS) {
+                movableCount--;
+            }
+            for (int i = 0; i < movableCount; i++) {
+                if (movingKey.equals(ordered.get(i).component.flattenToShortString())) {
+                    currentIndex = i;
+                    break;
+                }
+            }
+            if (currentIndex < 0) {
+                finishMove();
+                return;
+            }
+            int dx = keyCode == KeyEvent.KEYCODE_DPAD_LEFT ? -1
+                    : keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0;
+            int dy = keyCode == KeyEvent.KEYCODE_DPAD_UP ? -1
+                    : keyCode == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0;
+            int target = ClassicAppMovePolicy.target(
+                    currentIndex, movableCount, COLUMNS, dx, dy);
+            if (target == currentIndex || !adapter.moveAllEntries(currentIndex, target)) return;
+
+            View previousCard = movingCard;
+            dockAdapter.refresh();
+            applyDockLayout();
+            boolean nowInDock = dockAdapter.positionOf(movingKey) >= 0;
+            int resolved = nowInDock ? dockAdapter.positionOf(movingKey) : adapter.positionOf(movingKey);
+            if (resolved < 0) {
+                finishMove();
+                return;
+            }
+            movingDock = nowInDock;
+            movingRecycler = nowInDock ? dockRecycler : grid;
+            movingPos = resolved;
+            restoreMovingTile(nowInDock, movingKey, resolved, previousCard, 8);
+            return;
+        }
+
         if (movingDock) {
             if (dockAdapter == null) {
                 finishMove();
