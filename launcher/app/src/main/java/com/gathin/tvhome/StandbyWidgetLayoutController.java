@@ -468,7 +468,7 @@ final class StandbyWidgetLayoutController {
                     scheduleItems[item] = (LinearLayout) child;
                     scheduleItemParams[item] = child.getLayoutParams();
                     itemBackgrounds[item] = child.getBackground();
-                    itemGravities[item] = child.getGravity();
+                    itemGravities[item] = ((LinearLayout) child).getGravity();
                     labels[item] = child.findViewById(labelIds[item]);
                     times[item] = child.findViewById(timeIds[item]);
                     labelParams[item] = labels[item].getLayoutParams();
