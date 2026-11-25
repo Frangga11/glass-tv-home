@@ -943,8 +943,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         Backdrop.watch(dockRecycler);
         setUpGlider();
-        // Both Dock and Grid app cards now use the same DockBreathingBorderView focus animation.
-        // Do not add a second static Grid outline or a Glider companion over the same focused tile.
+        // Glider is the sole app/Dock focus cursor. DockDecoration paints that same
+        // Glider above the tray; Grid focus is painted by the root Glider. No per-card cursor.
         // Preserve one shared glass capsule for Home/Profile/Settings.
         // Each focusable header control paints the same moving Glider after its glass surface
         // and before its own text/icon content, so no capsule can cover the focus indicator.
