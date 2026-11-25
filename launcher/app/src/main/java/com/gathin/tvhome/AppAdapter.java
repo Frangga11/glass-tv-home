@@ -218,8 +218,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             }
         }
         presentationSnapshot = null;
-        // The Grid adapter reads this same partition; publish the mode change to its holders
-        // before DockAdapter refreshes its independent presentation.
+    }
+
+    /** Publish a fresh Dock/Grid partition after mode or capacity preferences change. */
+    void refreshPresentation() {
+        presentationSnapshot = null;
         notifyDataSetChanged();
     }
 
