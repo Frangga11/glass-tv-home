@@ -10,6 +10,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.RobolectricTestRunner;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -110,9 +111,12 @@ public class ClassicModeContractTest {
         AppAdapter.Entry fifth = entry("Five");
         AppAdapter.Entry sixth = entry("Six");
         AppAdapter.Entry seventh = entry("Seven");
-        inventory(adapter).replace(Arrays.asList(
-                entryForKey(one), entryForKey(two), entryForKey(three),
-                fourth, fifth, sixth, seventh));
+        List<AppAdapter.Entry> sevenApps = new ArrayList<>(adapter.allEntriesSnapshot());
+        sevenApps.add(fourth);
+        sevenApps.add(fifth);
+        sevenApps.add(sixth);
+        sevenApps.add(seventh);
+        inventory(adapter).replace(sevenApps);
 
         adapter.setClassicVerticalMode(true);
         assertEquals(5, adapter.dockSnapshot().dockItems.size());
@@ -134,14 +138,6 @@ public class ClassicModeContractTest {
                         + seventh.component.flattenToShortString(),
                 context.getSharedPreferences("tiles", Context.MODE_PRIVATE).getString("order", ""));
         assertEquals(Arrays.asList(one), DockPreferences.loadPinnedKeys(context));
-    }
-
-    private AppAdapter.Entry entryForKey(String key) {
-        String[] parts = key.split("/", 2);
-        String pkg = parts[0];
-        String cls = parts[1];
-        return new AppAdapter.Entry(pkg.substring(pkg.lastIndexOf('.') + 1),
-                new ComponentName(pkg, cls), null, null);
     }
 
     @Test
