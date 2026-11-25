@@ -105,6 +105,46 @@ public class ClassicModeContractTest {
     }
 
     @Test
+    public void verticalClassicModeDerivesDockAndGridFromOneCommittedOrder() throws Exception {
+        AppAdapter.Entry fourth = entry("Four");
+        AppAdapter.Entry fifth = entry("Five");
+        AppAdapter.Entry sixth = entry("Six");
+        AppAdapter.Entry seventh = entry("Seven");
+        inventory(adapter).replace(Arrays.asList(
+                entryForKey(one), entryForKey(two), entryForKey(three),
+                fourth, fifth, sixth, seventh));
+
+        adapter.setClassicVerticalMode(true);
+        assertEquals(5, adapter.dockSnapshot().dockItems.size());
+        assertEquals(2, adapter.dockSnapshot().gridItems.size());
+        assertTrue(adapter.beginMoveTransaction());
+        assertTrue(adapter.moveAllEntries(0, 5));
+
+        assertEquals(5, adapter.dockSnapshot().dockItems.size());
+        assertEquals(sixth.component.flattenToShortString(),
+                adapter.dockSnapshot().dockItems.get(4).component.flattenToShortString());
+        assertEquals(one, adapter.dockSnapshot().gridItems.get(0).component.flattenToShortString());
+        assertEquals("", context.getSharedPreferences("tiles", Context.MODE_PRIVATE)
+                .getString("order", ""));
+
+        assertTrue(adapter.commitMoveTransaction());
+        assertEquals(two + "\n" + three + "\n" + fourth.component.flattenToShortString()
+                        + "\n" + fifth.component.flattenToShortString() + "\n"
+                        + sixth.component.flattenToShortString() + "\n" + one + "\n"
+                        + seventh.component.flattenToShortString(),
+                context.getSharedPreferences("tiles", Context.MODE_PRIVATE).getString("order", ""));
+        assertEquals(Arrays.asList(one), DockPreferences.loadPinnedKeys(context));
+    }
+
+    private AppAdapter.Entry entryForKey(String key) {
+        String[] parts = key.split("/", 2);
+        String pkg = parts[0];
+        String cls = parts[1];
+        return new AppAdapter.Entry(pkg.substring(pkg.lastIndexOf('.') + 1),
+                new ComponentName(pkg, cls), null, null);
+    }
+
+    @Test
     public void okCommitsPreviewedGridOrderAndDockMembership() {
         assertTrue(adapter.beginMoveTransaction());
         assertTrue(adapter.move(0, 1));
