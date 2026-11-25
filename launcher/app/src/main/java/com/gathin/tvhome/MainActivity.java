@@ -3472,6 +3472,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private int movingPos = -1;
     /** Stable identity for the complete Move Mode session, including Dock/Grid hand-off. */
     private String moveSessionKey;
+    /** Tracks the physical OK hold so touch long-presses do not wait for a key-up they never send. */
+    private boolean dpadCenterHeld;
     /** The first OK release after the long hold only enters Move Mode; it must not save immediately. */
     private boolean moveWaitRelease;
     /** Stable component identity; resolve its live adapter position before every Move Mode step. */
@@ -3541,7 +3543,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 && adapter != null && !adapter.isMoveTransactionActive();
         if (!horizontalCarouselMode && adapter != null && !adapter.beginMoveTransaction()) return;
         if (startClassicSession) {
-            moveWaitRelease = true;
+            moveWaitRelease = dpadCenterHeld;
             moveSessionKey = key;
             Toast.makeText(this, R.string.app_move_hint, Toast.LENGTH_LONG).show();
         } else if (moveSessionKey == null) {
@@ -3902,6 +3904,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return true;
         }
         int code = event.getKeyCode();
+        if (code == KeyEvent.KEYCODE_DPAD_CENTER || code == KeyEvent.KEYCODE_ENTER
+                || code == KeyEvent.KEYCODE_NUMPAD_ENTER) {
+            dpadCenterHeld = event.getAction() == KeyEvent.ACTION_DOWN;
+        }
         // Standard Android TV and configured Xiaomi/vendor Input keys open the same source selector.
         // Consume the press sequence, but dispatch only the initial down event.
         if (config != null && InputKeyService.isInputKeyCode(code, config.inputKeyKeycodes)) {
