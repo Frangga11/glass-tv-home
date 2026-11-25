@@ -3108,10 +3108,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int center = DockGeometry.horizontalCenterOffsetPx(inner, slotWidth, dockCount);
         dockRecycler.setPadding(center, 0, center, 0);
         dockAdapter.setHorizontalViewportWidth(viewport);
-        dockRecycler.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dockHeight));
+        int dockBottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
+        LinearLayout.LayoutParams classicDockParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dockHeight);
+        classicDockParams.bottomMargin = dockBottomMargin;
+        dockRecycler.setLayoutParams(classicDockParams);
 
-        classicDockHeightPx = dockHeight;
+        classicDockHeightPx = dockHeight + dockBottomMargin;
         classicDockSpacer = new View(this);
         classicDockSpacer.setFocusable(false);
         classicDockSpacer.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -3186,10 +3189,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int inner = DockGeometry.horizontalContentWidthPx(viewport, density);
         int tileWidth = DockGeometry.horizontalDockTileWidthPx(inner, COLUMNS, density);
         int tileHeight = DockGeometry.tileHeightPx(tileWidth);
-        classicDockHeightPx = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+        int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+        int dockBottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
+        classicDockHeightPx = dockHeight + dockBottomMargin;
         ViewGroup.LayoutParams dockParams = dockRecycler.getLayoutParams();
-        if (dockParams != null && dockParams.height != classicDockHeightPx) {
-            dockParams.height = classicDockHeightPx;
+        if (dockParams != null) {
+            if (dockParams.height != dockHeight) dockParams.height = dockHeight;
+            if (dockParams instanceof ViewGroup.MarginLayoutParams) {
+                ((ViewGroup.MarginLayoutParams) dockParams).bottomMargin = dockBottomMargin;
+            }
             dockRecycler.setLayoutParams(dockParams);
         }
         dockAdapter.setHorizontalViewportWidth(viewport);
