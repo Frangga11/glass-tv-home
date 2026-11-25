@@ -260,6 +260,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             parts.add('#' + c.pkg + '/' + c.component.flattenToShortString() + '|' + c.label + '|'
                     + c.caption + '|' + c.accent);
         }
+        android.content.pm.ActivityInfo classicNativeHome = classicVerticalMode
+                ? ClassicSystemHome.resolve(ctx) : null;
+        if (classicNativeHome != null) {
+            parts.add("@system-home:" + classicNativeHome.packageName + "/" + classicNativeHome.name);
+        }
         Collections.sort(parts);
         String signature = android.text.TextUtils.join(";", parts);
         if (signature.equals(builtFrom) && !items.isEmpty()) return false;
@@ -298,6 +303,19 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             }
         }
         builtApps = apps;
+        Entry classicSystemHomeEntry = null;
+        if (classicNativeHome != null) {
+            // Keep System Home in the same movable, persisted inventory. It used to be appended
+            // after sorting, which silently discarded a user-moved position on the next reload.
+            for (int i = fresh.size() - 1; i >= 0; i--) {
+                if (classicNativeHome.packageName.equals(fresh.get(i).pkg)) fresh.remove(i);
+            }
+            ComponentName homeComponent = new ComponentName(
+                    classicNativeHome.packageName, classicNativeHome.name);
+            classicSystemHomeEntry = new Entry(Entry.SYSTEM_HOME, ctx.getString(R.string.system_home),
+                    homeComponent, ctx.getDrawable(R.drawable.classic_system_home_banner), null, null, 0);
+        }
+
         List<String> classicOrder = null;
         Map<String, Integer> place = new HashMap<>();
         if (classicVerticalMode) {
@@ -308,6 +326,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             });
             List<String> installedPackages = new ArrayList<>();
             for (Entry entry : alphabeticalApps) installedPackages.add(entry.pkg);
+            if (classicNativeHome != null && !installedPackages.contains(classicNativeHome.packageName)) {
+                // Preserve the existing default: System Home starts after ordinary apps unless
+                // a saved Classic order explicitly places it elsewhere.
+                installedPackages.add(classicNativeHome.packageName);
+            }
             classicOrder = ClassicAppOrder.merge(arranged, favourites, installedPackages);
             if (!moveTransactionActive && !arranged.equals(classicOrder)) {
                 arranged.clear();
@@ -343,15 +366,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             return a.label.compareToIgnoreCase(b.label);
         });
         if (classicVerticalMode) {
-            // Home Universal adds the actual system HOME activity as a movable app tile.
-            android.content.pm.ActivityInfo nativeHome = ClassicSystemHome.resolve(ctx);
-            if (nativeHome != null) {
-                for (int i = fresh.size() - 1; i >= 0; i--) {
-                    if (nativeHome.packageName.equals(fresh.get(i).pkg)) fresh.remove(i);
-                }
-                ComponentName homeComponent = new ComponentName(nativeHome.packageName, nativeHome.name);
-                fresh.add(new Entry(Entry.SYSTEM_HOME, ctx.getString(R.string.system_home),
-                        homeComponent, ctx.getDrawable(R.drawable.classic_system_home_banner), null, null, 0));
+            if (classicSystemHomeEntry != null) {
+                Integer homePosition = place.get(classicSystemHomeEntry.pkg);
+                int insertAt = homePosition == null ? fresh.size()
+                        : Math.max(0, Math.min(homePosition, fresh.size()));
+                fresh.add(insertAt, classicSystemHomeEntry);
             }
         } else if (showHomeSettings
                 && pm.resolveActivity(new Intent(Settings.ACTION_HOME_SETTINGS), 0) != null) {
