@@ -339,6 +339,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private StandbyCoordinator standbyCoordinator;
     private View screensaverView;
     private String standbyPhotoUriShown = "";
+    private String standbyPhotoUriLoading = "";
     private final Runnable standbyPhotoTick = new Runnable() {
         @Override public void run() {
             if (screensaverActive) {
@@ -9638,11 +9639,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         Uri uri = uris.get(index);
         photo.setVisibility(View.VISIBLE);
         scrim.setVisibility(View.VISIBLE);
-        if (!uri.toString().equals(standbyPhotoUriShown)) {
-            standbyPhotoUriShown = uri.toString();
+        final String requestedUri = uri.toString();
+        boolean imageMissing = photo.getDrawable() == null;
+        if (!requestedUri.equals(standbyPhotoUriShown)) {
+            standbyPhotoUriShown = requestedUri;
+            photo.setImageDrawable(null);
+            imageMissing = true;
+        }
+        if (imageMissing && !requestedUri.equals(standbyPhotoUriLoading)) {
+            standbyPhotoUriLoading = requestedUri;
             StandbyPhotoStore.loadBitmapAsync(this, uri, bitmap -> {
+                if (requestedUri.equals(standbyPhotoUriLoading)) standbyPhotoUriLoading = "";
+                // The editor/preview may be dismissed while decoding. Keep the successfully
+                // decoded image on the retained standby view so the next opening is not blank.
+                boolean stillCurrent = screensaverView != null
+                        && photo.getParent() != null
+                        && StandbyPhotoStore.isPhotoMode(this)
+                        && requestedUri.equals(standbyPhotoUriShown);
                 if (bitmap == null) {
-                    if (uri.toString().equals(standbyPhotoUriShown)) {
+                    if (stillCurrent) {
+                        standbyPhotoUriShown = "";
                         photo.setImageDrawable(null);
                         photo.setVisibility(View.GONE);
                         scrim.setVisibility(View.GONE);
@@ -9650,13 +9666,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     }
                     return;
                 }
-                if (!screensaverActive || screensaverView == null
-                        || !StandbyPhotoStore.isPhotoMode(this)
-                        || !uri.toString().equals(standbyPhotoUriShown)) {
+                if (!stillCurrent) {
                     bitmap.recycle();
                     return;
                 }
                 photo.setImageBitmap(bitmap);
+                photo.setVisibility(View.VISIBLE);
+                scrim.setVisibility(View.VISIBLE);
             });
         }
     }
