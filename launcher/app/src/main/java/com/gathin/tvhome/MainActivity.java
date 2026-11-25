@@ -9512,7 +9512,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View content = screensaverView.findViewById(R.id.nightstandContent);
         if (content == null) return;
         StandbyWidgetEditor.show(this, (FrameLayout) screensaverView, content, density,
-                () -> applyStandbyPanelPreferences());
+                () -> applyStandbyPanelPreferences(), this::dismissScreensaver);
     }
 
     /** Refreshes only the manually opened in-launcher nightstand; Android owns idle transitions. */
