@@ -3769,7 +3769,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (recycler == null || pos < 0 || !canMove) return;
         RecyclerView.ViewHolder vh = recycler.findViewHolderForAdapterPosition(pos);
         if (vh == null) {
-            if (!inDock && classicHomeHostActive) scrollClassicHomeToRow(pos, null);
+            if (!inDock && classicHomeHostActive) recycler.scrollToPosition(pos);
             else if (!inDock && !dockVertical && horizontalGridExpanded) alignHorizontalGridRowToGlass(pos);
             else recycler.scrollToPosition(pos);
             startMoveWhenLaidOut(key, inDock, pos, 3);
@@ -3796,6 +3796,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         movingRecycler = recycler;
         hideShelfImmediately();
         movingCard = vh.itemView.findViewById(R.id.card);
+        if (!inDock && classicHomeHostActive) scrollClassicHomeToRow(pos, movingCard);
         movingCard.requestFocus();
         glider.setMoveModeActive(true, isGlassEffectsEnabled());
         startMoveWiggle(movingCard);
