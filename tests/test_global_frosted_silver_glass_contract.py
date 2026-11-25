@@ -214,6 +214,8 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertIn("adapter.beginMoveTransaction()", main)
         self.assertIn("finishMoveFromUser(true)", main)
         self.assertIn("finishMoveFromUser(false)", main)
+        self.assertIn("dpadCenterHeld = event.getAction() == KeyEvent.ACTION_DOWN;", main)
+        self.assertIn("moveWaitRelease = dpadCenterHeld;", main)
         self.assertIn("latestConfig.columns != COLUMNS", main)
         self.assertIn("recreate();", main)
         adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
