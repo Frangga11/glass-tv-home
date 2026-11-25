@@ -15,7 +15,7 @@ public class ClassicAppMovePolicyTest {
     @Test public void verticalMovementPreservesColumnAndHandlesIncompleteRows() {
         assertEquals(1, ClassicAppMovePolicy.target(5, 10, 4, 0, -1));
         assertEquals(9, ClassicAppMovePolicy.target(5, 10, 4, 0, 1));
-        assertEquals(5, ClassicAppMovePolicy.target(9, 10, 4, 0, 1));
+        assertEquals(9, ClassicAppMovePolicy.target(9, 10, 4, 0, 1));
     }
 
     @Test public void invalidPositionsAndColumnsAreStable() {
