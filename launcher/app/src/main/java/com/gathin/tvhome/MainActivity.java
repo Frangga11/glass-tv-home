@@ -1050,8 +1050,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             @Override
             public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
                 updateTopFade();
-                if (!dockVertical && horizontalGridExpanded && !horizontalDockCollapseInProgress
-                        && dockRecycler != null) {
+                if (!classicHomeHostActive && !dockVertical && horizontalGridExpanded
+                        && !horizontalDockCollapseInProgress && dockRecycler != null) {
                     // Derive the offset from laid-out rows; accumulated callbacks can drift during relayouts.
                     horizontalGridScrollPixels = measuredGridScrollPixels(horizontalGridScrollPixels + dy);
                     // Never let a layout pass override a running frame animation.
@@ -3769,7 +3769,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (recycler == null || pos < 0 || !canMove) return;
         RecyclerView.ViewHolder vh = recycler.findViewHolderForAdapterPosition(pos);
         if (vh == null) {
-            if (!inDock && !dockVertical && horizontalGridExpanded) alignHorizontalGridRowToGlass(pos);
+            if (!inDock && classicHomeHostActive) scrollClassicHomeToRow(pos, null);
+            else if (!inDock && !dockVertical && horizontalGridExpanded) alignHorizontalGridRowToGlass(pos);
             else recycler.scrollToPosition(pos);
             startMoveWhenLaidOut(key, inDock, pos, 3);
             return;
@@ -4464,7 +4465,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return true;
         }
         if (horizontalDockCollapseInProgress) return true;
-        if (!dockVertical && horizontalGridExpanded) {
+        if (!classicHomeHostActive && !dockVertical && horizontalGridExpanded) {
             collapseHorizontalOverflowToDock(Math.max(0, dockAdapter == null ? 0
                     : dockAdapter.positionOf(lastDockFocusedKey)));
             return true;
