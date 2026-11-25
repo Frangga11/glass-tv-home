@@ -472,8 +472,22 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 || to >= snapshot.dockItems.size() || from >= pinned.size() || to >= pinned.size()) return false;
         List<String> reordered = DockLayoutModel.movePinnedKey(pinned, from, to, snapshot.dockItems.size());
         if (reordered.equals(pinned) || !savePinnedState(reordered, currentUnpinnedKeys())) return false;
-        presentationSnapshot = null;
-        notifyDataSetChanged();
+        if (moveTransactionActive) {
+            Map<String, Entry> entriesByKey = new HashMap<>();
+            for (Entry entry : snapshot.dockItems) {
+                entriesByKey.put(entry.component.flattenToShortString(), entry);
+            }
+            List<Entry> orderedDock = new ArrayList<>();
+            for (String key : reordered) {
+                Entry entry = entriesByKey.get(key);
+                if (entry != null) orderedDock.add(entry);
+            }
+            // Classic Mode is one ordered list: Dock first, then Grid, just like Home Universal.
+            replacePresentationOrder(orderedDock, snapshot.gridItems);
+        } else {
+            presentationSnapshot = null;
+            notifyDataSetChanged();
+        }
         return true;
     }
 
@@ -485,13 +499,21 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         List<String> excluded = currentUnpinnedKeys();
         excluded.remove(key);
         if (!savePinnedState(updated, excluded)) return false;
-        presentationSnapshot = null;
-        notifyDataSetChanged();
+        if (moveTransactionActive) {
+            DockLayoutModel.Snapshot<Entry> snapshot = dockSnapshot();
+            replacePresentationOrder(snapshot.dockItems, snapshot.gridItems);
+        } else {
+            presentationSnapshot = null;
+            notifyDataSetChanged();
+        }
         return true;
     }
 
     boolean unpinFromDock(String key) {
         if (key == null || key.trim().isEmpty()) return false;
+        if (moveTransactionActive) {
+            return unpinFromDockAtGridPosition(key, dockSnapshot().gridItems.size());
+        }
         List<String> pinned = currentPinnedKeys();
         List<String> updated = DockLayoutModel.unpinKey(pinned, key);
         if (updated.equals(pinned)) return false;
