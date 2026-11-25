@@ -61,6 +61,58 @@ final class StandbyWidgetLayoutController {
         }
     }
 
+    static void refreshPalette(View root, String style, float density) {
+        if (root == null || COMPACT.equals(style)) return;
+        TextView clock = root.findViewById(R.id.nightstandClock);
+        TextView date = root.findViewById(R.id.nightstandDate);
+        TextView hijri = root.findViewById(R.id.nightstandHijri);
+        TextView prayer = root.findViewById(R.id.nightstandPrayer);
+        if (clock != null) clock.setTextColor(0xFFF7FBFF);
+        if (date != null) date.setTextColor(0xFFF3FAFF);
+        if (hijri != null) hijri.setTextColor(0xFFFFE52B);
+        if (prayer != null) {
+            prayer.setTextColor(0xFFF5FBFF);
+            prayer.setBackground(pill(density, 0xB812DCEB, 0xFF24EAF4,
+                    COLUMN.equals(style) ? 24 : 26));
+        }
+        LinearLayout schedule = root.findViewById(R.id.nightstandPrayerSchedule);
+        if (schedule == null) return;
+        int next = nextPrayerIndex(new TextView[] {
+                root.findViewById(R.id.nightstandFajrTime),
+                root.findViewById(R.id.nightstandDhuhrTime),
+                root.findViewById(R.id.nightstandAsrTime),
+                root.findViewById(R.id.nightstandMaghribTime),
+                root.findViewById(R.id.nightstandIshaTime)
+        });
+        if (COLUMN.equals(style)) {
+            for (int i = 0; i < schedule.getChildCount(); i++) {
+                View row = schedule.getChildAt(i);
+                if (!(row instanceof LinearLayout)) continue;
+                TextView label = (TextView) ((LinearLayout) row).getChildAt(0);
+                TextView time = (TextView) ((LinearLayout) row).getChildAt(1);
+                label.setTextColor(0xFFF3FAFF);
+                time.setTextColor(0xFFFFFFFF);
+                row.setBackground(pill(density, i == next ? 0xD900DCE8 : 0x223A7895,
+                        i == next ? 0xFF00E8F2 : 0x446EC7E0, 14));
+            }
+        } else {
+            int item = 0;
+            for (int i = 0; i < schedule.getChildCount(); i++) {
+                View child = schedule.getChildAt(i);
+                if (!(child instanceof LinearLayout)) continue;
+                LinearLayout cell = (LinearLayout) child;
+                TextView label = (TextView) cell.getChildAt(0);
+                TextView time = (TextView) cell.getChildAt(1);
+                label.setTextColor(0xFFF4FAFF);
+                time.setTextColor(0xFFFFFFFF);
+                cell.setBackground(item == next
+                        ? pill(density, 0xD900DCE8, 0xFF00E8F2, 14)
+                        : null);
+                item++;
+            }
+        }
+    }
+
     private static void buildLinear(Context c, LinearLayout root, Snapshot s, float d) {
         root.setOrientation(LinearLayout.HORIZONTAL);
         root.setGravity(Gravity.CENTER_VERTICAL);
