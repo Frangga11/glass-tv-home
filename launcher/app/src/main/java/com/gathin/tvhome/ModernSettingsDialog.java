@@ -1389,17 +1389,18 @@ public final class ModernSettingsDialog {
                     rightContent.addView(buildCardRow(activity, density, outfit,
                             "Atur posisi langsung", "Geser widget pada layar pratinjau menggunakan remote TV",
                             activity::showStandbyWidgetEditor));
-                    String[] shapes = {"Kapsul lembut", "Sudut membulat", "Persegi"};
-                    String[] shapeValues = {"soft", "rounded", "square"};
-                    String currentShape = standbyPrefs.getString("widget_shape", "soft");
+                    String[] widgetNames = {"Widget Linear", "Widget Kolom", "Widget Bentang", "Widget Compact"};
+                    String[] widgetValues = {"linear", "column", "bentang", "compact"};
+                    String currentWidget = standbyPrefs.getString("widget_layout", "compact");
+                    int selectedWidget = Math.max(0, java.util.Arrays.asList(widgetValues).indexOf(currentWidget));
                     rightContent.addView(buildCardRow(activity, density, outfit,
-                            "Bentuk panel", "Saat ini: " + (currentShape.equals("square") ? "Persegi" : currentShape.equals("rounded") ? "Sudut membulat" : "Kapsul lembut"),
+                            "Bentuk Widget", "Saat ini: " + widgetNames[selectedWidget],
                             () -> new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                                    .setTitle("Bentuk panel")
-                                    .setSingleChoiceItems(shapes, Math.max(0, java.util.Arrays.asList(shapeValues).indexOf(currentShape)), (d,w) -> {
-                                        standbyPrefs.edit().putString("widget_shape", shapeValues[w]).apply();
+                                    .setTitle("Bentuk Widget")
+                                    .setSingleChoiceItems(widgetNames, selectedWidget, (d,w) -> {
+                                        standbyPrefs.edit().putString("widget_layout", widgetValues[w]).apply();
                                         d.dismiss();
-                                        TvFeedback.show(activity, "Bentuk disimpan.", Toast.LENGTH_SHORT);
+                                        TvFeedback.show(activity, widgetNames[w] + " dipilih.", Toast.LENGTH_SHORT);
                                         if (renderRightPane[0] != null) renderRightPane[0].run();
                                     }).setNegativeButton(android.R.string.cancel, null).show()));
                     rightContent.addView(buildCardRow(activity, density, outfit,
