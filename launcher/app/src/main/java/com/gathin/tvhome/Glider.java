@@ -237,8 +237,8 @@ final class Glider extends View {
     }
 
     /**
-     * While an app is being moved it wiggles, and the glass pane behind it would show at its corners:
-     * then only the app's shadow is drawn.
+     * Allows a caller to suppress the glass fill while retaining the focus perimeter.
+     * Move Mode does not use this path; its one Glider body and Rim remain visible.
      */
     void setPaneHidden(boolean hidden) {
         if (paneHidden == hidden) return;
@@ -256,7 +256,7 @@ final class Glider extends View {
         changed();
     }
 
-    /** Restricts this Glider to its capsule companions; prevents the full-window shadow bleeding at corners. */
+    /** Restricts drawing to capsule companions when a popup needs clipped focus geometry. */
     void setCompanionOnly(boolean companionOnly) {
         if (this.companionOnly == companionOnly) return;
         this.companionOnly = companionOnly;
