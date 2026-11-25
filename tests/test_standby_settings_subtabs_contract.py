@@ -28,13 +28,13 @@ class StandbySettingsSubtabsContractTest(unittest.TestCase):
     def test_layout_preferences_are_persisted_and_applied(self):
         settings = SETTINGS.read_text(encoding="utf-8")
         main = MAIN.read_text(encoding="utf-8")
-        self.assertIn('"widget_position"', settings)
-        self.assertIn('"widget_vertical_position"', settings)
+        editor = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/StandbyWidgetEditor.java").read_text(encoding="utf-8")
+        self.assertIn('"widget_x"', editor)
+        self.assertIn('"widget_y"', editor)
         self.assertIn('"widget_shape"', settings)
         self.assertIn("applyStandbyPanelPreferences()", main)
-        self.assertIn("Gravity.CENTER_VERTICAL", main)
-        self.assertIn("Gravity.TOP", main)
-        self.assertIn("Gravity.BOTTOM", main)
+        self.assertIn("UniversalGlassMaterial.homeCapsule(", main)
+        self.assertIn("Gravity.TOP | Gravity.START", main)
 
     def test_subtabs_are_compact_and_dpad_navigation_is_explicit(self):
         settings = SETTINGS.read_text(encoding="utf-8")
