@@ -2356,7 +2356,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     left + width - pad, top + height - pad, radius);
         } else {
             // Grid focus always uses the same spring glide, including Move Mode. Hard-syncing
-            // during Dock/Grid motion cancels the shadow's travel and makes row one feel different.
+            // during Dock/Grid motion cancels the Glider's travel and makes row one feel different.
             glider.moveTo(left + pad, top + pad,
                     left + width - pad, top + height - pad, radius);
         }
@@ -3582,7 +3582,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void finishMoveFromUser(boolean commit) {
         String key = moveSessionKey != null ? moveSessionKey : movingKey;
         boolean restoreDockShelf = movingDock;
-        if (adapter != null && adapter.isMoveTransactionActive()) {
+        boolean classicSession = adapter != null && adapter.isMoveTransactionActive();
+        if (classicSession) {
             boolean completed = commit ? adapter.commitMoveTransaction() : cancelClassicMoveTransaction();
             if (!completed) return;
             if (dockAdapter != null) dockAdapter.refresh();
@@ -3590,7 +3591,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         finishMoveState(false);
         moveHandoffPending = false;
-        restoreMoveFocus(key, restoreDockShelf);
+        if (classicSession) {
+            restoreMoveFocus(key, restoreDockShelf);
+        } else if (restoreDockShelf && !horizontalThreeRowFrameActive && dockAdapter != null) {
+            int position = dockAdapter.positionOf(key);
+            if (position >= 0) showHero(position);
+        }
     }
 
     private boolean cancelClassicMoveTransaction() {
@@ -3603,21 +3609,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void finishMove() {
         String key = moveSessionKey != null ? moveSessionKey : movingKey;
         boolean restoreDockShelf = movingDock;
-        if (adapter != null && adapter.isMoveTransactionActive()) {
+        boolean classicSession = adapter != null && adapter.isMoveTransactionActive();
+        if (classicSession) {
             adapter.cancelMoveTransaction();
             if (dockAdapter != null) dockAdapter.refresh();
             applyDockLayout();
         }
         finishMoveState(false);
         moveHandoffPending = false;
-        restoreMoveFocus(key, restoreDockShelf);
+        if (classicSession) restoreMoveFocus(key, restoreDockShelf);
     }
 
     private void restoreMoveFocus(String key, boolean restoreDockShelf) {
         if (key == null) return;
         int dockPosition = dockAdapter == null ? RecyclerView.NO_POSITION : dockAdapter.positionOf(key);
         if (dockPosition >= 0) {
-            if (restoreDockShelf && !horizontalThreeRowFrameActive) showHero(dockPosition);
+            if (!horizontalThreeRowFrameActive) showHero(dockPosition);
             if (dockRecycler != null) dockRecycler.post(() -> focusDockTile(dockPosition));
             return;
         }
