@@ -9498,6 +9498,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
     }
 
+    void showStandbyPreviewWindow() {
+        if (isFinishing() || isDestroyed()) return;
+        if (!screensaverActive) showNightstandScreensaver();
+        if (screensaverView == null || !(screensaverView.getParent() instanceof ViewGroup)) return;
+        StandbyPreviewWindow.show(this, screensaverView, this::dismissScreensaver);
+    }
+
     void showStandbyWidgetEditor() {
         if (isFinishing() || isDestroyed()) return;
         if (!screensaverActive) showNightstandScreensaver();
