@@ -13,7 +13,10 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         start = MAIN.index("gridWrap.addOnLayoutChangeListener")
         end = MAIN.index("// Resolve the bottom anchor", start)
         layout_listener = MAIN[start:end]
-        self.assertIn("if (classicHomeHostActive) updateClassicDockSpacer();", layout_listener)
+        self.assertIn("parkDock();", layout_listener)
+        park = MAIN[MAIN.index("private boolean parkDock()"):MAIN.index("/** Applies the 30dp", MAIN.index("private boolean parkDock()"))]
+        self.assertIn("if (classicHomeHostActive)", park)
+        self.assertIn("updateClassicDockSpacer();", park)
 
         host = MAIN[MAIN.index("private void activateClassicHomeHost"):
                     MAIN.index("private void deactivateClassicHomeHost")]
@@ -28,16 +31,18 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertIn("if (dockLayoutChanged) dockRecycler.setLayoutParams(dockParams);", method)
         self.assertIn("if (spacerParams != null && spacerParams.height != wanted)", method)
         self.assertNotIn("classicHomeScroll.requestLayout()", method)
-        self.assertIn("if (classicHomeHostActive) updateClassicDockSpacer();", MAIN)
+        park = MAIN[MAIN.index("private boolean parkDock()"):MAIN.index("/** Applies the 30dp", MAIN.index("private boolean parkDock()"))]
+        self.assertIn("updateClassicDockSpacer();", park)
 
     def test_classic_layout_pass_does_not_refresh_dock_adapter_or_rebuild_focus_targets(self):
         start = MAIN.index("private boolean parkDock()")
-        end = MAIN.index("\n    }", start) + len("\n    }")
+        end = MAIN.index("/** Applies the 30dp", start)
         method = MAIN[start:end]
-        classic = method[method.index("if (classicHomeHostActive)"):]
+        classic = method[method.index("if (classicHomeHostActive)"):method.index("        applyDockLayout();")]
         self.assertIn("updateClassicDockSpacer();", classic)
+        self.assertNotIn("dockAdapter.refresh()", classic)
         self.assertNotIn("applyDockLayout();", classic)
-        self.assertIn("applyDockLayout();", method[method.index("        }\n        applyDockLayout();"):])
+        self.assertIn("applyDockLayout();", method)
 
 
     def test_column_change_recreates_atomic_grid_and_restores_stable_focus_identity(self):
