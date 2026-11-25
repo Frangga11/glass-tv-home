@@ -3268,7 +3268,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // path hid the Grid and swallowed DOWN, so it is not an app-navigation mode anymore.
         boolean classicOrderedMode = preferences.orientation == DockPreferences.Orientation.VERTICAL;
         horizontalCarouselMode = false;
+        boolean appModeChanged = adapter.isClassicVerticalMode() != classicOrderedMode;
         adapter.setClassicVerticalMode(classicOrderedMode);
+        if (appModeChanged) {
+            adapter.invalidateCache();
+            adapter.reload(cards);
+        }
         adapter.refreshPresentation();
         dockAdapter.refresh();
         dockAdapter.setVertical(false);
