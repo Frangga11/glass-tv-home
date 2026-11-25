@@ -2289,7 +2289,7 @@ public final class ModernSettingsDialog {
             return secure
                     ? Settings.Secure.getString(ctx.getContentResolver(), key)
                     : Settings.System.getString(ctx.getContentResolver(), key);
-        } catch (SecurityException | RuntimeException e) {
+        } catch (RuntimeException e) {
             return null;
         }
     }
