@@ -9469,32 +9469,43 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View content = screensaverView.findViewById(R.id.nightstandContent);
         if (content == null) return;
         android.content.SharedPreferences prefs = getSharedPreferences("standby_prefs", MODE_PRIVATE);
-        String position = prefs.getString("widget_position", "left");
         String shape = prefs.getString("widget_shape", "soft");
+        float radius = shape.equals("square") ? 6f : shape.equals("rounded") ? 14f : 26f;
         if (content.getLayoutParams() instanceof FrameLayout.LayoutParams) {
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) content.getLayoutParams();
-            String verticalPosition = prefs.getString("widget_vertical_position", "center");
-            int horizontalGravity = position.equals("right") ? Gravity.END
-                    : position.equals("center") ? Gravity.CENTER_HORIZONTAL : Gravity.START;
-            int verticalGravity = verticalPosition.equals("top") ? Gravity.TOP
-                    : verticalPosition.equals("bottom") ? Gravity.BOTTOM : Gravity.CENTER_VERTICAL;
-            lp.gravity = horizontalGravity | verticalGravity;
-            int edge = Math.round(42 * density);
-            lp.leftMargin = position.equals("left") ? edge : 0;
-            lp.rightMargin = position.equals("right") ? edge : 0;
-            lp.topMargin = verticalPosition.equals("top") ? edge : 0;
-            lp.bottomMargin = verticalPosition.equals("bottom") ? edge : 0;
+            lp.gravity = Gravity.TOP | Gravity.START;
+            lp.leftMargin = 0;
+            lp.topMargin = 0;
+            lp.rightMargin = 0;
+            lp.bottomMargin = 0;
             content.setLayoutParams(lp);
         }
-        android.graphics.drawable.GradientDrawable panel =
-                new android.graphics.drawable.GradientDrawable(
-                        android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
-                        new int[]{0xEAF8FFFF, 0xDDEAF7FF, 0xD3DCEBFA});
-        panel.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
-        panel.setStroke(Math.max(1, Math.round(density)), 0xEFFFFFFF);
-        float radius = shape.equals("square") ? 6f : shape.equals("rounded") ? 14f : 26f;
-        panel.setCornerRadius(radius * density);
-        content.setBackground(panel);
+        // Reuse the same Silver-Cyan glass recipe as the Home Dock; do not maintain a
+        // second standby-only gradient/material implementation.
+        content.setBackground(UniversalGlassMaterial.homeCapsule(
+                this, density, radius, 0xEAF8FFFF, 0xEFFFFFFF));
+        content.post(() -> {
+            if (screensaverView == null || content.getParent() == null) return;
+            View area = (View) content.getParent();
+            float maxX = Math.max(0f, area.getWidth() - content.getWidth());
+            float maxY = Math.max(0f, area.getHeight() - content.getHeight());
+            float defaultX = maxX == 0f ? 0f : Math.min(1f, (42f * density) / maxX);
+            float defaultY = 0.5f;
+            float x = prefs.getFloat("widget_x", defaultX);
+            float y = prefs.getFloat("widget_y", defaultY);
+            content.setTranslationX(Math.max(0f, Math.min(1f, x)) * maxX);
+            content.setTranslationY(Math.max(0f, Math.min(1f, y)) * maxY);
+        });
+    }
+
+    void showStandbyWidgetEditor() {
+        if (isFinishing() || isDestroyed()) return;
+        if (!screensaverActive) showNightstandScreensaver();
+        if (screensaverView == null) return;
+        View content = screensaverView.findViewById(R.id.nightstandContent);
+        if (content == null) return;
+        StandbyWidgetEditor.show(this, (FrameLayout) screensaverView, content, density,
+                () -> applyStandbyPanelPreferences());
     }
 
     /** Refreshes only the manually opened in-launcher nightstand; Android owns idle transitions. */
