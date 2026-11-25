@@ -9525,7 +9525,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updateHomeTabIndicator();
         if (screensaverView == null) {
             screensaverView = getLayoutInflater().inflate(R.layout.view_nightstand, root, false);
+            screensaverView.setFocusable(true);
+            screensaverView.setFocusableInTouchMode(true);
             screensaverView.setOnClickListener(v -> dismissScreensaver());
+            screensaverView.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() != KeyEvent.ACTION_DOWN) return true;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+                        || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
+                        || keyCode == KeyEvent.KEYCODE_DPAD_UP
+                        || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    dismissScreensaver();
+                    return true;
+                }
+                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                    dismissScreensaver();
+                    return true;
+                }
+                return false;
+            });
             root.addView(screensaverView, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
@@ -9538,6 +9555,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         screensaverView.setVisibility(View.VISIBLE);
         screensaverView.setAlpha(0f);
         screensaverView.animate().alpha(1f).setDuration(500).start();
+        screensaverView.requestFocus();
         android.util.Log.i("TvHome", "Nightstand screensaver activated");
     }
 
@@ -9550,13 +9568,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         TextView prayer = screensaverView.findViewById(R.id.nightstandPrayer);
         if (prayer != null) prayer.setText("🕌 " + PrayerTimes.getNextPrayerSummary(this));
 
-        // Center locked strictly with no movement
-        View content = screensaverView.findViewById(R.id.nightstandContent);
-        if (content != null) {
-            content.animate().cancel();
-            content.setTranslationX(0f);
-            content.setTranslationY(0f);
-        }
+        // Preserve the persisted widget position. Refreshing clock/prayer metrics must
+        // never force the dashboard back to the origin or interrupt an active editor.
 
         // iPhone StandBy Wind Down Mode: 10:00 PM (22:00) to 6:00 AM (06:00) -> Red Monochrome
         java.util.Calendar cal = PrayerTimes.calendar(this);
