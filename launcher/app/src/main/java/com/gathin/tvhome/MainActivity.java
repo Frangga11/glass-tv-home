@@ -1034,6 +1034,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         // Recalculate the two independent regions when the host receives a new size.
         gridWrap.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            // The Classic ScrollView is installed before the first measured frame. Recompute
+            // its Dock spacer and viewport geometry after the host receives real dimensions.
+            if (classicHomeHostActive) updateClassicDockSpacer();
             parkDock();
             updateTopFade();
             if (l != ol || t != ot || r != or || b != ob) {
@@ -1233,7 +1236,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         packageFilter.addDataScheme("package");
 
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
-        TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
+        TvInputManager tim = null;
+        try {
+            tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
+        } catch (android.os.ServiceManager.ServiceNotFoundException unavailableInTestHost) {
+            // Android TV always publishes tv_input; non-TV Robolectric hosts may not.
+            android.util.Log.d("TvHome.Inputs", "TV input service unavailable on this host");
+        }
         if (tim != null) tim.registerCallback(inputCallback, handler);
         if (cm != null) {
             cm.registerDefaultNetworkCallback(networkCallback);
