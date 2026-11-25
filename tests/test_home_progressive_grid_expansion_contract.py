@@ -385,8 +385,11 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("boolean classicOrderedMode = preferences.orientation == DockPreferences.Orientation.VERTICAL;", layout)
         self.assertIn("horizontalCarouselMode = false;", layout)
         self.assertIn("adapter.refreshPresentation();", layout)
+        self.assertIn("adapter.invalidateCache();", layout)
+        self.assertIn("adapter.reload(cards);", layout)
         self.assertIn("dockAdapter.setCarouselMode(false);", layout)
         self.assertIn("activateClassicHomeHost();", layout)
+        self.assertIn("dockAdapter.dockCapacity()", MAIN)
         self.assertNotIn("dockAdapter.setCarouselMode(horizontalCarouselMode);", layout)
 
     def test_classic_grid_scrolls_before_requesting_focus(self):
