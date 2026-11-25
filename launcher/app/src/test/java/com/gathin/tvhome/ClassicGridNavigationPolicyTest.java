@@ -39,6 +39,23 @@ public class ClassicGridNavigationPolicyTest {
         assertEquals(8, target.position);
     }
 
+    @Test public void changingColumnCountRecomputesVerticalFocusForThreeAndFiveColumns() {
+        ClassicGridNavigationPolicy.Target threeColumns =
+                ClassicGridNavigationPolicy.fromGrid(2, android.view.KeyEvent.KEYCODE_DPAD_DOWN, 3, 8, 3);
+        assertFalse(threeColumns.dock);
+        assertEquals(5, threeColumns.position);
+
+        ClassicGridNavigationPolicy.Target fiveColumns =
+                ClassicGridNavigationPolicy.fromGrid(4, android.view.KeyEvent.KEYCODE_DPAD_DOWN, 5, 12, 5);
+        assertFalse(fiveColumns.dock);
+        assertEquals(9, fiveColumns.position);
+
+        ClassicGridNavigationPolicy.Target fiveColumnUp =
+                ClassicGridNavigationPolicy.fromGrid(4, android.view.KeyEvent.KEYCODE_DPAD_UP, 5, 12, 5);
+        assertTrue(fiveColumnUp.dock);
+        assertEquals(4, fiveColumnUp.position);
+    }
+
     @Test public void dockDownMapsToGridAtSameSlot() {
         ClassicGridNavigationPolicy.Target target =
                 ClassicGridNavigationPolicy.fromDock(2, android.view.KeyEvent.KEYCODE_DPAD_DOWN, 4, 7, 0);
