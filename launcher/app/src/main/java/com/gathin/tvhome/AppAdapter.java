@@ -295,8 +295,13 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         List<String> classicOrder = null;
         Map<String, Integer> place = new HashMap<>();
         if (classicVerticalMode) {
+            List<Entry> alphabeticalApps = new ArrayList<>(fresh);
+            Collections.sort(alphabeticalApps, (a, b) -> {
+                int byLabel = a.label.compareToIgnoreCase(b.label);
+                return byLabel != 0 ? byLabel : a.pkg.compareTo(b.pkg);
+            });
             List<String> installedPackages = new ArrayList<>();
-            for (Entry entry : fresh) installedPackages.add(entry.pkg);
+            for (Entry entry : alphabeticalApps) installedPackages.add(entry.pkg);
             classicOrder = ClassicAppOrder.merge(arranged, favourites, installedPackages);
             if (!moveTransactionActive && !arranged.equals(classicOrder)) {
                 arranged.clear();
