@@ -154,6 +154,8 @@ final class StandbyWidgetLayoutController {
             time.setTextSize(16f);
             time.setTextColor(0xFFFFFFFF);
             time.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+            detach(label);
+            detach(time);
             line.addView(label, new LinearLayout.LayoutParams(0, dp(d, 30), 1f));
             line.addView(time, new LinearLayout.LayoutParams(dp(d, 76), dp(d, 30)));
             schedule.addView(line, new LinearLayout.LayoutParams(-1, dp(d, 31)));
@@ -187,6 +189,8 @@ final class StandbyWidgetLayoutController {
             time.setTextColor(0xFFFFFFFF);
             time.setGravity(Gravity.CENTER);
             item.removeAllViews();
+            detach(label);
+            detach(time);
             item.addView(label, matchWrap());
             item.addView(time, matchWrap());
             s.schedule.addView(item, new LinearLayout.LayoutParams(0, -1, 1f));
@@ -203,6 +207,8 @@ final class StandbyWidgetLayoutController {
         for (int i = 0; i < s.scheduleItems.length; i++) {
             LinearLayout item = s.scheduleItems[i];
             item.removeAllViews();
+            detach(s.labels[i]);
+            detach(s.times[i]);
             s.labels[i].setTextSize(s.labelSizes[i]);
             s.labels[i].setTextColor(s.labelColors[i]);
             s.labels[i].setGravity(s.labelGravities[i]);
@@ -229,6 +235,12 @@ final class StandbyWidgetLayoutController {
         s.restoreClockDateHijriPrayer();
         content.setOrientation(s.orientation);
         content.setGravity(s.gravity);
+    }
+
+    private static void detach(View view) {
+        if (view != null && view.getParent() instanceof ViewGroup) {
+            ((ViewGroup) view.getParent()).removeView(view);
+        }
     }
 
     private static void detachAll(ViewGroup group) {
