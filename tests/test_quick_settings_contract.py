@@ -22,6 +22,16 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("private void showQuickControlPopup(int initialFocus)", MAIN)
         self.assertIn("showQuickSettingsDialog(initialFocus);", MAIN)
 
+    def test_tv_input_service_is_only_queried_on_leanback_devices(self):
+        start = MAIN.index("private TvInputManager tvInputManagerOrNull()")
+        end = MAIN.index("\n    }", start) + len("\n    }")
+        lookup = MAIN[start:end]
+        feature_check = lookup.index("hasSystemFeature(PackageManager.FEATURE_LEANBACK)")
+        service_lookup = lookup.index("getSystemService(TV_INPUT_SERVICE)")
+        self.assertLess(feature_check, service_lookup)
+        self.assertIn("catch (RuntimeException unavailableOnDevice)", lookup)
+        self.assertNotIn("catch (Exception", lookup)
+
     def test_focus_keeps_white_text_and_uses_dark_halo_on_glass(self):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
