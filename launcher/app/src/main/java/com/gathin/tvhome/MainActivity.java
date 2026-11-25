@@ -2250,9 +2250,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (islamicShelf != null) {
             islamicShelf.animate().alpha(alpha).setDuration(duration).start();
         }
-        if (glass != null) {
-            glass.animate().alpha(alpha).setDuration(duration).start();
-        }
         if (glider != null) {
             glider.animate().alpha(alpha).setDuration(duration).start();
         }
@@ -2270,7 +2267,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updateHomeTabIndicator();
     }
 
-    // ---- glass highlight -------------------------------------------------------------------------
+    // ---- Glider focus highlight -----------------------------------------------------------------
 
     /** Reused by every focus move. */
     private final Rect tileRect = new Rect(), showRect = new Rect();
