@@ -65,10 +65,6 @@ import android.widget.Toast;
 import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
-import androidx.dynamicanimation.animation.DynamicAnimation;
-import androidx.dynamicanimation.animation.FloatPropertyCompat;
-import androidx.dynamicanimation.animation.SpringAnimation;
-import androidx.dynamicanimation.animation.SpringForce;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -195,7 +191,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private static final String HOME_DOCK_FOCUS_KEY = "home_dock_focus_key";
     private static String lastDockFocusedKey;
     private FrameLayout root;
-    private GlassView glass;
     private View ambient;
     /** The focus: one dark shape gliding between tiles and pills (see Glider). */
     private Glider glider;
@@ -223,6 +218,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private TextView heroName;
     private TextView heroDesc;
     private TextView heroWhere;
+    private TextView appsLabel;
     /** The place on screen and a few lines about it; null for the user's own wallpapers. */
     private String placeName;
     private String placeText = "", placeCountry = "";
@@ -274,11 +270,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private TextView timeSubuh, timeSyuruk, timeZohor, timeAsar, timeMaghrib, timeIsyak;
     private boolean shamsi;
     private String vpnApp;
-    private SpringAnimation springX, springY;
-    private float glassTargetX, glassTargetY;
-    // How far the grid has scrolled the glass. springY works without it, in grid content space, so a
-    // scroll moves the glass in lockstep with its tile instead of becoming a moving spring target.
-    private float glassScrollShift;
     private boolean glassShown;
     // Static so they survive the activity being destroyed while another app is open (low-memory TVs,
     // or Developer options → "Don't keep activities"); they only reset when the process dies.
@@ -536,7 +527,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         wallpaperIntervalMs = getWallpaperIntervalMs();
         placesMode = cfg.places;
         mainContent = findViewById(R.id.mainContent);
-        glass = findViewById(R.id.glass);
         ambient = findViewById(R.id.ambient);
         Backdrop.setWorker(wallDecoder, handler);
         heroShelf = findViewById(R.id.heroShelf);
@@ -549,6 +539,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         heroName = findViewById(R.id.heroName);
         heroDesc = findViewById(R.id.heroDesc);
         heroWhere = findViewById(R.id.heroWhere);
+        appsLabel = findViewById(R.id.appsLabel);
         int usable = getResources().getDisplayMetrics().widthPixels - Math.round(68 * density);
         heroMaxWidth = Math.round(usable * HERO_WIDTH_SHARE);
         heroNameMaxWidth = Math.round(usable * HERO_NAME_WIDTH_SHARE);
@@ -1079,37 +1070,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 } else if (!horizontalGridTransitionRunning) {
                     // Hold the cursor in its destination screen slot while coordinator-driven
                     // row scrolling moves the old and new rows underneath it.
-                    glassTargetY -= dy;
-                    glassScrollShift -= dy;
                     glider.scrolled(dy);
                 }
             }
         });
-
-        // Liquid feel: soft springs on the highlight's position.
-        springX = new SpringAnimation(glass, DynamicAnimation.TRANSLATION_X);
-        springY = new SpringAnimation(glass, new FloatPropertyCompat<View>("glassContentY") {
-            @Override
-            public float getValue(View v) {
-                return v.getTranslationY() - glassScrollShift;
-            }
-
-            @Override
-            public void setValue(View v, float value) {
-                v.setTranslationY(value + glassScrollShift);
-            }
-        });
-        for (SpringAnimation s : new SpringAnimation[]{springX, springY}) {
-            if (reducedMotion) {
-                // Stiff and almost critically damped: settles in a few frames instead of oscillating,
-                // and stops once the highlight is within 1.5 px of its tile.
-                s.setSpring(new SpringForce().setStiffness(1400f).setDampingRatio(0.95f));
-                s.setMinimumVisibleChange(1.5f);
-            } else {
-                // Critically damped: glides onto the tile and stops there, with no bounce back.
-                s.setSpring(new SpringForce().setStiffness(900f).setDampingRatio(1.0f));
-            }
-        }
 
         btnInputs = findViewById(R.id.btnInputs);
         btnAssistant = findViewById(R.id.btnAssistant);
@@ -2353,7 +2317,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         root.offsetDescendantRectToMyCoords(card, bounds);
         offsetByAncestorTranslation(card, bounds);
         float pad = 6f * density;
-        float scale = isIconAnimationsEnabled() ? AppAdapter.FOCUS_SCALE : 1f;
+        float scale = isIconAnimationsEnabled() ? AppAdapter.focusScale(true) : 1f;
         float width = card.getWidth() * scale + 2f * pad;
         float height = card.getHeight() * scale + 2f * pad;
         float left = bounds.exactCenterX() - width / 2f;
@@ -2380,7 +2344,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         root.offsetDescendantRectToMyCoords(card, bounds);
         offsetByAncestorTranslation(card, bounds);
         float pad = 6f * density;
-        float scale = isIconAnimationsEnabled() ? AppAdapter.FOCUS_SCALE : 1f;
+        float scale = isIconAnimationsEnabled() ? AppAdapter.focusScale(inDock) : 1f;
         float width = card.getWidth() * scale + 2f * pad;
         float height = card.getHeight() * scale + 2f * pad;
         float left = bounds.exactCenterX() - width / 2f;
@@ -2473,21 +2437,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         root.offsetDescendantRectToMyCoords(card, r);
         offsetByAncestorTranslation(card, r);
         float pad = 6f * density;
-        float focusScale = isIconAnimationsEnabled() ? AppAdapter.FOCUS_SCALE : 1f;
+        float focusScale = isIconAnimationsEnabled() ? AppAdapter.focusScale(inDock) : 1f;
         float w = card.getWidth() * focusScale + 2 * pad;
         float h = card.getHeight() * focusScale + 2 * pad;
         float x = r.exactCenterX() - w / 2f;
         float y = r.exactCenterY() - h / 2f;
 
-        ViewGroup.LayoutParams lp = glass.getLayoutParams();
-        if (lp.width != (int) w || lp.height != (int) h) {
-            lp.width = (int) w;
-            lp.height = (int) h;
-            glass.setLayoutParams(lp);
-            glass.setRadius(AppAdapter.cornerRadius(card.getWidth(), density) * focusScale);
-        }
-        glassTargetX = x;
-        glassTargetY = y;
         float cardRadius = AppAdapter.cornerRadius(card.getWidth(), density) * focusScale;
         if (deferHorizontalCarouselGliderMove && inDock) {
             // The previous focused card occupies the same final second-slot anchor. Leave the
@@ -2620,6 +2575,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     @Override
     public boolean onDockTileHeld(String key, View card) {
+        int position = dockAdapter == null ? RecyclerView.NO_POSITION : dockAdapter.positionOf(key);
+        if (!horizontalCarouselMode && position != RecyclerView.NO_POSITION
+                && dockAdapter.canMove(position)) {
+            startMove(key, true);
+            return true;
+        }
         return showTileContextMenu(key, card, true);
     }
 
@@ -2826,8 +2787,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Behind the shelf's text, the pills and the tiles, so it never draws over any of them.
         root.addView(glider, root.indexOfChild(heroShelf), new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        // The glider replaces the glass selection outright.
-        glass.setVisibility(View.GONE);
+        // The Glider is the only moving focus cursor; the retired GlassView is no longer inflated.
     }
 
     private String topPillKeyForView(View view) {
@@ -3076,6 +3036,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // In Vertikal/Classic mode the Grid is an on-demand progressive surface.
         // Horizontal mode instead displays the full inventory in the Dock carousel and keeps Grid hidden.
         int wantedGridVisibility = !horizontalCarouselMode && horizontalGridExpanded ? View.VISIBLE : View.GONE;
+        if (appsLabel != null) {
+            boolean showAppsLabel = !horizontalCarouselMode && horizontalGridExpanded
+                    && adapter != null && adapter.getItemCount() > 0;
+            appsLabel.setVisibility(showAppsLabel ? View.VISIBLE : View.GONE);
+        }
         boolean gridVisibilityChanged = grid.getVisibility() != wantedGridVisibility;
         grid.setVisibility(wantedGridVisibility);
         grid.setClipToPadding(!horizontalCarouselMode && horizontalGridExpanded);
@@ -3498,6 +3463,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** The tile being moved (adapter position), or -1; its card wiggles while it is. */
     private int movingPos = -1;
+    /** Stable identity for the complete Move Mode session, including Dock/Grid hand-off. */
+    private String moveSessionKey;
+    /** The first OK release after the long hold only enters Move Mode; it must not save immediately. */
+    private boolean moveWaitRelease;
     /** Stable component identity; resolve its live adapter position before every Move Mode step. */
     private String movingKey;
     private View movingCard;
@@ -3507,7 +3476,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** Holding OK on an app: a glass menu to move it, or to open Android's page for it. */
     @Override
     public boolean onTileHeld(int position, View card) {
-        return showTileContextMenu(adapter.keyAt(position), card, false);
+        String key = adapter == null ? null : adapter.keyAt(position);
+        if (!horizontalCarouselMode && key != null && adapter.canMove(position)) {
+            startMove(key, false);
+            return true;
+        }
+        return showTileContextMenu(key, card, false);
     }
 
     private boolean showTileContextMenu(String key, View card, boolean inDock) {
@@ -3556,6 +3530,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // animations retain old-holder snapshots during notifyDataSetChanged(), which can look
         // like a second focus/shadow travelling on a different row.
         recycler.setItemAnimator(null);
+        boolean startClassicSession = !horizontalCarouselMode
+                && adapter != null && !adapter.isMoveTransactionActive();
+        if (!horizontalCarouselMode && adapter != null && !adapter.beginMoveTransaction()) return;
+        if (startClassicSession) {
+            moveWaitRelease = true;
+            moveSessionKey = key;
+            Toast.makeText(this, R.string.app_move_hint, Toast.LENGTH_LONG).show();
+        } else if (moveSessionKey == null) {
+            moveSessionKey = key;
+        }
         movingPos = pos;
         movingKey = key;
         moveHandoffPending = false;
@@ -3595,18 +3579,50 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         wiggle.start();
     }
 
-    private void finishMoveFromUser() {
+    private void finishMoveFromUser(boolean commit) {
+        String key = moveSessionKey != null ? moveSessionKey : movingKey;
         boolean restoreDockShelf = movingDock;
-        String key = movingKey;
-        finishMove();
-        if (restoreDockShelf && !horizontalThreeRowFrameActive && dockAdapter != null) {
-            int position = dockAdapter.positionOf(key);
-            if (position >= 0) showHero(position);
+        if (adapter != null && adapter.isMoveTransactionActive()) {
+            boolean completed = commit ? adapter.commitMoveTransaction() : cancelClassicMoveTransaction();
+            if (!completed) return;
+            if (dockAdapter != null) dockAdapter.refresh();
+            applyDockLayout();
         }
+        finishMoveState(false);
+        moveHandoffPending = false;
+        restoreMoveFocus(key, restoreDockShelf);
     }
 
+    private boolean cancelClassicMoveTransaction() {
+        if (adapter == null || !adapter.isMoveTransactionActive()) return true;
+        adapter.cancelMoveTransaction();
+        return true;
+    }
+
+    /** Cancel an unfinished Classic preview when leaving Move Mode without pressing OK. */
     private void finishMove() {
+        String key = moveSessionKey != null ? moveSessionKey : movingKey;
+        boolean restoreDockShelf = movingDock;
+        if (adapter != null && adapter.isMoveTransactionActive()) {
+            adapter.cancelMoveTransaction();
+            if (dockAdapter != null) dockAdapter.refresh();
+            applyDockLayout();
+        }
         finishMoveState(false);
+        moveHandoffPending = false;
+        restoreMoveFocus(key, restoreDockShelf);
+    }
+
+    private void restoreMoveFocus(String key, boolean restoreDockShelf) {
+        if (key == null) return;
+        int dockPosition = dockAdapter == null ? RecyclerView.NO_POSITION : dockAdapter.positionOf(key);
+        if (dockPosition >= 0) {
+            if (restoreDockShelf && !horizontalThreeRowFrameActive) showHero(dockPosition);
+            if (dockRecycler != null) dockRecycler.post(() -> focusDockTile(dockPosition));
+            return;
+        }
+        int gridPosition = adapter == null ? RecyclerView.NO_POSITION : adapter.positionOf(key);
+        if (gridPosition >= 0 && grid != null) grid.post(() -> focusTile(gridPosition));
     }
 
     /** End the picked-up ViewHolder but retain the same Move Mode Glider through Dock/Grid handoff. */
@@ -3615,7 +3631,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void finishMoveState(boolean preserveMoveGlider) {
-        if (movingPos < 0) return;
+        if (movingPos < 0 && movingCard == null && movingRecycler == null && !moveHandoffPending) {
+            if (!preserveMoveGlider) {
+                moveSessionKey = null;
+                moveWaitRelease = false;
+                if (glider != null) glider.setMoveModeActive(false, isGlassEffectsEnabled());
+            }
+            return;
+        }
         if (wiggle != null) wiggle.cancel();
         wiggle = null;
         if (movingCard != null) {
@@ -3627,7 +3650,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         movingCard = null;
         movingKey = null;
         movingPos = -1;
-        if (!preserveMoveGlider) glider.setMoveModeActive(false, isGlassEffectsEnabled());
+        if (!preserveMoveGlider) {
+            glider.setMoveModeActive(false, isGlassEffectsEnabled());
+            moveSessionKey = null;
+            moveWaitRelease = false;
+        }
         RecyclerView recycler = movingRecycler;
         movingRecycler = null;
         movingDock = false;
@@ -3636,8 +3663,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void moveTileAcrossRegion(String key, boolean toDock, int dockPosition) {
         if (key == null) return;
-        // Stop the source wiggle but keep its one GLASS shadow alive. When the destination holder
-        // receives focus, moveTo() springs this same Glider to it just as it does between Grid rows.
+        // Stop the source wiggle but keep the same Glider and Rim alive through the hand-off.
         finishMoveForHandoff();
         moveHandoffPending = true;
         int liveDockPosition = !toDock && !dockVertical && dockAdapter != null
@@ -3663,16 +3689,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             final int generation = ++gridFocusRequestGeneration;
             handler.postDelayed(() -> {
                 if (!moveHandoffPending || movingPos >= 0) return;
-                moveHandoffPending = false;
-                // The handoff timed out: this becomes an ordinary focus restore, not Move Mode.
-                glider.setMoveModeActive(false, isGlassEffectsEnabled());
-                glider.hideNow();
-                int gridPosition = adapter.positionOf(key);
-                if (gridPosition >= 0 && horizontalGridExpanded) focusTile(gridPosition);
-                else {
-                    int fallbackDockPosition = dockAdapter.positionOf(key);
-                    if (fallbackDockPosition >= 0) focusDockTile(fallbackDockPosition);
-                }
+                // A failed hand-off must roll back the preview instead of leaving a partial order saved.
+                finishMove();
             }, 2500);
             expandHorizontalDockForOverflow(Math.max(0, adapter.positionOf(key)), generation, key);
             return;
@@ -3874,7 +3892,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Consume the press sequence, but dispatch only the initial down event.
         if (config != null && InputKeyService.isInputKeyCode(code, config.inputKeyKeycodes)) {
             if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-                if (movingPos >= 0) finishMoveFromUser();
+                if (movingPos >= 0) finishMoveFromUser(true);
                 if (cardPrompt != null) cardPrompt.dismiss();
                 if (openMenu != null) {
                     closeMenu(false);
@@ -3961,8 +3979,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (moveHandoffPending && movingPos < 0 && (code == KeyEvent.KEYCODE_DPAD_UP
                 || code == KeyEvent.KEYCODE_DPAD_DOWN || code == KeyEvent.KEYCODE_DPAD_LEFT
                 || code == KeyEvent.KEYCODE_DPAD_RIGHT || code == KeyEvent.KEYCODE_DPAD_CENTER
-                || code == KeyEvent.KEYCODE_ENTER || code == KeyEvent.KEYCODE_NUMPAD_ENTER)) {
-            return true; // Keep all DPAD/OK input inside the Dock-to-Grid Move Mode hand-off.
+                || code == KeyEvent.KEYCODE_ENTER || code == KeyEvent.KEYCODE_NUMPAD_ENTER
+                || code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE)) {
+            if (adapter != null && adapter.isMoveTransactionActive()
+                    && (code == KeyEvent.KEYCODE_DPAD_CENTER || code == KeyEvent.KEYCODE_ENTER
+                    || code == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP) {
+                finishMoveFromUser(true);
+            } else if (adapter != null && adapter.isMoveTransactionActive()
+                    && (code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE)
+                    && event.getAction() == KeyEvent.ACTION_UP) {
+                finishMoveFromUser(false);
+            }
+            return true; // Keep DPAD inside the hand-off; OK saves and BACK cancels the preview.
         }
         if (movingPos < 0) {
             if (code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE) {
@@ -3974,6 +4002,35 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return super.dispatchKeyEvent(event);
         }
         boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
+        boolean classicMove = adapter != null && adapter.isMoveTransactionActive();
+        if (classicMove && moveWaitRelease) {
+            if ((code == KeyEvent.KEYCODE_DPAD_CENTER || code == KeyEvent.KEYCODE_ENTER
+                    || code == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP) {
+                moveWaitRelease = false;
+            }
+            return true; // Swallow the release of the long-hold that entered Move Mode.
+        }
+        if (classicMove) {
+            switch (code) {
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                case KeyEvent.KEYCODE_DPAD_UP:
+                case KeyEvent.KEYCODE_DPAD_DOWN:
+                    if (down) stepMove(code);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_CENTER:
+                case KeyEvent.KEYCODE_ENTER:
+                case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                    if (!down) finishMoveFromUser(true);
+                    return true;
+                case KeyEvent.KEYCODE_BACK:
+                case KeyEvent.KEYCODE_ESCAPE:
+                    if (!down) finishMoveFromUser(false);
+                    return true;
+                default:
+                    return true;
+            }
+        }
         switch (code) {
             case KeyEvent.KEYCODE_DPAD_LEFT:
             case KeyEvent.KEYCODE_DPAD_RIGHT:
@@ -3987,7 +4044,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             case KeyEvent.KEYCODE_BACK:
             case KeyEvent.KEYCODE_ESCAPE:
                 if (down) {
-                    finishMoveFromUser();
+                    finishMoveFromUser(true);
                     swallowRelease = code;
                 }
                 return true;
