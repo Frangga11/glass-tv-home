@@ -3807,8 +3807,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
             View previousCard = movingCard;
             dockAdapter.refresh();
-            applyDockLayout();
             boolean nowInDock = dockAdapter.positionOf(movingKey) >= 0;
+            // The current Glass UI reveals its Grid on demand. When Classic Move Mode
+            // transfers a Dock app into the Grid, reveal that destination before restoring focus.
+            if (!nowInDock) horizontalGridExpanded = true;
+            applyDockLayout();
             int resolved = nowInDock ? dockAdapter.positionOf(movingKey) : adapter.positionOf(movingKey);
             if (resolved < 0) {
                 finishMove();
