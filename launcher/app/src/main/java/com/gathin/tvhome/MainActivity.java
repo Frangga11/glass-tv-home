@@ -3119,7 +3119,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         classicDockSpacer.setFocusable(false);
         classicDockSpacer.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         classicHomeContent.addView(classicDockSpacer, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, Math.max(0, gridWrap.getHeight() - dockHeight)));
+                ViewGroup.LayoutParams.MATCH_PARENT, Math.max(0, gridWrap.getHeight() - classicDockHeightPx)));
 
         if (appsLabel != null) {
             appsLabel.setVisibility(adapter != null && adapter.getItemCount() > 0 ? View.VISIBLE : View.GONE);
