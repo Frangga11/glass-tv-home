@@ -14,6 +14,14 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 
 class QuickSettingsContractTest(unittest.TestCase):
+    def test_settings_button_routes_to_quick_control_popup_without_full_activity_test_harness(self):
+        start = MAIN.index("if (btnSettings != null)")
+        end = MAIN.index("\n        }", start) + len("\n        }")
+        settings_binding = MAIN[start:end]
+        self.assertIn("btnSettings.setOnClickListener(v -> showQuickControlPopup());", settings_binding)
+        self.assertIn("private void showQuickControlPopup(int initialFocus)", MAIN)
+        self.assertIn("showQuickSettingsDialog(initialFocus);", MAIN)
+
     def test_focus_keeps_white_text_and_uses_dark_halo_on_glass(self):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
