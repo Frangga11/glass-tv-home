@@ -271,6 +271,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (classicNativeHome != null) {
             parts.add("@system-home:" + classicNativeHome.packageName + "/" + classicNativeHome.name);
         }
+        // The same installed packages can expose different launchable activities by app mode.
+        // Include the catalog policy in the signature so switching modes cannot reuse a stale inventory.
+        parts.add("@classic-mode:" + classicVerticalMode);
         Collections.sort(parts);
         String signature = android.text.TextUtils.join(";", parts);
         if (signature.equals(builtFrom) && !items.isEmpty()) return false;
