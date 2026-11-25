@@ -59,6 +59,30 @@ class StandbyWidgetEditorContractTest(unittest.TestCase):
         self.assertIn("UniversalGlassMaterial.homeCapsule(", main)
         self.assertNotIn("new int[]{0xEAF8FFFF, 0xDDEAF7FF, 0xD3DCEBFA}", main)
 
+    def test_four_standby_widget_layouts_are_selectable_and_compact_is_default(self):
+        settings = SETTINGS.read_text(encoding="utf-8")
+        main = MAIN.read_text(encoding="utf-8")
+        controller_path = ROOT / "launcher/app/src/main/java/com/gathin/tvhome/StandbyWidgetLayoutController.java"
+        controller = controller_path.read_text(encoding="utf-8")
+        for token in ('"Widget Linear"', '"Widget Kolom"', '"Widget Bentang"', '"Widget Compact"',
+                      '"linear", "column", "bentang", "compact"', '"Bentuk Widget"'):
+            self.assertIn(token, settings)
+        self.assertIn('getString("widget_layout", StandbyWidgetLayoutController.COMPACT)', main)
+        self.assertIn("StandbyWidgetLayoutController.apply(", main)
+        for token in ("buildLinear(", "buildColumn(", "buildBentang(", "restoreCompact(",
+                      "refreshPalette(", "nightstandPrayerSchedule"):
+            self.assertIn(token, controller)
+        self.assertIn("Widget Compact", settings)
+        self.assertNotIn('putString("widget_shape"', settings)
+
+    def test_widget_layout_controller_reuses_live_views_and_restores_compact_tree(self):
+        controller = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/StandbyWidgetLayoutController.java").read_text(encoding="utf-8")
+        self.assertIn("WeakHashMap<LinearLayout, Snapshot>", controller)
+        self.assertIn("root.findViewById(R.id.nightstandClock)", controller)
+        self.assertIn("root.findViewById(R.id.nightstandPrayerSchedule)", controller)
+        self.assertIn("detach(label)", controller)
+        self.assertIn("content.addView(child, s.childParams[i])", controller)
+
 
 if __name__ == "__main__":
     unittest.main()
