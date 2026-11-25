@@ -48,7 +48,8 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     void refresh() {
-        capacity = DockPreferences.load(context).capacity;
+        capacity = source.isClassicVerticalMode()
+                ? source.classicDockCapacity() : DockPreferences.load(context).capacity;
         DockLayoutModel.Snapshot<AppAdapter.Entry> snapshot = source.dockSnapshot();
         entries = carouselMode ? source.allEntriesSnapshot()
                 : snapshot == null ? Collections.emptyList() : snapshot.dockItems;
