@@ -628,9 +628,21 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         int last = ordered.size() - 1;
         while (last >= 0 && ordered.get(last).kind == Entry.HOME_SETTINGS) last--;
         if (from < 0 || from > last || to < 0 || to > last || from == to) return false;
-        Entry moved = ordered.remove(from);
-        ordered.add(to, moved);
-        replacePresentationOrder(Collections.emptyList(), ordered);
+        List<String> keys = new ArrayList<>(ordered.size());
+        Map<String, Entry> byKey = new HashMap<>();
+        for (Entry entry : ordered) {
+            String key = entry.component.flattenToShortString();
+            keys.add(key);
+            byKey.put(key, entry);
+        }
+        String movedKey = keys.get(from);
+        ClassicAppOrder.move(keys, movedKey, to);
+        List<Entry> reordered = new ArrayList<>(ordered.size());
+        for (String key : keys) {
+            Entry entry = byKey.get(key);
+            if (entry != null) reordered.add(entry);
+        }
+        replacePresentationOrder(Collections.emptyList(), reordered);
         return true;
     }
 
