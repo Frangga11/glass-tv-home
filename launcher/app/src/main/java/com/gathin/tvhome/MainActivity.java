@@ -1236,13 +1236,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         packageFilter.addDataScheme("package");
 
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
-        TvInputManager tim = null;
-        try {
-            tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
-        } catch (RuntimeException unavailableInTestHost) {
-            // Android TV always publishes tv_input; non-TV Robolectric hosts may not.
-            android.util.Log.d("TvHome.Inputs", "TV input service unavailable on this host");
-        }
+        TvInputManager tim = tvInputManagerOrNull();
         if (tim != null) tim.registerCallback(inputCallback, handler);
         if (cm != null) {
             cm.registerDefaultNetworkCallback(networkCallback);
@@ -2191,11 +2185,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         handler.removeCallbacksAndMessages(null);
         wallDecoder.shutdownNow();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
-        TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
+        TvInputManager tim = tvInputManagerOrNull();
         if (tim != null) tim.unregisterCallback(inputCallback);
         if (cm != null) {
             cm.unregisterNetworkCallback(networkCallback);
             cm.unregisterNetworkCallback(vpnCallback);
+        }
+    }
+
+    /** Android TV provides tv_input; generic Robolectric hosts and non-TV builds may not. */
+    private TvInputManager tvInputManagerOrNull() {
+        try {
+            return (TvInputManager) getSystemService(TV_INPUT_SERVICE);
+        } catch (RuntimeException unavailableOnHost) {
+            android.util.Log.d("TvHome.Inputs", "TV input service unavailable on this host");
+            return null;
         }
     }
 
