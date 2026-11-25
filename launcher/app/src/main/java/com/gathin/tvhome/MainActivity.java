@@ -3863,17 +3863,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Resolve every direction from the selected app's CURRENT position. Vertical neighbors
         // preserve the column reached by the latest LEFT/RIGHT move instead of returning to
         // the column where Move Mode originally started.
-        int direction;
+        int dx;
+        int dy;
         switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_LEFT: direction = -1; break;
-            case KeyEvent.KEYCODE_DPAD_RIGHT: direction = 1; break;
-            case KeyEvent.KEYCODE_DPAD_UP: direction = -2; break;
-            case KeyEvent.KEYCODE_DPAD_DOWN: direction = 2; break;
+            case KeyEvent.KEYCODE_DPAD_LEFT: dx = -1; dy = 0; break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT: dx = 1; dy = 0; break;
+            case KeyEvent.KEYCODE_DPAD_UP: dx = 0; dy = -1; break;
+            case KeyEvent.KEYCODE_DPAD_DOWN: dx = 0; dy = 1; break;
             default: return;
         }
         int last = adapter.lastMovable();
-        int targetPosition = DockLayoutModel.gridNeighborPosition(
-                currentPosition, direction, COLUMNS, last + 1);
+        // Match Home Universal's Classic policy exactly: resolve the target from the
+        // selected tile's current Grid-local position, including incomplete final rows.
+        int targetPosition = ClassicAppMovePolicy.target(
+                currentPosition, last + 1, COLUMNS, dx, dy);
         if (targetPosition < 0 || targetPosition == currentPosition
                 || !adapter.move(currentPosition, targetPosition)) return;
 
