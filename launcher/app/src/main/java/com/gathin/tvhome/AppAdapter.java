@@ -866,7 +866,6 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         final ImageView icon;
         final TextView label;
         final TextView name;
-        final DockBreathingBorderView breathingBorder;
         final boolean reducedMotion;
         private final boolean dockTile;
         private boolean iconAnimationsEnabled;
@@ -879,7 +878,6 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             icon = v.findViewById(R.id.icon);
             label = v.findViewById(R.id.label);
             name = v.findViewById(R.id.name);
-            breathingBorder = v.findViewById(R.id.dockBreathingBorder);
             this.reducedMotion = reducedMotion;
             this.iconAnimationsEnabled = iconAnimationsEnabled;
             this.dockTile = dockTile;
@@ -903,18 +901,6 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             });
 
             card.setOnFocusChangeListener((view, focused) -> {
-                if (breathingBorder != null) {
-                    // The Dock breathing rim is the canonical Home app-focus treatment.
-                    // Use the exact same view/animation for Dock row and expanded Grid rows;
-                    // row identity must not change focus appearance.
-                    if (focused) {
-                        float r = cornerRadius(view.getWidth(), density);
-                        breathingBorder.setCornerRadiusDp(r / density);
-                        breathingBorder.setVisibility(View.VISIBLE);
-                    } else {
-                        breathingBorder.setVisibility(View.GONE);
-                    }
-                }
                 float s = focused && iconAnimationsEnabled ? focusScale() : 1.0f;
                 view.animate().cancel();
                 name.animate().cancel();
