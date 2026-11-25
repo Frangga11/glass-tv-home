@@ -298,6 +298,12 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             List<String> installedPackages = new ArrayList<>();
             for (Entry entry : fresh) installedPackages.add(entry.pkg);
             classicOrder = ClassicAppOrder.merge(arranged, favourites, installedPackages);
+            if (!moveTransactionActive && !arranged.equals(classicOrder)) {
+                arranged.clear();
+                arranged.addAll(classicOrder);
+                ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
+                        .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
+            }
             for (int i = 0; i < classicOrder.size(); i++) place.put(classicOrder.get(i), i);
         } else {
             for (int i = 0; i < arranged.size(); i++) place.put(arranged.get(i), i);
