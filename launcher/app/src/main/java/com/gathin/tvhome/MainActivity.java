@@ -6436,7 +6436,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         // Quick Settings must not be measured against a Dock that is still raised for overflow.
         // Reuse the established focus-safe collapse path; do not squeeze or overlap the popup.
-        if (!dockVertical && horizontalGridExpanded) {
+        if (!classicHomeHostActive && !dockVertical && horizontalGridExpanded) {
             pendingQuickSettingsOpen = () -> showQuickSettingsDialog(initialFocus);
             if (!horizontalDockCollapseInProgress) {
                 int dockPosition = dockAdapter == null ? -1 : dockAdapter.positionOf(lastFocusedKey);
