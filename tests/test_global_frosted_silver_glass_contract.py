@@ -366,14 +366,12 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertEqual(padding.attrib[ns + "right"], "20dp")
         self.assertEqual(padding.attrib[ns + "bottom"], "9dp")
 
-    def test_dock_breathing_rim_uses_shared_electric_cyan_token(self):
-        source = (JAVA / "DockBreathingBorderView.java").read_text(encoding="utf-8")
-        self.assertGreaterEqual(source.count("TvUiTokens.ACCENT_CYAN"), 2)
-        self.assertIn("Color.red(TvUiTokens.ACCENT_CYAN)", source)
-        self.assertIn("Color.green(TvUiTokens.ACCENT_CYAN)", source)
-        self.assertIn("Color.blue(TvUiTokens.ACCENT_CYAN)", source)
-        self.assertNotIn("56, 189, 248", source)
-        self.assertNotIn("#38BDF8", source)
+    def test_single_focus_cursor_uses_shared_glass_rim_and_cyan_tokens(self):
+        source = (JAVA / "Glider.java").read_text(encoding="utf-8")
+        self.assertIn("private final GlassRim rim;", source)
+        self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", source)
+        self.assertIn("rim = new GlassRim(", source)
+        self.assertNotIn("DockBreathingBorderView", source)
 
 
 if __name__ == "__main__":
