@@ -22,8 +22,8 @@ final class TileBinder {
         holder.name.setVisibility(showName ? android.view.View.VISIBLE : android.view.View.INVISIBLE);
         boolean focused = holder.card.isFocused();
         holder.name.setAlpha(focused ? 1f : 0f);
-        holder.card.setScaleX(focused && iconAnimationsEnabled ? AppAdapter.FOCUS_SCALE : 1f);
-        holder.card.setScaleY(focused && iconAnimationsEnabled ? AppAdapter.FOCUS_SCALE : 1f);
+        holder.card.setScaleX(focused && iconAnimationsEnabled ? holder.focusScale() : 1f);
+        holder.card.setScaleY(focused && iconAnimationsEnabled ? holder.focusScale() : 1f);
         holder.name.setTranslationY(0f);
         if (entry.banner != null) {
             holder.banner.setImageDrawable(entry.banner);
