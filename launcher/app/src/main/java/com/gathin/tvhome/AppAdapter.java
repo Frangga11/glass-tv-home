@@ -308,11 +308,13 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         } else {
             for (int i = 0; i < arranged.size(); i++) place.put(arranged.get(i), i);
         }
-        final boolean classicOrdering = classicVerticalMode;
         Collections.sort(fresh, (a, b) -> {
-            // Classic persists package order like Home Universal; Horizontal keeps component order.
-            Integer pa = place.get(classicOrdering ? a.pkg : a.component.flattenToShortString());
-            Integer pb = place.get(classicOrdering ? b.pkg : b.component.flattenToShortString());
+            // Classic persists package order like Home Universal. Accept that package order
+            // when switching to Horizontal; legacy component-key orders remain supported too.
+            Integer pa = place.get(a.component.flattenToShortString());
+            Integer pb = place.get(b.component.flattenToShortString());
+            if (pa == null) pa = place.get(a.pkg);
+            if (pb == null) pb = place.get(b.pkg);
             if (pa != null || pb != null) {
                 if (pa == null) return 1;
                 if (pb == null) return -1;
