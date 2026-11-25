@@ -3212,11 +3212,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         classicDockHeightPx = dockHeight + dockBottomMargin;
         ViewGroup.LayoutParams dockParams = dockRecycler.getLayoutParams();
         if (dockParams != null) {
-            if (dockParams.height != dockHeight) dockParams.height = dockHeight;
+            boolean dockLayoutChanged = dockParams.height != dockHeight;
+            if (dockLayoutChanged) dockParams.height = dockHeight;
             if (dockParams instanceof ViewGroup.MarginLayoutParams) {
-                ((ViewGroup.MarginLayoutParams) dockParams).bottomMargin = dockBottomMargin;
+                ViewGroup.MarginLayoutParams margins = (ViewGroup.MarginLayoutParams) dockParams;
+                if (margins.bottomMargin != dockBottomMargin) {
+                    margins.bottomMargin = dockBottomMargin;
+                    dockLayoutChanged = true;
+                }
             }
-            dockRecycler.setLayoutParams(dockParams);
+            // setLayoutParams() always requests a parent layout. The gridWrap layout listener
+            // calls this method again, so only publish params when a measured value changed.
+            if (dockLayoutChanged) dockRecycler.setLayoutParams(dockParams);
         }
         dockAdapter.setHorizontalViewportWidth(viewport);
         int slot = DockGeometry.horizontalDockSlotWidthPx(inner, COLUMNS, density);
@@ -3229,7 +3236,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             spacerParams.height = wanted;
             classicDockSpacer.setLayoutParams(spacerParams);
         }
-        if (classicHomeScroll.getScrollY() == 0) classicHomeScroll.requestLayout();
     }
 
     private void scrollClassicHomeToRow(int position, View card) {
