@@ -260,7 +260,7 @@ class QuickSettingsContractTest(unittest.TestCase):
     def test_quick_settings_waits_for_safe_horizontal_dock_collapse(self):
         opener = MAIN[MAIN.index("private void showQuickControlPopup(int initialFocus)"):
                       MAIN.index("private void showQuickSettingsDialog(int initialFocus)")]
-        self.assertIn("if (!dockVertical && horizontalGridExpanded)", opener)
+        self.assertIn("if (!classicHomeHostActive && !dockVertical && horizontalGridExpanded)", opener)
         self.assertIn("pendingQuickSettingsOpen = () -> showQuickSettingsDialog(initialFocus);", opener)
         self.assertIn("collapseHorizontalOverflowToDock(dockPosition);", opener)
         collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse("):
