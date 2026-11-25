@@ -208,7 +208,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         strings = ET.parse(RES / "values/strings.xml").getroot()
         label = next(node for node in strings.findall("string")
                      if node.attrib.get("name") == "apps_other_label")
-        self.assertEqual(label.text, '"APLIKASI LAINNYA · TAHAN OK UNTUK ATUR"')
+        self.assertEqual(label.text, '"APLIKASI LAINNYA • TAHAN OK UNTUK ATUR"')
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         self.assertIn("startMove(key, false);", main)
         self.assertIn("adapter.beginMoveTransaction()", main)
