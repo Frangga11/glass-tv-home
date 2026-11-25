@@ -3118,10 +3118,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int viewport = gridWrap.getWidth() > 0 ? gridWrap.getWidth()
                 : Math.max(1, getResources().getDisplayMetrics().widthPixels - 2 * DockGeometry.safeHorizontalInsetPx(density));
         int inner = DockGeometry.horizontalContentWidthPx(viewport, density);
-        int tileWidth = DockGeometry.horizontalDockTileWidthPx(inner, COLUMNS, density);
+        int dockCapacity = dockAdapter.dockCapacity();
+        int tileWidth = DockGeometry.horizontalDockTileWidthPx(inner, dockCapacity, density);
         int tileHeight = DockGeometry.tileHeightPx(tileWidth);
         int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
-        int slotWidth = DockGeometry.horizontalDockSlotWidthPx(inner, COLUMNS, density);
+        int slotWidth = DockGeometry.horizontalDockSlotWidthPx(inner, dockCapacity, density);
         int dockCount = dockAdapter.getItemCount();
         int center = DockGeometry.horizontalCenterOffsetPx(inner, slotWidth, dockCount);
         dockRecycler.setPadding(center, 0, center, 0);
@@ -3205,7 +3206,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 : Math.max(1, getResources().getDisplayMetrics().widthPixels
                         - 2 * DockGeometry.safeHorizontalInsetPx(density));
         int inner = DockGeometry.horizontalContentWidthPx(viewport, density);
-        int tileWidth = DockGeometry.horizontalDockTileWidthPx(inner, COLUMNS, density);
+        int dockCapacity = dockAdapter.dockCapacity();
+        int tileWidth = DockGeometry.horizontalDockTileWidthPx(inner, dockCapacity, density);
         int tileHeight = DockGeometry.tileHeightPx(tileWidth);
         int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
         int dockBottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
@@ -3226,7 +3228,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (dockLayoutChanged) dockRecycler.setLayoutParams(dockParams);
         }
         dockAdapter.setHorizontalViewportWidth(viewport);
-        int slot = DockGeometry.horizontalDockSlotWidthPx(inner, COLUMNS, density);
+        int slot = DockGeometry.horizontalDockSlotWidthPx(inner, dockCapacity, density);
         int center = DockGeometry.horizontalCenterOffsetPx(inner, slot, dockAdapter.getItemCount());
         dockRecycler.setPadding(center, 0, center, 0);
         dockRecycler.setHorizontalViewportClip(false, center);
@@ -3261,13 +3263,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // "Vertikal" now means the existing progressive Classic app-navigation mode.
         // The physical Dock is always horizontal and bottom-anchored in both modes.
         dockVertical = false;
-        horizontalCarouselMode = preferences.orientation == DockPreferences.Orientation.HORIZONTAL;
-        // Home Universal Classic uses one ordered inventory: first COLUMNS become the Dock,
-        // all remaining apps become the Grid. Horizontal carousel keeps its own saved partition.
-        adapter.setClassicVerticalMode(!horizontalCarouselMode);
+        // Both app modes keep a real Dock + Grid. VERTICAL uses the single Classic ordered
+        // inventory; HORIZONTAL uses the saved pinned partition. The old all-app carousel
+        // path hid the Grid and swallowed DOWN, so it is not an app-navigation mode anymore.
+        boolean classicOrderedMode = preferences.orientation == DockPreferences.Orientation.VERTICAL;
+        horizontalCarouselMode = false;
+        adapter.setClassicVerticalMode(classicOrderedMode);
+        adapter.invalidateDockSnapshot();
+        adapter.notifyDataSetChanged();
         dockAdapter.refresh();
         dockAdapter.setVertical(false);
-        dockAdapter.setCarouselMode(horizontalCarouselMode);
+        dockAdapter.setCarouselMode(false);
         dockRecycler.setClipChildren(horizontalCarouselMode);
         if (!horizontalCarouselMode) {
             dockVertical = false;
@@ -3314,7 +3320,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     : Math.max(1, getResources().getDisplayMetrics().widthPixels
                             - 2 * DockGeometry.safeHorizontalInsetPx(density));
             int inner = DockGeometry.horizontalContentWidthPx(viewport, density);
-            int slot = DockGeometry.horizontalDockSlotWidthPx(inner, COLUMNS, density);
+            int slot = DockGeometry.horizontalDockSlotWidthPx(inner, dockAdapter.dockCapacity(), density);
             int center = DockGeometry.horizontalCenterOffsetPx(inner, slot, dockCount);
             dockRecycler.setPadding(center, 0, center, 0);
             dockRecycler.setHorizontalViewportClip(false, center);
@@ -5616,9 +5622,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(position);
         View card = holder != null ? holder.itemView.findViewById(R.id.card) : null;
         if (card != null && card.isShown() && card.isFocusable()) {
-            if (card.isFocused()) onTileFocused(position, card);
-            else card.requestFocus();
-            return;
+            // The ScrollView deliberately disables platform focus-driven scrolling. Move its
+            // viewport to the target row before asking Android to transfer focus; otherwise an
+            // off-screen Grid card can reject the request and the scroll callback never runs.
+            scrollClassicHomeToRow(position, card);
+            if (card.isFocused()) {
+                onTileFocused(position, card);
+                return;
+            }
+            if (card.requestFocus() && card.isFocused()) return;
         }
         if (attemptsRemaining > 0) {
             grid.scrollToPosition(position);
