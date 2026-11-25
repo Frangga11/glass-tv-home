@@ -38,13 +38,20 @@ class HomeSharedCyanBreathingFocusRowsTest(unittest.TestCase):
         self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider))", main)
         self.assertNotIn("glider.addCompanion(grid)", main)
 
-    def test_focus_animation_does_not_change_tile_geometry(self):
+    def test_focus_scale_changes_visual_transform_without_changing_layout_geometry(self):
         adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
-        self.assertIn("static final float FOCUS_SCALE = 1.0f", adapter)
+        self.assertIn("static final float DOCK_FOCUS_SCALE = 1.12f", adapter)
+        self.assertIn("static final float GRID_FOCUS_SCALE = 1.10f", adapter)
+        self.assertIn("static final float LAYOUT_FOCUS_RESERVATION_SCALE = 1.07f", adapter)
+        self.assertIn("/ LAYOUT_FOCUS_RESERVATION_SCALE", adapter)
         listener = adapter.split("card.setOnFocusChangeListener", 1)[1].split(
             "void setIconAnimationsEnabled", 1
         )[0]
         self.assertIn("view.animate().scaleX(s).scaleY(s)", listener)
+        self.assertIn(".setDuration(focused ? 320 : 200)", listener)
+        self.assertIn("new OvershootInterpolator(1.8f)", adapter)
+        self.assertNotIn("setElevation(", adapter)
+        self.assertNotIn("translationZ(", adapter)
         border = (JAVA / "DockBreathingBorderView.java").read_text(encoding="utf-8")
         self.assertNotIn("setScaleX", border)
         self.assertNotIn("setScaleY", border)
