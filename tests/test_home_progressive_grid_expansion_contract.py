@@ -30,6 +30,18 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertNotIn("classicHomeScroll.requestLayout()", method)
         self.assertIn("if (classicHomeHostActive) updateClassicDockSpacer();", MAIN)
 
+    def test_column_change_recreates_atomic_grid_and_restores_stable_focus_identity(self):
+        start = MAIN.index("protected void onResume()")
+        end = MAIN.index("\n    @Override", start + 30)
+        on_resume = MAIN[start:end]
+        self.assertIn("Config latestConfig = Config.load(this);", on_resume)
+        self.assertIn("if (latestConfig.columns != COLUMNS)", on_resume)
+        self.assertIn("recreate();", on_resume)
+        self.assertIn("return;", on_resume)
+        self.assertIn("COLUMNS = cfg.columns;", MAIN)
+        self.assertIn("navigationPrefs.getString(NavigationState.HOME_FOCUS_KEY, null)", MAIN)
+        self.assertIn("putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey)", MAIN)
+
     def test_dock_tracks_grid_scroll_by_the_same_pixel_delta(self):
         start = MAIN.index("grid.addOnScrollListener")
         end = MAIN.index("btnInputs = findViewById", start)
