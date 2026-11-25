@@ -85,7 +85,7 @@ public class ClassicModeContractTest {
 
         assertTrue(adapter.commitMoveTransaction());
 
-        assertEquals(three + "\n" + one + "\n" + two,
+        assertEquals(one + "\n" + three + "\n" + two,
                 context.getSharedPreferences("tiles", Context.MODE_PRIVATE).getString("order", ""));
         assertEquals(Arrays.asList(one, two), DockPreferences.loadPinnedKeys(context));
         assertEquals(Arrays.asList(three), DockPreferences.loadUnpinnedKeys(context));
