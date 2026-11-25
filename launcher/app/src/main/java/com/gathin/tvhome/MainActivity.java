@@ -1239,7 +1239,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         TvInputManager tim = null;
         try {
             tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
-        } catch (android.os.ServiceManager.ServiceNotFoundException unavailableInTestHost) {
+        } catch (RuntimeException unavailableInTestHost) {
             // Android TV always publishes tv_input; non-TV Robolectric hosts may not.
             android.util.Log.d("TvHome.Inputs", "TV input service unavailable on this host");
         }
