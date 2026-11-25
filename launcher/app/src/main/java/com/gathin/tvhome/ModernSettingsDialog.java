@@ -1409,13 +1409,12 @@ public final class ModernSettingsDialog {
                     addSectionHeader(rightContent, outfit, "Sinkronisasi Android");
                     rightContent.addView(buildStandbyDiagnosticsCard(activity, density, outfit));
                     rightContent.addView(buildCardRow(activity, density, outfit,
-                            "Pengaturan screensaver Android", "Buka pengaturan sistem untuk memeriksa pilihan Backdrop dan waktu mulai 30 menit",
-                            () -> {
-                                Intent intent = new Intent(Settings.ACTION_DREAM_SETTINGS);
-                                if (intent.resolveActivity(activity.getPackageManager()) == null) intent = new Intent(Settings.ACTION_DISPLAY_SETTINGS);
-                                try { activity.startActivity(intent); }
-                                catch (Exception e) { TvFeedback.show(activity, "Pengaturan screensaver Android tidak dapat dibuka.", Toast.LENGTH_LONG); }
-                            }));
+                            "Pengaturan screensaver Android",
+                            "Buka Setelan Android TV > Preferensi perangkat > Screensaver",
+                            () -> openDeviceSettingsOrFeedback(activity,
+                                    new Intent(Settings.ACTION_DREAM_SETTINGS),
+                                    new Intent(Settings.ACTION_DISPLAY_SETTINGS),
+                                    new Intent(Settings.ACTION_SETTINGS))));
                 }
                 int selectedIndex = standbySubtab[0] >= 0 && standbySubtab[0] < subtabViews.length
                         ? standbySubtab[0] : 0;
