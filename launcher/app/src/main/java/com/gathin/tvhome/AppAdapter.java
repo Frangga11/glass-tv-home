@@ -218,6 +218,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             }
         }
         presentationSnapshot = null;
+        // The Grid adapter reads this same partition; publish the mode change to its holders
+        // before DockAdapter refreshes its independent presentation.
+        notifyDataSetChanged();
     }
 
     boolean isClassicVerticalMode() { return classicVerticalMode; }
