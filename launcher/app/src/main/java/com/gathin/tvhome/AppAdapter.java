@@ -58,7 +58,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     static final class Entry {
-        static final int APP = 0, HOME_SETTINGS = 1, CARD = 2;
+        static final int APP = 0, HOME_SETTINGS = 1, CARD = 2, SYSTEM_HOME = 3;
 
         final int kind;
         final String label;
@@ -336,8 +336,18 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             if (ca != cb) return ca ? -1 : 1;
             return a.label.compareToIgnoreCase(b.label);
         });
-        // Optional "Default home" tile (config.xml), only when this TV actually has a home-screen picker.
-        if (showHomeSettings
+        if (classicVerticalMode) {
+            // Home Universal adds the actual system HOME activity as a movable app tile.
+            android.content.pm.ActivityInfo nativeHome = ClassicSystemHome.resolve(ctx);
+            if (nativeHome != null) {
+                for (int i = fresh.size() - 1; i >= 0; i--) {
+                    if (nativeHome.packageName.equals(fresh.get(i).pkg)) fresh.remove(i);
+                }
+                ComponentName homeComponent = new ComponentName(nativeHome.packageName, nativeHome.name);
+                fresh.add(new Entry(Entry.SYSTEM_HOME, ctx.getString(R.string.system_home),
+                        homeComponent, null, nativeHome.loadIcon(pm), null, 0));
+            }
+        } else if (showHomeSettings
                 && pm.resolveActivity(new Intent(Settings.ACTION_HOME_SETTINGS), 0) != null) {
             fresh.add(new Entry(Entry.HOME_SETTINGS, ctx.getString(R.string.home_settings),
                     new ComponentName(ctx, HomeSettingsActivity.class), null,
