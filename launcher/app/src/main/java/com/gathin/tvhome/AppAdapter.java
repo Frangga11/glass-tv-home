@@ -140,6 +140,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             entry -> entry.component.flattenToShortString());
     /** The order someone arranged the tiles in, by key (see {@link #keyAt}); empty until they do. */
     private final List<String> arranged = new ArrayList<>();
+    /** Vertical Classic mode derives Dock membership from one ordered app list, as Home Universal does. */
+    private boolean classicVerticalMode;
     private DockLayoutModel.Snapshot<Entry> presentationSnapshot;
     /** Classic Move Mode edits are previews until OK commits; BACK restores this snapshot. */
     private boolean moveTransactionActive;
@@ -192,6 +194,12 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      *
      * @return whether the tiles were rebuilt
      */
+    void setClassicVerticalMode(boolean enabled) {
+        if (classicVerticalMode == enabled) return;
+        classicVerticalMode = enabled;
+        presentationSnapshot = null;
+    }
+
     boolean reload(List<Cards.Card> cards) {
         // A package/catalog refresh invalidates adapter positions; never carry a preview across it.
         if (moveTransactionActive) cancelMoveTransaction();
@@ -400,7 +408,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     /** Commit the preview only after the user presses OK. */
     boolean commitMoveTransaction() {
         if (!moveTransactionActive) return true;
-        if (!DockPreferences.savePinnedState(ctx, movePreviewPinnedKeys, movePreviewUnpinnedKeys)) {
+        if (!classicVerticalMode
+                && !DockPreferences.savePinnedState(ctx, movePreviewPinnedKeys, movePreviewUnpinnedKeys)) {
             return false;
         }
         boolean orderSaved = ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
@@ -593,7 +602,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     DockLayoutModel.Snapshot<Entry> dockSnapshot() {
         if (presentationSnapshot == null) {
-            int capacity = DockPreferences.load(ctx).capacity;
+            int capacity = classicVerticalMode ? gridColumns : DockPreferences.load(ctx).capacity;
             List<String> pinnedComponentKeys = currentPinnedKeys();
             presentationSnapshot = DockLayoutModel.split(items, pinnedComponentKeys, capacity,
                     entry -> entry.component.flattenToShortString());
@@ -626,6 +635,15 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     private List<String> currentPinnedKeys() {
+        if (classicVerticalMode) {
+            List<String> classicDock = new ArrayList<>();
+            for (Entry entry : items) {
+                if (entry.kind == Entry.HOME_SETTINGS) continue;
+                if (classicDock.size() >= gridColumns) break;
+                classicDock.add(entry.component.flattenToShortString());
+            }
+            return classicDock;
+        }
         List<String> explicit = moveTransactionActive
                 ? new ArrayList<>(movePreviewPinnedKeys) : DockPreferences.loadPinnedKeys(ctx);
         List<String> defaults = DockLayoutModel.orderedPinnedKeys(items, favourites, arranged,
