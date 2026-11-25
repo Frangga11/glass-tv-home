@@ -41,11 +41,10 @@ class HomeSharedCyanBreathingFocusRowsTest(unittest.TestCase):
         self.assertIn("new OvershootInterpolator(1.8f)", adapter)
         self.assertNotIn("setElevation(", adapter)
         self.assertNotIn("translationZ(", adapter)
-        border = (JAVA / "DockBreathingBorderView.java").read_text(encoding="utf-8")
-        self.assertNotIn("setScaleX", border)
-        self.assertNotIn("setScaleY", border)
-        self.assertNotIn("setTranslationX", border)
-        self.assertNotIn("setTranslationY", border)
+        glider = (JAVA / "Glider.java").read_text(encoding="utf-8")
+        self.assertIn("void moveToScreen(", glider)
+        self.assertIn("void drawShape(", glider)
+        self.assertNotIn("DockBreathingBorderView", glider)
 
 
 if __name__ == "__main__":
