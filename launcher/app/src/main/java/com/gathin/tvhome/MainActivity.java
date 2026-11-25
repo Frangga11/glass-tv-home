@@ -3001,6 +3001,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private ClassicHomeScrollView classicHomeScroll;
     private LinearLayout classicHomeContent;
     private boolean classicHomeHostActive;
+    private View classicDockSpacer;
+    private int classicDockHeightPx;
     private ViewGroup classicAppsOriginalParent;
     private ViewGroup.LayoutParams classicAppsOriginalParams;
     private int classicAppsOriginalIndex = -1;
@@ -3070,7 +3072,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 else syncFocusedAppGlider();
             });
         }
-        if (classicHomeHostActive) return;
+        if (classicHomeHostActive) {
+            updateClassicDockSpacer();
+            return;
+        }
 
         if (appsLabel != null && appsLabel.getParent() instanceof ViewGroup) {
             classicAppsOriginalParent = (ViewGroup) appsLabel.getParent();
@@ -3105,6 +3110,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockRecycler.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dockHeight));
 
+        classicDockHeightPx = dockHeight;
+        classicDockSpacer = new View(this);
+        classicDockSpacer.setFocusable(false);
+        classicDockSpacer.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        classicHomeContent.addView(classicDockSpacer, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, Math.max(0, gridWrap.getHeight() - dockHeight)));
+
         if (appsLabel != null) {
             appsLabel.setVisibility(adapter != null && adapter.getItemCount() > 0 ? View.VISIBLE : View.GONE);
             ViewGroup.LayoutParams labelParams = classicAppsOriginalParams != null
@@ -3124,7 +3136,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         grid.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        classicHomeContent.addView(dockRecycler, 0);
+        classicHomeContent.addView(dockRecycler, 1);
         classicHomeContent.addView(grid);
         gridWrap.removeAllViews();
         gridWrap.addView(classicHomeScroll, new FrameLayout.LayoutParams(
@@ -3164,13 +3176,38 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         classicHomeHostActive = false;
     }
 
+    private void updateClassicDockSpacer() {
+        if (!classicHomeHostActive || classicDockSpacer == null || gridWrap == null
+                || classicHomeScroll == null || dockRecycler == null) return;
+        int viewport = gridWrap.getWidth() > 0 ? gridWrap.getWidth()
+                : Math.max(1, getResources().getDisplayMetrics().widthPixels
+                        - 2 * DockGeometry.safeHorizontalInsetPx(density));
+        int inner = DockGeometry.horizontalContentWidthPx(viewport, density);
+        int tileWidth = DockGeometry.horizontalDockTileWidthPx(inner, COLUMNS, density);
+        int tileHeight = DockGeometry.tileHeightPx(tileWidth);
+        classicDockHeightPx = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+        ViewGroup.LayoutParams dockParams = dockRecycler.getLayoutParams();
+        if (dockParams != null && dockParams.height != classicDockHeightPx) {
+            dockParams.height = classicDockHeightPx;
+            dockRecycler.setLayoutParams(dockParams);
+        }
+        dockAdapter.setHorizontalViewportWidth(viewport);
+        ViewGroup.LayoutParams spacerParams = classicDockSpacer.getLayoutParams();
+        int wanted = Math.max(0, gridWrap.getHeight() - classicDockHeightPx);
+        if (spacerParams != null && spacerParams.height != wanted) {
+            spacerParams.height = wanted;
+            classicDockSpacer.setLayoutParams(spacerParams);
+        }
+        if (classicHomeScroll.getScrollY() == 0) classicHomeScroll.requestLayout();
+    }
+
     private void scrollClassicHomeToRow(int position, View card) {
         if (!classicHomeHostActive || classicHomeScroll == null || classicHomeContent == null
                 || card == null) return;
         if (position < COLUMNS) {
-            // The first app row sits directly below the Dock, exactly as Home Universal's
-            // first-row target places the Dock band at the top edge of the scroll surface.
-            classicHomeScroll.smoothScrollTo(0, 0);
+            // Home Universal scrolls the hero Dock band to the top edge for the first Grid row.
+            int target = Math.max(0, dockRecycler.getTop() - Math.round(22 * density));
+            classicHomeScroll.smoothScrollTo(0, target);
             return;
         }
         View item = card.getParent() instanceof View ? (View) card.getParent() : card;
