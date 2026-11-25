@@ -1858,6 +1858,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     protected void onResume() {
         super.onResume();
+        activityResumed = true;
         // COLUMNS is captured by GridLayoutManager, AppAdapter and DPAD mapping at Activity creation.
         // Recreate as one atomic layout change instead of mutating only one of those consumers.
         Config latestConfig = Config.load(this);
@@ -1868,7 +1869,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             recreate();
             return;
         }
-        activityResumed = true;
         standbyCoordinator = StandbyCoordinator.get(this);
         standbyCoordinator.bindHome(this);
         standbyCoordinator.onHomeResumed();
