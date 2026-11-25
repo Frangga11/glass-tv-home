@@ -28,7 +28,12 @@ class StandbyWidgetEditorContractTest(unittest.TestCase):
     def test_preview_dpad_exits_and_refresh_does_not_reset_widget(self):
         main = MAIN.read_text(encoding="utf-8")
         self.assertIn("screensaverView.setOnKeyListener", main)
-        self.assertIn("KEYCODE_DPAD_LEFT", main)
+        self.assertIn("StandbyPreviewWindow.show", main)
+        preview = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/StandbyPreviewWindow.java").read_text(encoding="utf-8")
+        self.assertIn("KEYCODE_DPAD_LEFT", preview)
+        self.assertIn("KEYCODE_DPAD_RIGHT", preview)
+        self.assertIn("KEYCODE_DPAD_UP", preview)
+        self.assertIn("KEYCODE_DPAD_DOWN", preview)
         self.assertNotIn("content.setTranslationX(0f)", main)
         self.assertNotIn("content.setTranslationY(0f)", main)
 
