@@ -2474,8 +2474,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         if (inDock) {
             showAmbient(dockAdapter.ambientColorAt(position));
+            if (classicHomeHostActive && classicHomeScroll != null) {
+                classicHomeScroll.smoothScrollTo(0, 0);
+            }
         } else {
             showAmbient(adapter.ambientColorAt(position));
+            if (classicHomeHostActive) scrollClassicHomeToRow(position, card);
             // Horizontal Dock mode owns a fixed one-row viewport. Revealing the enlarged
             // focus rectangle can scroll the active row away from the glass baseline.
             // Row placement is controlled explicitly by focusTile() in this mode.
@@ -2494,6 +2498,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int position = dockAdapter.positionOf(key);
         if (position < 0) return false;
         int count = dockAdapter.getItemCount();
+        if (classicHomeHostActive) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                    if (position > 0) focusDockTile(position - 1);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                    if (position < count - 1) focusDockTile(position + 1);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_UP:
+                    focusTopBarFallback();
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_DOWN:
+                    if (adapter != null && adapter.getItemCount() > 0) {
+                        focusTile(Math.min(position, adapter.getItemCount() - 1));
+                    }
+                    return true;
+                default:
+                    return false;
+            }
+        }
         if (horizontalCarouselMode) {
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (position > 0) focusDockTile(position - 1);
@@ -2984,12 +3008,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Turns the top fade on while any row reaches into its band, with room for a focused tile's zoom. */
     private void updateTopFade() {
-        if (gridWrap == null) return;
+        if (gridWrap == null || grid == null) return;
         float band = 56 * density + 24 * density;
         boolean inBand = false;
+        int scrollY = classicHomeHostActive && classicHomeScroll != null
+                ? classicHomeScroll.getScrollY() : 0;
         for (int i = 0; i < grid.getChildCount() && !inBand; i++) {
             View child = grid.getChildAt(i);
-            inBand = grid.getTop() + child.getTop() + child.getTranslationY() < band;
+            int top = grid.getTop() + child.getTop() + Math.round(child.getTranslationY()) - scrollY;
+            inBand = top < band && top + child.getHeight() > 0;
         }
         gridWrap.setFadeStrength(inBand ? 1f : 0f);
     }
@@ -3974,6 +4001,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void stepMove(int keyCode) {
         if (movingPos < 0 || movingRecycler == null) return;
+        if (!horizontalCarouselMode) {
+            long now = android.os.SystemClock.uptimeMillis();
+            if (now - lastClassicMoveAt < 130L) return;
+            lastClassicMoveAt = now;
+        }
         // Keep the selected app anchored by identity, not by a RecyclerView position that
         // may have become stale during notifyDataSetChanged()/layout after the previous move.
         if (movingKey == null) {
@@ -4343,7 +4375,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         // Classic vertical mode uses Home Universal's explicit focus graph. Horizontal mode
         // retains Glass TV Home's independent measured-row transition controller.
-        if (!horizontalCarouselMode && horizontalGridExpanded) {
+        if (classicHomeHostActive) {
             ClassicGridNavigationPolicy.Target classicTarget = ClassicGridNavigationPolicy.fromGrid(
                     position, keyCode, COLUMNS, count,
                     dockAdapter == null ? 0 : dockAdapter.getItemCount());
@@ -4535,6 +4567,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         final int requestGeneration = ++gridFocusRequestGeneration;
         final int targetPosition = NavigationState.resolveHomePosition(-1, position, dockAdapter.getItemCount());
+        if (classicHomeHostActive && classicHomeScroll != null) {
+            classicHomeScroll.smoothScrollTo(0, 0);
+            dockRecycler.postOnAnimation(() -> focusDockTileWhenLaidOut(targetPosition, 10, requestGeneration));
+            return;
+        }
         RecyclerView.ViewHolder vh = dockRecycler.findViewHolderForAdapterPosition(targetPosition);
         if (vh != null) {
             View card = vh.itemView.findViewById(R.id.card);
@@ -5133,6 +5170,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void focusTile(int position) {
         if (adapter == null || grid == null) return;
         final int requestGeneration = ++gridFocusRequestGeneration;
+        if (classicHomeHostActive) {
+            if (adapter.getItemCount() <= 0) {
+                if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
+                else focusTopBarFallback();
+                return;
+            }
+            final int target = NavigationState.resolveHomePosition(-1, position, adapter.getItemCount());
+            grid.post(() -> focusClassicGridTileWhenLaidOut(target, requestGeneration, 10));
+            return;
+        }
         if (!dockVertical && !horizontalGridExpanded) {
             if (adapter.getItemCount() == 0) {
                 if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
@@ -5485,6 +5532,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
         } else {
             grid.scrollToPosition(position);
+        }
+    }
+
+    private void focusClassicGridTileWhenLaidOut(int position, int requestGeneration, int attemptsRemaining) {
+        if (!classicHomeHostActive || requestGeneration != gridFocusRequestGeneration
+                || adapter == null || grid == null || position < 0 || position >= adapter.getItemCount()) return;
+        RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(position);
+        View card = holder != null ? holder.itemView.findViewById(R.id.card) : null;
+        if (card != null && card.isShown() && card.isFocusable()) {
+            if (card.isFocused()) onTileFocused(position, card);
+            else card.requestFocus();
+            return;
+        }
+        if (attemptsRemaining > 0) {
+            grid.requestLayout();
+            grid.postOnAnimation(() -> focusClassicGridTileWhenLaidOut(
+                    position, requestGeneration, attemptsRemaining - 1));
+        } else {
+            android.util.Log.w("TvHome.Classic", "Unable to resolve Classic Grid focus at " + position);
         }
     }
 
