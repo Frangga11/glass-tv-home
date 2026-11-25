@@ -3473,7 +3473,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private android.animation.ObjectAnimator wiggle;
     /** A key whose release is swallowed: the OK or Back that put a moved tile down must not also open it. */
     private int swallowRelease = -1;
-    /** Holding OK on an app: a glass menu to move it, or to open Android's page for it. */
+    /** Classic mode uses direct long-hold Move Mode; Horizontal mode keeps its existing tile menu. */
     @Override
     public boolean onTileHeld(int position, View card) {
         String key = adapter == null ? null : adapter.keyAt(position);
@@ -3528,7 +3528,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         // Move Mode reorders use stable identities and immediate rebinding. RecyclerView item
         // animations retain old-holder snapshots during notifyDataSetChanged(), which can look
-        // like a second focus/shadow travelling on a different row.
+        // like a second focus cursor travelling on a different row.
         recycler.setItemAnimator(null);
         boolean startClassicSession = !horizontalCarouselMode
                 && adapter != null && !adapter.isMoveTransactionActive();
@@ -3746,7 +3746,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (inDock) onDockTileFocused(key, movingCard);
         else onTileFocused(position, movingCard);
         // The focus callback selects the normal UI style; Move Mode then reapplies its one
-        // canonical shadow style after every RecyclerView rebind.
+        // canonical glass style after every RecyclerView rebind.
         glider.setMoveModeActive(true, isGlassEffectsEnabled());
     }
 
