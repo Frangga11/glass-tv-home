@@ -2193,12 +2193,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
-    /** Android TV provides tv_input; generic Robolectric hosts and non-TV builds may not. */
+    /**
+     * TV input callbacks are only meaningful on Leanback devices. Avoid probing a hidden
+     * system service on phones, generic Android hosts and Robolectric: that lookup emits a
+     * ServiceNotFound stack trace on non-TV hosts and does no useful work for this launcher.
+     */
     private TvInputManager tvInputManagerOrNull() {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK)) return null;
         try {
             return (TvInputManager) getSystemService(TV_INPUT_SERVICE);
-        } catch (Exception unavailableOnHost) {
-            android.util.Log.d("TvHome.Inputs", "TV input service unavailable on this host");
+        } catch (RuntimeException unavailableOnDevice) {
+            android.util.Log.w("TvHome.Inputs", "Leanback device does not expose tv_input", unavailableOnDevice);
             return null;
         }
     }
