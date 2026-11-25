@@ -28,7 +28,7 @@ public class ClassicGridNavigationPolicyTest {
         ClassicGridNavigationPolicy.Target normal =
                 ClassicGridNavigationPolicy.fromGrid(5, android.view.KeyEvent.KEYCODE_DPAD_DOWN, 4, 10, 4);
         ClassicGridNavigationPolicy.Target incomplete =
-                ClassicGridNavigationPolicy.fromGrid(4, android.view.KeyEvent.KEYCODE_DPAD_DOWN, 4, 6, 4);
+                ClassicGridNavigationPolicy.fromGrid(3, android.view.KeyEvent.KEYCODE_DPAD_DOWN, 4, 6, 4);
         assertEquals(9, normal.position);
         assertEquals(5, incomplete.position);
     }
