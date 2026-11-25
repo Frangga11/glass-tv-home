@@ -2516,24 +2516,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (position < 0) return false;
         int count = dockAdapter.getItemCount();
         if (classicHomeHostActive) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_DPAD_LEFT:
-                    if (position > 0) focusDockTile(position - 1);
-                    return true;
-                case KeyEvent.KEYCODE_DPAD_RIGHT:
-                    if (position < count - 1) focusDockTile(position + 1);
-                    return true;
-                case KeyEvent.KEYCODE_DPAD_UP:
-                    focusTopBarFallback();
-                    return true;
-                case KeyEvent.KEYCODE_DPAD_DOWN:
-                    if (adapter != null && adapter.getItemCount() > 0) {
-                        focusTile(Math.min(position, adapter.getItemCount() - 1));
-                    }
-                    return true;
-                default:
-                    return false;
+            // Dock and Grid use the same authoritative neighbour policy. A negative Dock
+            // target is the sole top-shelf exit; no second inline DPAD graph is maintained here.
+            ClassicGridNavigationPolicy.Target target = ClassicGridNavigationPolicy.fromDock(
+                    position, keyCode, count, adapter == null ? 0 : adapter.getItemCount(), -1);
+            if (target.dock && target.position < 0) {
+                focusTopBarFallback();
+            } else if (target.dock) {
+                if (target.position != position) focusDockTile(target.position);
+            } else if (target.position != position) {
+                focusTile(target.position);
             }
+            return true;
         }
         if (horizontalCarouselMode) {
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
