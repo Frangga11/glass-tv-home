@@ -9615,6 +9615,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             if (hint != null) hint.setTextColor(0x66475569);
         }
+        String widgetLayout = getSharedPreferences("standby_prefs", MODE_PRIVATE)
+                .getString("widget_layout", StandbyWidgetLayoutController.COMPACT);
+        StandbyWidgetLayoutController.refreshPalette(screensaverView, widgetLayout, density);
     }
 
     private void updateNightstandPhoto() {
