@@ -197,8 +197,25 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     void setClassicVerticalMode(boolean enabled) {
         if (classicVerticalMode == enabled) return;
         classicVerticalMode = enabled;
+        if (enabled) {
+            // Home Universal persists package names. Convert legacy Glass component keys once,
+            // so the Classic inventory and its saved order share the same identity model.
+            List<String> packages = new ArrayList<>();
+            for (String savedKey : arranged) {
+                int slash = savedKey.indexOf('/');
+                String pkg = slash > 0 ? savedKey.substring(0, slash) : savedKey;
+                int at = pkg.indexOf('@');
+                if (at >= 0) pkg = pkg.substring(0, at);
+                if (!pkg.isEmpty() && !packages.contains(pkg)) packages.add(pkg);
+            }
+            arranged.clear();
+            arranged.addAll(packages);
+        }
         presentationSnapshot = null;
     }
+
+    boolean isClassicVerticalMode() { return classicVerticalMode; }
+    int classicDockCapacity() { return gridColumns; }
 
     boolean reload(List<Cards.Card> cards) {
         // A package/catalog refresh invalidates adapter positions; never carry a preview across it.
@@ -206,17 +223,23 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         PackageManager pm = ctx.getPackageManager();
         Intent probe = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
         List<ResolveInfo> found = new ArrayList<>(pm.queryIntentActivities(probe, 0));
-        // A phone-only app named in dock_apps (e.g. the phone Play Store some boxes ship) has no leanback
-        // entry; take its ordinary launcher activity instead. Apps not named stay hidden.
-        Set<String> listed = new HashSet<>();
-        for (ResolveInfo ri : found) if (ri.activityInfo != null) listed.add(ri.activityInfo.packageName);
-        for (String pkg : favourites) {
-            if (listed.contains(pkg)) continue;
-            Intent phone = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setPackage(pkg);
-            List<ResolveInfo> more = pm.queryIntentActivities(phone, 0);
-            if (!more.isEmpty() && more.get(0).activityInfo != null) {
-                found.add(more.get(0));
-                listed.add(pkg);
+        // Home Universal Classic inventories both TV and ordinary launcher activities, then
+        // keeps the first launchable activity for each package. Horizontal mode retains the
+        // previous TV-first/favourites fallback catalog.
+        if (classicVerticalMode) {
+            found.addAll(pm.queryIntentActivities(new Intent(Intent.ACTION_MAIN)
+                    .addCategory(Intent.CATEGORY_LAUNCHER), 0));
+        } else {
+            Set<String> listed = new HashSet<>();
+            for (ResolveInfo ri : found) if (ri.activityInfo != null) listed.add(ri.activityInfo.packageName);
+            for (String pkg : favourites) {
+                if (listed.contains(pkg)) continue;
+                Intent phone = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setPackage(pkg);
+                List<ResolveInfo> more = pm.queryIntentActivities(phone, 0);
+                if (!more.isEmpty() && more.get(0).activityInfo != null) {
+                    found.add(more.get(0));
+                    listed.add(pkg);
+                }
             }
         }
         // The install path moves when an app is updated, so it stands in for the version: an update
@@ -239,9 +262,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         for (Cards.Card c : cards) cardByPkg.put(c.pkg, c);
         List<Entry> fresh = new ArrayList<>();
         Map<String, Entry> apps = new HashMap<>();
+        Set<String> classicPackages = new HashSet<>();
         for (ResolveInfo ri : found) {
             if (ri.activityInfo == null) continue;
             String pkg = ri.activityInfo.packageName;
+            if (classicVerticalMode && !classicPackages.add(pkg)) continue;
             if (pkg.equals(ctx.getPackageName()) || hidden.contains(pkg) || ChildModeManager.isAppHidden(ctx, pkg)) continue;
             ComponentName component = new ComponentName(pkg, ri.activityInfo.name);
             Cards.Card card = cardByPkg.get(pkg);
@@ -267,11 +292,21 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             }
         }
         builtApps = apps;
+        List<String> classicOrder = null;
         Map<String, Integer> place = new HashMap<>();
-        for (int i = 0; i < arranged.size(); i++) place.put(arranged.get(i), i);
+        if (classicVerticalMode) {
+            List<String> installedPackages = new ArrayList<>();
+            for (Entry entry : fresh) installedPackages.add(entry.pkg);
+            classicOrder = ClassicAppOrder.merge(arranged, favourites, installedPackages);
+            for (int i = 0; i < classicOrder.size(); i++) place.put(classicOrder.get(i), i);
+        } else {
+            for (int i = 0; i < arranged.size(); i++) place.put(arranged.get(i), i);
+        }
+        final boolean classicOrdering = classicVerticalMode;
         Collections.sort(fresh, (a, b) -> {
-            // The order someone arranged comes first; apps it has not seen yet go after it.
-            Integer pa = place.get(a.component.flattenToShortString()), pb = place.get(b.component.flattenToShortString());
+            // Classic persists package order like Home Universal; Horizontal keeps component order.
+            Integer pa = place.get(classicOrdering ? a.pkg : a.component.flattenToShortString());
+            Integer pb = place.get(classicOrdering ? b.pkg : b.component.flattenToShortString());
             if (pa != null || pb != null) {
                 if (pa == null) return 1;
                 if (pb == null) return -1;
@@ -587,7 +622,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         items.replace(ordered);
         presentationSnapshot = null;
         arranged.clear();
-        for (Entry x : ordered) if (x.kind != Entry.HOME_SETTINGS) arranged.add(x.component.flattenToShortString());
+        for (Entry x : ordered) if (x.kind != Entry.HOME_SETTINGS) {
+            arranged.add(classicVerticalMode ? x.pkg : x.component.flattenToShortString());
+        }
         if (!moveTransactionActive) {
             ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
                     .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
