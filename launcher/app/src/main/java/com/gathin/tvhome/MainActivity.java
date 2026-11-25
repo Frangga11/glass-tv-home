@@ -4084,6 +4084,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int count = adapter == null ? 0 : adapter.getItemCount();
         if (count <= 0) return true;
 
+        // Classic vertical mode uses Home Universal's explicit focus graph. Horizontal mode
+        // retains Glass TV Home's independent measured-row transition controller.
+        if (dockVertical) {
+            ClassicGridNavigationPolicy.Target classicTarget = ClassicGridNavigationPolicy.fromGrid(
+                    position, keyCode, COLUMNS, count,
+                    dockAdapter == null ? 0 : dockAdapter.getItemCount());
+            if (classicTarget.dock) focusDockTile(classicTarget.position);
+            else focusTile(classicTarget.position);
+            return true;
+        }
+
         // During a measured row transition, the pending destination is the logical cursor.
         // Every direction is resolved from it so a quick LEFT/RIGHT cannot be answered by
         // Android's geometric focus search against a RecyclerView that is still scrolling.
