@@ -3169,7 +3169,70 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockAdapter.refresh();
         dockAdapter.setVertical(false);
         dockAdapter.setCarouselMode(horizontalCarouselMode);
-        dockRecycler.setClipChildren(horizontalCarouselMode);
+        if (!horizontalCarouselMode) {
+            dockVertical = false;
+            horizontalGridExpanded = true;
+            horizontalGridViewportRows = 1;
+            cancelHorizontalGridRowTransition();
+            if (horizontalDockExpansionInProgress || horizontalDockCollapseInProgress) {
+                horizontalDockTransitionGeneration++;
+            }
+            horizontalDockExpansionInProgress = false;
+            horizontalDockCollapseInProgress = false;
+            if (horizontalGridViewportAnimator != null) horizontalGridViewportAnimator.cancel();
+            horizontalGridViewportAnimator = null;
+            if (horizontalDockTransitionAnimator != null) horizontalDockTransitionAnimator.cancel();
+            horizontalDockTransitionAnimator = null;
+            grid.setTranslationY(0f);
+            dockRecycler.setTranslationY(0f);
+            dockRecycler.setClipChildren(false);
+            dockRecycler.setClipToPadding(false);
+            RecyclerView.LayoutManager classicManager = dockRecycler.getLayoutManager();
+            if (!(classicManager instanceof CarouselLinearLayoutManager)
+                    || ((CarouselLinearLayoutManager) classicManager).getOrientation()
+                    != android.widget.LinearLayout.HORIZONTAL) {
+                dockRecycler.setLayoutManager(new CarouselLinearLayoutManager(
+                        this, android.widget.LinearLayout.HORIZONTAL, false));
+            }
+            int dockCount = dockAdapter.getItemCount();
+            if (tray == null) {
+                tray = new DockDecoration(dockCount, density, false);
+                tray.setGlider(glider);
+                dockRecycler.addItemDecoration(tray);
+                lastDockDecorationCount = dockCount;
+                lastDockDecorationVertical = false;
+            } else if (lastDockDecorationCount != dockCount || lastDockDecorationVertical) {
+                tray.update(dockCount, false);
+                lastDockDecorationCount = dockCount;
+                lastDockDecorationVertical = false;
+                dockRecycler.invalidateItemDecorations();
+            }
+            tray.setHorizontalTailInsetPx(0);
+            dockRecycler.invalidateItemDecorations();
+            activateClassicHomeHost();
+            int viewport = gridWrap.getWidth() > 0 ? gridWrap.getWidth()
+                    : Math.max(1, getResources().getDisplayMetrics().widthPixels
+                            - 2 * DockGeometry.safeHorizontalInsetPx(density));
+            int inner = DockGeometry.horizontalContentWidthPx(viewport, density);
+            int slot = DockGeometry.horizontalDockSlotWidthPx(inner, COLUMNS, density);
+            int center = DockGeometry.horizontalCenterOffsetPx(inner, slot, dockCount);
+            dockRecycler.setPadding(center, 0, center, 0);
+            dockRecycler.setHorizontalViewportClip(false, center);
+            dockAdapter.setHorizontalViewportWidth(viewport);
+            dockRecycler.setVisibility(dockCount > 0 ? View.VISIBLE : View.GONE);
+            grid.setVisibility(View.VISIBLE);
+            if (appsLabel != null) appsLabel.setVisibility(adapter.getItemCount() > 0 ? View.VISIBLE : View.GONE);
+            classicHomeScroll.post(() -> {
+                if (classicHomeHostActive) {
+                    classicHomeScroll.scrollTo(0, 0);
+                    updateTopFade();
+                    updateHomeShelfAnchor();
+                }
+            });
+            return;
+        }
+        deactivateClassicHomeHost();
+        dockRecycler.setClipChildren(true);
         // Use RecyclerView's full padded content area and apply a symmetric visual clip below.
         // The extra scroll extent is a final-item decoration, not host padding.
         dockRecycler.setClipToPadding(false);
