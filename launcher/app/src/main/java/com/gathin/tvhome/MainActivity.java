@@ -926,7 +926,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         gridWrap = findViewById(R.id.gridWrap);
         gridBasePaddingTop = grid.getPaddingTop();
         gridBasePaddingBottom = grid.getPaddingBottom();
-        grid.setLayoutManager(new GridLayoutManager(this, COLUMNS));
+        grid.setLayoutManager(new FocusControlledGridLayoutManager(this, COLUMNS));
         grid.setHasFixedSize(true);
         grid.setItemAnimator(null);
         Backdrop.watch(grid);
