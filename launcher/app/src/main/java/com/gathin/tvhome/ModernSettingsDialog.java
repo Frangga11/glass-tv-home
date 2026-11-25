@@ -1358,7 +1358,7 @@ public final class ModernSettingsDialog {
                             "Jadwal kerja", "Home aktif: 0–15 menit  •  Layar Siaga: menit ke-15  •  Google Backdrop: menit ke-30  •  Tidur perangkat: menit ke-60"));
                     rightContent.addView(buildCardRow(activity, density, outfit,
                             "Pratinjau Layar Siaga", "Buka tampilan aktual untuk memeriksa komposisi dashboard",
-                            activity::showNightstandScreensaver));
+                            activity::showStandbyPreviewWindow));
                 } else if (standbySubtab[0] == 1) {
                     addSectionHeader(rightContent, outfit, "Foto Layar Siaga");
                     rightContent.addView(buildInfoCard(activity, density, outfit,
@@ -1389,17 +1389,18 @@ public final class ModernSettingsDialog {
                     rightContent.addView(buildCardRow(activity, density, outfit,
                             "Atur posisi langsung", "Geser widget pada layar pratinjau menggunakan remote TV",
                             activity::showStandbyWidgetEditor));
-                    String[] shapes = {"Kapsul lembut", "Sudut membulat", "Persegi"};
-                    String[] shapeValues = {"soft", "rounded", "square"};
-                    String currentShape = standbyPrefs.getString("widget_shape", "soft");
+                    String[] widgetNames = {"Widget Linear", "Widget Kolom", "Widget Bentang", "Widget Compact"};
+                    String[] widgetValues = {"linear", "column", "bentang", "compact"};
+                    String currentWidget = standbyPrefs.getString("widget_layout", "compact");
+                    int selectedWidget = Math.max(0, java.util.Arrays.asList(widgetValues).indexOf(currentWidget));
                     rightContent.addView(buildCardRow(activity, density, outfit,
-                            "Bentuk panel", "Saat ini: " + (currentShape.equals("square") ? "Persegi" : currentShape.equals("rounded") ? "Sudut membulat" : "Kapsul lembut"),
+                            "Bentuk Widget", "Saat ini: " + widgetNames[selectedWidget],
                             () -> new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                                    .setTitle("Bentuk panel")
-                                    .setSingleChoiceItems(shapes, Math.max(0, java.util.Arrays.asList(shapeValues).indexOf(currentShape)), (d,w) -> {
-                                        standbyPrefs.edit().putString("widget_shape", shapeValues[w]).apply();
+                                    .setTitle("Bentuk Widget")
+                                    .setSingleChoiceItems(widgetNames, selectedWidget, (d,w) -> {
+                                        standbyPrefs.edit().putString("widget_layout", widgetValues[w]).apply();
                                         d.dismiss();
-                                        TvFeedback.show(activity, "Bentuk disimpan.", Toast.LENGTH_SHORT);
+                                        TvFeedback.show(activity, widgetNames[w] + " dipilih.", Toast.LENGTH_SHORT);
                                         if (renderRightPane[0] != null) renderRightPane[0].run();
                                     }).setNegativeButton(android.R.string.cancel, null).show()));
                     rightContent.addView(buildCardRow(activity, density, outfit,
@@ -1407,16 +1408,14 @@ public final class ModernSettingsDialog {
                             activity::showNightstandScreensaver));
                 } else {
                     addSectionHeader(rightContent, outfit, "Sinkronisasi Android");
-                    rightContent.addView(buildInfoCard(activity, density, outfit,
-                            "Jadwal perangkat", "Google Backdrop tetap dipilih di pengaturan Android. Layar Siaga Glass TV Home muncul pada menit ke-15, Android screensaver mulai pada menit ke-30, dan tidur perangkat pada menit ke-60."));
+                    rightContent.addView(buildStandbyDiagnosticsCard(activity, density, outfit));
                     rightContent.addView(buildCardRow(activity, density, outfit,
-                            "Pengaturan screensaver Android", "Buka pengaturan sistem untuk memeriksa pilihan Backdrop dan waktu mulai 30 menit",
-                            () -> {
-                                Intent intent = new Intent(Settings.ACTION_DREAM_SETTINGS);
-                                if (intent.resolveActivity(activity.getPackageManager()) == null) intent = new Intent(Settings.ACTION_DISPLAY_SETTINGS);
-                                try { activity.startActivity(intent); }
-                                catch (Exception e) { TvFeedback.show(activity, "Pengaturan screensaver Android tidak dapat dibuka.", Toast.LENGTH_LONG); }
-                            }));
+                            "Pengaturan screensaver Android",
+                            "Buka Setelan Android TV > Preferensi perangkat > Screensaver",
+                            () -> openDeviceSettingsOrFeedback(activity,
+                                    new Intent(Settings.ACTION_DREAM_SETTINGS),
+                                    new Intent(Settings.ACTION_DISPLAY_SETTINGS),
+                                    new Intent(Settings.ACTION_SETTINGS))));
                 }
                 int selectedIndex = standbySubtab[0] >= 0 && standbySubtab[0] < subtabViews.length
                         ? standbySubtab[0] : 0;
@@ -2226,6 +2225,91 @@ public final class ModernSettingsDialog {
         lp.bottomMargin = (int) (8 * density);
         card.setLayoutParams(lp);
         return card;
+    }
+
+    private static LinearLayout buildStandbyDiagnosticsCard(Context ctx, float density, Typeface font) {
+        LinearLayout card = new LinearLayout(ctx);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setPadding(Math.round(16 * density), Math.round(12 * density),
+                Math.round(16 * density), Math.round(12 * density));
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(TvUiTokens.SURFACE);
+        bg.setCornerRadius(12 * density);
+        card.setBackground(bg);
+
+        TextView title = new TextView(ctx);
+        title.setText("Status konfigurasi Android");
+        title.setTextSize(13.5f);
+        title.setTextColor(TvUiTokens.NAV_ITEM_TEXT);
+        title.setTypeface(font, Typeface.BOLD);
+        card.addView(title);
+
+        TextView details = new TextView(ctx);
+        details.setText(readStandbyAndroidDiagnostics(ctx));
+        details.setTextSize(12.5f);
+        details.setLineSpacing(2 * density, 1f);
+        details.setTextColor(TvUiTokens.ACCENT_CYAN);
+        details.setTypeface(font, Typeface.NORMAL);
+        LinearLayout.LayoutParams detailsLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        detailsLp.topMargin = Math.round(8 * density);
+        card.addView(details, detailsLp);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.bottomMargin = Math.round(8 * density);
+        card.setLayoutParams(lp);
+        return card;
+    }
+
+    private static String readStandbyAndroidDiagnostics(Context ctx) {
+        String enabled = readSetting(ctx, true, "screensaver_enabled");
+        String components = readSetting(ctx, true, "screensaver_components");
+        String activateOnSleep = readSetting(ctx, true, "screensaver_activate_on_sleep");
+        String screenOff = readSetting(ctx, false, Settings.System.SCREEN_OFF_TIMEOUT);
+        String sleepTimeout = readSetting(ctx, true, "sleep_timeout");
+
+        StringBuilder out = new StringBuilder();
+        out.append("Google Backdrop: ");
+        if (components == null) out.append("Tidak dapat dibaca");
+        else if (components.contains("com.google.android.backdrop")) out.append("Terpilih");
+        else if (components.trim().isEmpty()) out.append("Belum ada komponen dipilih");
+        else out.append(components);
+        out.append("\nScreensaver Android: ").append(settingState(enabled));
+        out.append("\nAktif saat perangkat tidur: ").append(settingState(activateOnSleep));
+        out.append("\nScreen-off timeout: ").append(formatTimeout(screenOff));
+        out.append("\nSleep timeout: ").append(formatTimeout(sleepTimeout));
+        out.append("\n\nJadwal Glass TV Home: Layar Siaga 15 menit; target Android screensaver 30 menit; tidur perangkat 60 menit.");
+        out.append("\nCatatan: nilai Tidak dapat dibaca berarti Android membatasi akses aplikasi; bukan berarti fitur nonaktif.");
+        return out.toString();
+    }
+
+    private static String readSetting(Context ctx, boolean secure, String key) {
+        try {
+            return secure
+                    ? Settings.Secure.getString(ctx.getContentResolver(), key)
+                    : Settings.System.getString(ctx.getContentResolver(), key);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private static String settingState(String value) {
+        if (value == null) return "Tidak dapat dibaca";
+        if ("1".equals(value) || "true".equalsIgnoreCase(value)) return "Aktif";
+        if ("0".equals(value) || "false".equalsIgnoreCase(value)) return "Nonaktif";
+        return value;
+    }
+
+    private static String formatTimeout(String value) {
+        if (value == null) return "Tidak dapat dibaca";
+        try {
+            long millis = Long.parseLong(value);
+            if (millis < 0) return "Tidak dibatasi / nilai khusus (" + value + ")";
+            return (millis / 60000L) + " menit";
+        } catch (NumberFormatException e) {
+            return value;
+        }
     }
 
     private static void showEditNameDialog(MainActivity activity, float density, Typeface font, EditNameCallback callback) {

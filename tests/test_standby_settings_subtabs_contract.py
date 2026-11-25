@@ -31,9 +31,15 @@ class StandbySettingsSubtabsContractTest(unittest.TestCase):
         editor = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/StandbyWidgetEditor.java").read_text(encoding="utf-8")
         self.assertIn('"widget_x"', editor)
         self.assertIn('"widget_y"', editor)
-        self.assertIn('"widget_shape"', settings)
+        self.assertIn('"widget_layout"', settings)
+        self.assertIn('"Widget Linear"', settings)
+        self.assertIn('"Widget Kolom"', settings)
+        self.assertIn('"Widget Bentang"', settings)
+        self.assertIn('"Widget Compact"', settings)
         self.assertIn("applyStandbyPanelPreferences()", main)
-        self.assertIn("UniversalGlassMaterial.homeCapsule(", main)
+        controller = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/StandbyWidgetLayoutController.java").read_text(encoding="utf-8")
+        self.assertIn("UniversalGlassMaterial.homeCapsule(", controller)
+        self.assertIn("StandbyWidgetLayoutController.apply(", main)
         self.assertIn("Gravity.TOP | Gravity.START", main)
 
     def test_subtabs_are_compact_and_dpad_navigation_is_explicit(self):

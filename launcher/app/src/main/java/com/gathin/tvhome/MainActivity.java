@@ -339,6 +339,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private StandbyCoordinator standbyCoordinator;
     private View screensaverView;
     private String standbyPhotoUriShown = "";
+    private String standbyPhotoUriLoading = "";
     private final Runnable standbyPhotoTick = new Runnable() {
         @Override public void run() {
             if (screensaverActive) {
@@ -9469,8 +9470,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View content = screensaverView.findViewById(R.id.nightstandContent);
         if (content == null) return;
         android.content.SharedPreferences prefs = getSharedPreferences("standby_prefs", MODE_PRIVATE);
-        String shape = prefs.getString("widget_shape", "soft");
-        float radius = shape.equals("square") ? 6f : shape.equals("rounded") ? 14f : 26f;
+        String widgetLayout = prefs.getString("widget_layout", StandbyWidgetLayoutController.COMPACT);
         if (content.getLayoutParams() instanceof FrameLayout.LayoutParams) {
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) content.getLayoutParams();
             lp.gravity = Gravity.TOP | Gravity.START;
@@ -9480,10 +9480,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             lp.bottomMargin = 0;
             content.setLayoutParams(lp);
         }
-        // Reuse the same Silver-Cyan glass recipe as the Home Dock; do not maintain a
-        // second standby-only gradient/material implementation.
-        content.setBackground(UniversalGlassMaterial.homeCapsule(
-                this, density, radius, 0xEAF8FFFF, 0xEFFFFFFF));
+        // The layout controller changes only the widget composition. The same live TextViews
+        // remain bound to PrayerTimes and WeatherAirQuality; Compact restores the original tree.
+        StandbyWidgetLayoutController.apply(this, (LinearLayout) content, density, widgetLayout);
         content.post(() -> {
             if (screensaverView == null || content.getParent() == null) return;
             View area = (View) content.getParent();
@@ -9498,6 +9497,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
     }
 
+    void showStandbyPreviewWindow() {
+        if (isFinishing() || isDestroyed()) return;
+        if (!screensaverActive) showNightstandScreensaver();
+        if (screensaverView == null || !(screensaverView.getParent() instanceof ViewGroup)) return;
+        StandbyPreviewWindow.show(this, screensaverView, this::dismissScreensaver);
+    }
+
     void showStandbyWidgetEditor() {
         if (isFinishing() || isDestroyed()) return;
         if (!screensaverActive) showNightstandScreensaver();
@@ -9505,7 +9511,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View content = screensaverView.findViewById(R.id.nightstandContent);
         if (content == null) return;
         StandbyWidgetEditor.show(this, (FrameLayout) screensaverView, content, density,
-                () -> applyStandbyPanelPreferences());
+                () -> applyStandbyPanelPreferences(), this::dismissScreensaver);
     }
 
     /** Refreshes only the manually opened in-launcher nightstand; Android owns idle transitions. */
@@ -9525,7 +9531,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updateHomeTabIndicator();
         if (screensaverView == null) {
             screensaverView = getLayoutInflater().inflate(R.layout.view_nightstand, root, false);
+            screensaverView.setFocusable(true);
+            screensaverView.setFocusableInTouchMode(true);
             screensaverView.setOnClickListener(v -> dismissScreensaver());
+            screensaverView.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() != KeyEvent.ACTION_DOWN) return true;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+                        || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
+                        || keyCode == KeyEvent.KEYCODE_DPAD_UP
+                        || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    dismissScreensaver();
+                    return true;
+                }
+                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                    dismissScreensaver();
+                    return true;
+                }
+                return false;
+            });
             root.addView(screensaverView, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
@@ -9538,6 +9561,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         screensaverView.setVisibility(View.VISIBLE);
         screensaverView.setAlpha(0f);
         screensaverView.animate().alpha(1f).setDuration(500).start();
+        screensaverView.requestFocus();
         android.util.Log.i("TvHome", "Nightstand screensaver activated");
     }
 
@@ -9550,13 +9574,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         TextView prayer = screensaverView.findViewById(R.id.nightstandPrayer);
         if (prayer != null) prayer.setText("🕌 " + PrayerTimes.getNextPrayerSummary(this));
 
-        // Center locked strictly with no movement
-        View content = screensaverView.findViewById(R.id.nightstandContent);
-        if (content != null) {
-            content.animate().cancel();
-            content.setTranslationX(0f);
-            content.setTranslationY(0f);
-        }
+        // Preserve the persisted widget position. Refreshing clock/prayer metrics must
+        // never force the dashboard back to the origin or interrupt an active editor.
 
         // iPhone StandBy Wind Down Mode: 10:00 PM (22:00) to 6:00 AM (06:00) -> Red Monochrome
         java.util.Calendar cal = PrayerTimes.calendar(this);
@@ -9596,6 +9615,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             if (hint != null) hint.setTextColor(0x66475569);
         }
+        String widgetLayout = getSharedPreferences("standby_prefs", MODE_PRIVATE)
+                .getString("widget_layout", StandbyWidgetLayoutController.COMPACT);
+        StandbyWidgetLayoutController.refreshPalette(screensaverView, widgetLayout, density);
     }
 
     private void updateNightstandPhoto() {
@@ -9618,11 +9640,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         Uri uri = uris.get(index);
         photo.setVisibility(View.VISIBLE);
         scrim.setVisibility(View.VISIBLE);
-        if (!uri.toString().equals(standbyPhotoUriShown)) {
-            standbyPhotoUriShown = uri.toString();
+        final String requestedUri = uri.toString();
+        boolean imageMissing = photo.getDrawable() == null;
+        if (!requestedUri.equals(standbyPhotoUriShown)) {
+            standbyPhotoUriShown = requestedUri;
+            photo.setImageDrawable(null);
+            imageMissing = true;
+        }
+        if (imageMissing && !requestedUri.equals(standbyPhotoUriLoading)) {
+            standbyPhotoUriLoading = requestedUri;
             StandbyPhotoStore.loadBitmapAsync(this, uri, bitmap -> {
+                if (requestedUri.equals(standbyPhotoUriLoading)) standbyPhotoUriLoading = "";
+                // The editor/preview may be dismissed while decoding. Keep the successfully
+                // decoded image on the retained standby view so the next opening is not blank.
+                boolean stillCurrent = screensaverView != null
+                        && photo.getParent() != null
+                        && StandbyPhotoStore.isPhotoMode(this)
+                        && requestedUri.equals(standbyPhotoUriShown);
                 if (bitmap == null) {
-                    if (uri.toString().equals(standbyPhotoUriShown)) {
+                    if (stillCurrent) {
+                        standbyPhotoUriShown = "";
                         photo.setImageDrawable(null);
                         photo.setVisibility(View.GONE);
                         scrim.setVisibility(View.GONE);
@@ -9630,13 +9667,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     }
                     return;
                 }
-                if (!screensaverActive || screensaverView == null
-                        || !StandbyPhotoStore.isPhotoMode(this)
-                        || !uri.toString().equals(standbyPhotoUriShown)) {
+                if (!stillCurrent) {
                     bitmap.recycle();
                     return;
                 }
                 photo.setImageBitmap(bitmap);
+                photo.setVisibility(View.VISIBLE);
+                scrim.setVisibility(View.VISIBLE);
             });
         }
     }
