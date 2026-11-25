@@ -3269,8 +3269,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         boolean classicOrderedMode = preferences.orientation == DockPreferences.Orientation.VERTICAL;
         horizontalCarouselMode = false;
         adapter.setClassicVerticalMode(classicOrderedMode);
-        adapter.invalidateDockSnapshot();
-        adapter.notifyDataSetChanged();
+        adapter.refreshPresentation();
         dockAdapter.refresh();
         dockAdapter.setVertical(false);
         dockAdapter.setCarouselMode(false);
