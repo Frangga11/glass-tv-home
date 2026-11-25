@@ -4086,7 +4086,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         // Classic vertical mode uses Home Universal's explicit focus graph. Horizontal mode
         // retains Glass TV Home's independent measured-row transition controller.
-        if (dockVertical) {
+        if (!horizontalCarouselMode && horizontalGridExpanded) {
             ClassicGridNavigationPolicy.Target classicTarget = ClassicGridNavigationPolicy.fromGrid(
                     position, keyCode, COLUMNS, count,
                     dockAdapter == null ? 0 : dockAdapter.getItemCount());
