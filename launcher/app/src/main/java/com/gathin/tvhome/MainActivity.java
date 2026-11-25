@@ -3066,6 +3066,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             Backdrop.watch(classicHomeScroll);
             classicHomeScroll.setOnScrollChangeListener((View v, int x, int y, int oldX, int oldY) -> {
                 updateTopFade();
+                updateHomeShelfAnchor();
                 if (!glassShown || glider == null) return;
                 View focused = getCurrentFocus();
                 if (focused != null && isDescendantOf(focused, dockRecycler)) syncFocusedDockGlider();
