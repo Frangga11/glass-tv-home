@@ -25,7 +25,7 @@ final class ClassicHomeScrollView extends ScrollView {
     private void initialize() {
         setVerticalScrollBarEnabled(false);
         setHorizontalScrollBarEnabled(false);
-        setFillViewport(false);
+        setFillViewport(true);
         setOverScrollMode(OVER_SCROLL_NEVER);
         setClipChildren(false);
         setClipToPadding(false);
