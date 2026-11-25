@@ -3192,6 +3192,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             dockRecycler.setLayoutParams(dockParams);
         }
         dockAdapter.setHorizontalViewportWidth(viewport);
+        int slot = DockGeometry.horizontalDockSlotWidthPx(inner, COLUMNS, density);
+        int center = DockGeometry.horizontalCenterOffsetPx(inner, slot, dockAdapter.getItemCount());
+        dockRecycler.setPadding(center, 0, center, 0);
+        dockRecycler.setHorizontalViewportClip(false, center);
         ViewGroup.LayoutParams spacerParams = classicDockSpacer.getLayoutParams();
         int wanted = Math.max(0, gridWrap.getHeight() - classicDockHeightPx);
         if (spacerParams != null && spacerParams.height != wanted) {
@@ -5584,6 +5588,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         if (attemptsRemaining > 0) {
+            grid.scrollToPosition(position);
             grid.requestLayout();
             grid.postOnAnimation(() -> focusClassicGridTileWhenLaidOut(
                     position, requestGeneration, attemptsRemaining - 1));
