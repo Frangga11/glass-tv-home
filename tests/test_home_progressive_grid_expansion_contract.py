@@ -21,6 +21,15 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertIn("classicHomeContent.addView(dockRecycler, 1)", host)
         self.assertIn("classicHomeContent.addView(grid)", host)
 
+    def test_classic_dock_spacer_update_is_idempotent_and_does_not_force_layout(self):
+        start = MAIN.index("private void updateClassicDockSpacer()")
+        end = MAIN.index("private void scrollClassicHomeToRow", start)
+        method = MAIN[start:end]
+        self.assertIn("if (dockLayoutChanged) dockRecycler.setLayoutParams(dockParams);", method)
+        self.assertIn("if (spacerParams != null && spacerParams.height != wanted)", method)
+        self.assertNotIn("classicHomeScroll.requestLayout()", method)
+        self.assertIn("if (classicHomeHostActive) updateClassicDockSpacer();", MAIN)
+
     def test_dock_tracks_grid_scroll_by_the_same_pixel_delta(self):
         start = MAIN.index("grid.addOnScrollListener")
         end = MAIN.index("btnInputs = findViewById", start)
