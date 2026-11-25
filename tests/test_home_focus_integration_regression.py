@@ -5,17 +5,17 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text(encoding="utf-8")
 ADAPTER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
-BORDER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockBreathingBorderView.java").read_text(encoding="utf-8")
+GLIDER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Glider.java").read_text(encoding="utf-8")
 
 
 class HomeFocusIntegrationRegressionTest(unittest.TestCase):
-    def test_grid_and_dock_share_the_same_cyan_focus_view(self):
-        self.assertIn("if (focused) {", ADAPTER)
-        self.assertNotIn("focused && dockTile", ADAPTER)
-        self.assertIn("breathingBorder.setVisibility(View.VISIBLE);", ADAPTER)
-        self.assertIn("breathingBorder.setVisibility(View.GONE);", ADAPTER)
-        self.assertIn("breathAnimator.setDuration(1600)", BORDER)
-        self.assertIn("TvUiTokens.ACCENT_CYAN", BORDER)
+    def test_grid_and_dock_share_one_glider_focus_cursor(self):
+        self.assertIn("card.setOnFocusChangeListener", ADAPTER)
+        self.assertNotIn("DockBreathingBorderView", ADAPTER)
+        self.assertNotIn("breathingBorder", ADAPTER)
+        self.assertIn("private final GlassRim rim;", GLIDER)
+        self.assertIn("rim = new GlassRim(", GLIDER)
+        self.assertIn("dockRecycler, tray.area", MAIN)
 
     def test_collapse_owns_focus_until_idle_geometry_is_committed(self):
         focus_start = MAIN.index("private void focusDockTile(int position)")
