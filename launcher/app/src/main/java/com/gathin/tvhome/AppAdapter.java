@@ -345,7 +345,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 }
                 ComponentName homeComponent = new ComponentName(nativeHome.packageName, nativeHome.name);
                 fresh.add(new Entry(Entry.SYSTEM_HOME, ctx.getString(R.string.system_home),
-                        homeComponent, null, nativeHome.loadIcon(pm), null, 0));
+                        homeComponent, ctx.getDrawable(R.drawable.classic_system_home_banner), null, null, 0));
             }
         } else if (showHomeSettings
                 && pm.resolveActivity(new Intent(Settings.ACTION_HOME_SETTINGS), 0) != null) {
