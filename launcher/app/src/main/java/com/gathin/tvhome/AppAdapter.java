@@ -208,8 +208,14 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 if (at >= 0) pkg = pkg.substring(0, at);
                 if (!pkg.isEmpty() && !packages.contains(pkg)) packages.add(pkg);
             }
-            arranged.clear();
-            arranged.addAll(packages);
+            if (!arranged.equals(packages)) {
+                arranged.clear();
+                arranged.addAll(packages);
+                // Persist the migration immediately; otherwise each process start would
+                // re-parse the legacy component-key format before the first catalog reload.
+                ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
+                        .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
+            }
         }
         presentationSnapshot = null;
     }
