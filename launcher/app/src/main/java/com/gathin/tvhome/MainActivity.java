@@ -9470,8 +9470,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View content = screensaverView.findViewById(R.id.nightstandContent);
         if (content == null) return;
         android.content.SharedPreferences prefs = getSharedPreferences("standby_prefs", MODE_PRIVATE);
-        String shape = prefs.getString("widget_shape", "soft");
-        float radius = shape.equals("square") ? 6f : shape.equals("rounded") ? 14f : 26f;
+        String widgetLayout = prefs.getString("widget_layout", StandbyWidgetLayoutController.COMPACT);
         if (content.getLayoutParams() instanceof FrameLayout.LayoutParams) {
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) content.getLayoutParams();
             lp.gravity = Gravity.TOP | Gravity.START;
@@ -9481,10 +9480,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             lp.bottomMargin = 0;
             content.setLayoutParams(lp);
         }
-        // Reuse the same Silver-Cyan glass recipe as the Home Dock; do not maintain a
-        // second standby-only gradient/material implementation.
-        content.setBackground(UniversalGlassMaterial.homeCapsule(
-                this, density, radius, 0xEAF8FFFF, 0xEFFFFFFF));
+        // The layout controller changes only the widget composition. The same live TextViews
+        // remain bound to PrayerTimes and WeatherAirQuality; Compact restores the original tree.
+        StandbyWidgetLayoutController.apply(this, (LinearLayout) content, density, widgetLayout);
         content.post(() -> {
             if (screensaverView == null || content.getParent() == null) return;
             View area = (View) content.getParent();
