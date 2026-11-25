@@ -9,6 +9,18 @@ GLIDER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Glider.java").rea
 
 
 class ProgressiveGridExpansionContractTest(unittest.TestCase):
+    def test_classic_scroll_host_recalculates_bottom_dock_spacer_after_measurement(self):
+        start = MAIN.index("gridWrap.addOnLayoutChangeListener")
+        end = MAIN.index("// Resolve the bottom anchor", start)
+        layout_listener = MAIN[start:end]
+        self.assertIn("if (classicHomeHostActive) updateClassicDockSpacer();", layout_listener)
+
+        host = MAIN[MAIN.index("private void activateClassicHomeHost"):
+                    MAIN.index("private void deactivateClassicHomeHost")]
+        self.assertIn("classicHomeContent.addView(classicDockSpacer", host)
+        self.assertIn("classicHomeContent.addView(dockRecycler, 1)", host)
+        self.assertIn("classicHomeContent.addView(grid)", host)
+
     def test_dock_tracks_grid_scroll_by_the_same_pixel_delta(self):
         start = MAIN.index("grid.addOnScrollListener")
         end = MAIN.index("btnInputs = findViewById", start)
