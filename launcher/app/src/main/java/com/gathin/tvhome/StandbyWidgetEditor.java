@@ -21,7 +21,7 @@ final class StandbyWidgetEditor {
     private StandbyWidgetEditor() { }
 
     static void show(Activity activity, FrameLayout host, View widget, float density,
-                     Runnable reapply) {
+                     Runnable reapply, Runnable onClose) {
         if (activity == null || host == null || widget == null) return;
         ViewGroup originalParent = host.getParent() instanceof ViewGroup
                 ? (ViewGroup) host.getParent() : null;
@@ -56,6 +56,7 @@ final class StandbyWidgetEditor {
                 int index = Math.max(0, Math.min(originalIndex, originalParent.getChildCount()));
                 originalParent.addView(host, index, originalParams);
             }
+            if (onClose != null) onClose.run();
         });
         windowDialog.show();
         Window window = windowDialog.getWindow();
