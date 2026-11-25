@@ -53,6 +53,13 @@ public class ClassicModeContractTest {
     }
 
     @Test
+    public void focusScaleMatchesClassicDockAndGridWithoutChangingLayoutReservation() {
+        assertEquals(1.12f, AppAdapter.focusScale(true), 0.001f);
+        assertEquals(1.10f, AppAdapter.focusScale(false), 0.001f);
+        assertEquals(1.07f, AppAdapter.LAYOUT_FOCUS_RESERVATION_SCALE, 0.001f);
+    }
+
+    @Test
     public void classicGridOwnsFocusScrollingAndSuppressesRecyclerViewAutoScroll() {
         FocusControlledGridLayoutManager layout =
                 new FocusControlledGridLayoutManager(context, 5);
