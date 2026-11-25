@@ -3017,6 +3017,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // The physical Dock is always horizontal and bottom-anchored in both modes.
         dockVertical = false;
         horizontalCarouselMode = preferences.orientation == DockPreferences.Orientation.HORIZONTAL;
+        // Home Universal Classic uses one ordered inventory: first COLUMNS become the Dock,
+        // all remaining apps become the Grid. Horizontal carousel keeps its own saved partition.
+        adapter.setClassicVerticalMode(!horizontalCarouselMode);
+        dockAdapter.refresh();
         dockAdapter.setVertical(false);
         dockAdapter.setCarouselMode(horizontalCarouselMode);
         dockRecycler.setClipChildren(horizontalCarouselMode);
