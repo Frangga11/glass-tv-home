@@ -1358,7 +1358,7 @@ public final class ModernSettingsDialog {
                             "Jadwal kerja", "Home aktif: 0–15 menit  •  Layar Siaga: menit ke-15  •  Google Backdrop: menit ke-30  •  Tidur perangkat: menit ke-60"));
                     rightContent.addView(buildCardRow(activity, density, outfit,
                             "Pratinjau Layar Siaga", "Buka tampilan aktual untuk memeriksa komposisi dashboard",
-                            activity::showNightstandScreensaver));
+                            activity::showStandbyPreviewWindow));
                 } else if (standbySubtab[0] == 1) {
                     addSectionHeader(rightContent, outfit, "Foto Layar Siaga");
                     rightContent.addView(buildInfoCard(activity, density, outfit,
