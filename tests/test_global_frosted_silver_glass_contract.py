@@ -176,24 +176,50 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertLess(row_pressed, row_focused)
         self.assertEqual(row_items[0].attrib.get(ns + "state_enabled"), "false")
 
-    def test_dpad_focus_does_not_scale_or_translate_tiles(self):
+    def test_app_focus_scale_matches_classic_values_without_changing_layout_or_elevation(self):
         adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
         self.assertEqual(java_float("CARD_FOCUS_SCALE"), 1.0)
         self.assertEqual(java_float("NAV_FOCUS_SCALE"), 1.0)
-        self.assertIn("static final float FOCUS_SCALE = 1.0f;", adapter)
+        self.assertIn("static final float DOCK_FOCUS_SCALE = 1.12f;", adapter)
+        self.assertIn("static final float GRID_FOCUS_SCALE = 1.10f;", adapter)
         self.assertIn("static final float LAYOUT_FOCUS_RESERVATION_SCALE = 1.07f;", adapter)
         self.assertIn("/ LAYOUT_FOCUS_RESERVATION_SCALE", adapter)
+        self.assertNotIn("setElevation(", adapter)
+        self.assertNotIn("translationZ(", adapter)
         self.assertNotIn(".translationY(focused ? density * 4f : -density * 6f)", adapter)
         self.assertIn(".translationY(0f)", adapter)
 
-    def test_top_navigation_glider_uses_shared_silver_focus_overlay(self):
+    def test_glider_is_the_single_focus_cursor_and_grid_has_one_scroll_owner(self):
         source = (JAVA / "Glider.java").read_text(encoding="utf-8")
         self.assertIn("paint.setColor(TvUiTokens.FOCUS_HALO)", source)
         self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", source)
         self.assertIn("focusStroke.setAlpha(Math.round(220 * opacity))", source)
+        self.assertIn("rim = new GlassRim(", source)
         self.assertNotIn("FOCUS_ALPHA", source)
-        grid_focus = (JAVA / "GlassView.java").read_text(encoding="utf-8")
-        self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", grid_focus)
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        self.assertIn("new FocusControlledGridLayoutManager(this, COLUMNS)", main)
+        self.assertNotIn("R.id.glass", main)
+        self.assertNotIn("GlassView", main)
+        scroll_owner = (JAVA / "FocusControlledGridLayoutManager.java").read_text(encoding="utf-8")
+        self.assertIn("onRequestChildFocus(", scroll_owner)
+        self.assertIn("return true;", scroll_owner)
+
+    def test_classic_mode_label_move_transaction_and_column_rebuild_are_explicit(self):
+        strings = ET.parse(RES / "values/strings.xml").getroot()
+        label = next(node for node in strings.findall("string")
+                     if node.attrib.get("name") == "apps_other_label")
+        self.assertEqual(label.text, '"APLIKASI LAINNYA · TAHAN OK UNTUK ATUR"')
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        self.assertIn("startMove(key, false);", main)
+        self.assertIn("adapter.beginMoveTransaction()", main)
+        self.assertIn("finishMoveFromUser(true)", main)
+        self.assertIn("finishMoveFromUser(false)", main)
+        self.assertIn("latestConfig.columns != COLUMNS", main)
+        self.assertIn("recreate();", main)
+        adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
+        self.assertIn("boolean beginMoveTransaction()", adapter)
+        self.assertIn("boolean commitMoveTransaction()", adapter)
+        self.assertIn("void cancelMoveTransaction()", adapter)
 
     def test_glass_rim_uses_neutral_silver_and_restrained_cyan(self):
         source = (JAVA / "GlassRim.java").read_text(encoding="utf-8")
