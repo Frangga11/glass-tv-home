@@ -933,6 +933,22 @@
                 android:visibility="gone" />
         </RelativeLayout>
 
+        <TextView
+            android:id="@+id/appsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/apps_other_label"
+            android:textColor="#99FFFFFF"
+            android:textSize="11sp"
+            android:fontFamily="@font/inter"
+            android:fontVariationSettings="'wght' 600"
+            android:letterSpacing="0.22"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:visibility="gone" />
+
         <!-- The wrapper clips at the grid's edge; the grid itself must not clip so scaled tiles can overflow their cells. -->
         <com.gathin.tvhome.FadeTopFrame
             android:id="@+id/gridWrap"
@@ -957,11 +973,4 @@
         </com.gathin.tvhome.FadeTopFrame>
     </LinearLayout>
 
-    <!-- The single floating glass highlight that springs between tiles. -->
-    <com.gathin.tvhome.GlassView
-        android:id="@+id/glass"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:alpha="0"
-        android:importantForAccessibility="no" />
 </FrameLayout>
