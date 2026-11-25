@@ -87,13 +87,18 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         }
     }
 
-    /** Visual focus never scales a tile; keep the historical reservation for unchanged layout geometry. */
-    static final float FOCUS_SCALE = 1.0f;
+    /** Classic Home Universal focus zoom: Dock 1.12x, Grid 1.10x. */
+    static final float DOCK_FOCUS_SCALE = 1.12f;
+    static final float GRID_FOCUS_SCALE = 1.10f;
+    /** Keep the existing layout reservation so normal icon dimensions and spacing do not change. */
     static final float LAYOUT_FOCUS_RESERVATION_SCALE = 1.07f;
+    static float focusScale(boolean dockTile) {
+        return dockTile ? DOCK_FOCUS_SCALE : GRID_FOCUS_SCALE;
+    }
     /** Shared by every tile's zoom, so a focus move makes no new objects. */
     private static final DecelerateInterpolator ZOOM_REDUCED = new DecelerateInterpolator();
-    private static final OvershootInterpolator ZOOM_IN = new OvershootInterpolator(1.6f);
-    private static final OvershootInterpolator ZOOM_OUT = new OvershootInterpolator(0f);
+    private static final OvershootInterpolator ZOOM_IN = new OvershootInterpolator(1.8f);
+    private static final DecelerateInterpolator ZOOM_OUT = new DecelerateInterpolator();
     /** Design size of a tile (dp); tiles shrink from here when the columns don't fit, see tileWidthPx. */
     static final float DESIGN_W_DP = 180f, DESIGN_H_DP = 101f;
 
@@ -136,6 +141,14 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     /** The order someone arranged the tiles in, by key (see {@link #keyAt}); empty until they do. */
     private final List<String> arranged = new ArrayList<>();
     private DockLayoutModel.Snapshot<Entry> presentationSnapshot;
+    /** Classic Move Mode edits are previews until OK commits; BACK restores this snapshot. */
+    private boolean moveTransactionActive;
+    private List<Entry> moveOriginalItems;
+    private List<String> moveOriginalArranged;
+    private List<String> moveOriginalPinnedKeys;
+    private List<String> moveOriginalUnpinnedKeys;
+    private List<String> movePreviewPinnedKeys;
+    private List<String> movePreviewUnpinnedKeys;
     private static final String ORDER_PREFS = "tiles", ORDER_KEY = "order";
     AppAdapter(Context ctx, TileListener listener, int gridColumns, Config cfg) {
         this.ctx = ctx;
@@ -180,6 +193,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      * @return whether the tiles were rebuilt
      */
     boolean reload(List<Cards.Card> cards) {
+        // A package/catalog refresh invalidates adapter positions; never carry a preview across it.
+        if (moveTransactionActive) cancelMoveTransaction();
         PackageManager pm = ctx.getPackageManager();
         Intent probe = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
         List<ResolveInfo> found = new ArrayList<>(pm.queryIntentActivities(probe, 0));
@@ -364,6 +379,78 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         return last;
     }
 
+    /** Begin an in-memory Classic Move Mode transaction. */
+    boolean beginMoveTransaction() {
+        if (moveTransactionActive) return true;
+        moveOriginalItems = new ArrayList<>(items.snapshot());
+        moveOriginalArranged = new ArrayList<>(arranged);
+        moveOriginalPinnedKeys = currentPinnedKeys();
+        moveOriginalUnpinnedKeys = DockPreferences.loadUnpinnedKeys(ctx);
+        movePreviewPinnedKeys = new ArrayList<>(moveOriginalPinnedKeys);
+        movePreviewUnpinnedKeys = new ArrayList<>(moveOriginalUnpinnedKeys);
+        moveTransactionActive = true;
+        presentationSnapshot = null;
+        return true;
+    }
+
+    boolean isMoveTransactionActive() {
+        return moveTransactionActive;
+    }
+
+    /** Commit the preview only after the user presses OK. */
+    boolean commitMoveTransaction() {
+        if (!moveTransactionActive) return true;
+        if (!DockPreferences.savePinnedState(ctx, movePreviewPinnedKeys, movePreviewUnpinnedKeys)) {
+            return false;
+        }
+        boolean orderSaved = ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
+                .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged))
+                .commit();
+        if (!orderSaved) {
+            DockPreferences.savePinnedState(ctx, moveOriginalPinnedKeys, moveOriginalUnpinnedKeys);
+            return false;
+        }
+        clearMoveTransaction();
+        presentationSnapshot = null;
+        notifyDataSetChanged();
+        return true;
+    }
+
+    /** Discard every previewed reorder when the user presses BACK. */
+    void cancelMoveTransaction() {
+        if (!moveTransactionActive) return;
+        items.replace(moveOriginalItems);
+        arranged.clear();
+        arranged.addAll(moveOriginalArranged);
+        clearMoveTransaction();
+        presentationSnapshot = null;
+        notifyDataSetChanged();
+    }
+
+    private void clearMoveTransaction() {
+        moveTransactionActive = false;
+        moveOriginalItems = null;
+        moveOriginalArranged = null;
+        moveOriginalPinnedKeys = null;
+        moveOriginalUnpinnedKeys = null;
+        movePreviewPinnedKeys = null;
+        movePreviewUnpinnedKeys = null;
+    }
+
+    private List<String> currentUnpinnedKeys() {
+        return moveTransactionActive
+                ? new ArrayList<>(movePreviewUnpinnedKeys)
+                : DockPreferences.loadUnpinnedKeys(ctx);
+    }
+
+    private boolean savePinnedState(List<String> pinned, List<String> unpinned) {
+        if (!moveTransactionActive) return DockPreferences.savePinnedState(ctx, pinned, unpinned);
+        movePreviewPinnedKeys = new ArrayList<>(DockPreferences.normalizePinnedKeys(pinned));
+        movePreviewUnpinnedKeys = new ArrayList<>(DockPreferences.normalizePinnedKeys(unpinned));
+        presentationSnapshot = null;
+        return true;
+    }
+
     /**
      * Moves the tile at {@code from} to {@code to}, the tiles between shifting to make room, and keeps
      * the new order. Returns false when it cannot go there.
@@ -384,9 +471,25 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (from == to || from < 0 || to < 0 || from >= snapshot.dockItems.size()
                 || to >= snapshot.dockItems.size() || from >= pinned.size() || to >= pinned.size()) return false;
         List<String> reordered = DockLayoutModel.movePinnedKey(pinned, from, to, snapshot.dockItems.size());
-        if (reordered.equals(pinned) || !DockPreferences.savePinnedState(ctx, reordered, DockPreferences.loadUnpinnedKeys(ctx))) return false;
-        presentationSnapshot = null;
-        notifyDataSetChanged();
+        if (reordered.equals(pinned) || !savePinnedState(reordered, currentUnpinnedKeys())) return false;
+        if (moveTransactionActive) {
+            Map<String, Entry> entriesByKey = new HashMap<>();
+            for (Entry entry : snapshot.dockItems) {
+                if (entry.component != null) {
+                    entriesByKey.put(entry.component.flattenToShortString(), entry);
+                }
+            }
+            List<Entry> orderedDock = new ArrayList<>();
+            for (String key : reordered) {
+                Entry entry = entriesByKey.get(key);
+                if (entry != null) orderedDock.add(entry);
+            }
+            // Classic Mode is one ordered list: Dock first, then Grid, just like Home Universal.
+            replacePresentationOrder(orderedDock, snapshot.gridItems);
+        } else {
+            presentationSnapshot = null;
+            notifyDataSetChanged();
+        }
         return true;
     }
 
@@ -395,22 +498,30 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         List<String> pinned = currentPinnedKeys();
         List<String> updated = DockLayoutModel.pinKey(pinned, key, requestedPosition, DockPreferences.load(ctx).capacity);
         if (updated.equals(pinned)) return false;
-        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        List<String> excluded = currentUnpinnedKeys();
         excluded.remove(key);
-        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
-        presentationSnapshot = null;
-        notifyDataSetChanged();
+        if (!savePinnedState(updated, excluded)) return false;
+        if (moveTransactionActive) {
+            DockLayoutModel.Snapshot<Entry> snapshot = dockSnapshot();
+            replacePresentationOrder(snapshot.dockItems, snapshot.gridItems);
+        } else {
+            presentationSnapshot = null;
+            notifyDataSetChanged();
+        }
         return true;
     }
 
     boolean unpinFromDock(String key) {
         if (key == null || key.trim().isEmpty()) return false;
+        if (moveTransactionActive) {
+            return unpinFromDockAtGridPosition(key, dockSnapshot().gridItems.size());
+        }
         List<String> pinned = currentPinnedKeys();
         List<String> updated = DockLayoutModel.unpinKey(pinned, key);
         if (updated.equals(pinned)) return false;
-        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        List<String> excluded = currentUnpinnedKeys();
         if (!excluded.contains(key)) excluded.add(key);
-        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
+        if (!savePinnedState(updated, excluded)) return false;
         presentationSnapshot = null;
         notifyDataSetChanged();
         return true;
@@ -438,9 +549,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         List<String> pinned = currentPinnedKeys();
         List<String> updated = DockLayoutModel.unpinKey(pinned, key);
         if (updated.equals(pinned)) return false;
-        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        List<String> excluded = currentUnpinnedKeys();
         if (!excluded.contains(key)) excluded.add(key);
-        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
+        if (!savePinnedState(updated, excluded)) return false;
 
         // Re-split after the Dock vacancy is created. An overflow-pinned entry may be promoted
         // into the freed Dock slot; that promotion must happen BEFORE the Grid insertion index
@@ -468,8 +579,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         presentationSnapshot = null;
         arranged.clear();
         for (Entry x : ordered) if (x.kind != Entry.HOME_SETTINGS) arranged.add(x.component.flattenToShortString());
-        ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
-                .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
+        if (!moveTransactionActive) {
+            ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
+                    .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
+        }
         notifyDataSetChanged();
     }
 
@@ -513,12 +626,13 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     private List<String> currentPinnedKeys() {
-        List<String> explicit = DockPreferences.loadPinnedKeys(ctx);
+        List<String> explicit = moveTransactionActive
+                ? new ArrayList<>(movePreviewPinnedKeys) : DockPreferences.loadPinnedKeys(ctx);
         List<String> defaults = DockLayoutModel.orderedPinnedKeys(items, favourites, arranged,
                 entry -> entry.component.flattenToShortString(),
                 entry -> entry.kind == Entry.HOME_SETTINGS ? null : entry.pkg);
         List<String> merged = DockLayoutModel.mergePinnedKeys(
-                explicit, defaults, DockPreferences.loadUnpinnedKeys(ctx));
+                explicit, defaults, currentUnpinnedKeys());
         List<String> resolved = DockLayoutModel.orderedExplicitPinnedKeys(items, merged,
                 entry -> entry.component.flattenToShortString());
         List<String> inventoryKeys = new ArrayList<>();
@@ -526,7 +640,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         // Patch 4.1 contract: configured favourites lead, then fill the remaining Dock slots
         // from the same ordered inventory. A short/empty favourites list must not erase the Dock.
         return new ArrayList<>(DockLayoutModel.fillDockSlots(
-                resolved, inventoryKeys, DockPreferences.loadUnpinnedKeys(ctx),
+                resolved, inventoryKeys, currentUnpinnedKeys(),
                 DockPreferences.load(ctx).capacity));
     }
 
@@ -686,7 +800,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                         breathingBorder.setVisibility(View.GONE);
                     }
                 }
-                float s = focused && iconAnimationsEnabled ? FOCUS_SCALE : 1.0f;
+                float s = focused && iconAnimationsEnabled ? focusScale() : 1.0f;
                 view.animate().cancel();
                 name.animate().cancel();
                 if (!iconAnimationsEnabled) {
@@ -704,7 +818,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     name.animate().alpha(focused ? 1f : 0f).setDuration(100).start();
                 } else {
                     view.animate().scaleX(s).scaleY(s)
-                            .setDuration(focused ? 260 : 180)
+                            .setDuration(focused ? 320 : 200)
                             .setInterpolator(focused ? ZOOM_IN : ZOOM_OUT)
                             .withLayer()
                             .start();
@@ -719,6 +833,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             });
         }
 
+        float focusScale() {
+            return AppAdapter.focusScale(dockTile);
+        }
+
         void setIconAnimationsEnabled(boolean enabled) {
             iconAnimationsEnabled = enabled;
             card.animate().cancel();
@@ -730,8 +848,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 name.setAlpha(focused ? 1f : 0f);
                 name.setTranslationY(0f);
             } else if (focused) {
-                card.setScaleX(FOCUS_SCALE);
-                card.setScaleY(FOCUS_SCALE);
+                card.setScaleX(focusScale());
+                card.setScaleY(focusScale());
                 name.setAlpha(1f);
             }
         }
