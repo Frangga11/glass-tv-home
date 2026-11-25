@@ -2197,7 +2197,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private TvInputManager tvInputManagerOrNull() {
         try {
             return (TvInputManager) getSystemService(TV_INPUT_SERVICE);
-        } catch (RuntimeException unavailableOnHost) {
+        } catch (Exception unavailableOnHost) {
             android.util.Log.d("TvHome.Inputs", "TV input service unavailable on this host");
             return null;
         }
