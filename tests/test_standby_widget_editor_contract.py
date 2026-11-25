@@ -15,8 +15,11 @@ class StandbyWidgetEditorContractTest(unittest.TestCase):
     def test_editor_supports_move_save_cancel_and_reset(self):
         editor = EDITOR.read_text(encoding="utf-8")
         for token in ("KEYCODE_DPAD_LEFT", "KEYCODE_DPAD_RIGHT", "KEYCODE_DPAD_UP",
-                      "KEYCODE_DPAD_DOWN", '"widget_x"', '"widget_y"', "Simpan", "Batal", "Reset"):
+                      "KEYCODE_DPAD_DOWN", '"widget_x"', '"widget_y"', "Simpan", "Batal", "Reset",
+                      "dispatchKeyEvent", "selectedAction", "perform[0].run()"):
             self.assertIn(token, editor)
+        self.assertNotIn("button.setOnKeyListener", editor)
+        self.assertNotIn("overlay.setOnKeyListener", editor)
 
     def test_editor_uses_topmost_window_and_restores_preview_host(self):
         editor = EDITOR.read_text(encoding="utf-8")
@@ -27,13 +30,17 @@ class StandbyWidgetEditorContractTest(unittest.TestCase):
 
     def test_preview_dpad_exits_and_refresh_does_not_reset_widget(self):
         main = MAIN.read_text(encoding="utf-8")
-        self.assertIn("screensaverView.setOnKeyListener", main)
         self.assertIn("StandbyPreviewWindow.show", main)
+        self.assertIn("standbyPhotoUriLoading", main)
+        self.assertIn("boolean stillCurrent", main)
+        self.assertNotIn("if (!screensaverActive || screensaverView == null", main)
         preview = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/StandbyPreviewWindow.java").read_text(encoding="utf-8")
         self.assertIn("KEYCODE_DPAD_LEFT", preview)
         self.assertIn("KEYCODE_DPAD_RIGHT", preview)
         self.assertIn("KEYCODE_DPAD_UP", preview)
         self.assertIn("KEYCODE_DPAD_DOWN", preview)
+        self.assertIn("dispatchKeyEvent", preview)
+        self.assertNotIn("preview.setOnKeyListener", preview)
         self.assertNotIn("content.setTranslationX(0f)", main)
         self.assertNotIn("content.setTranslationY(0f)", main)
 
