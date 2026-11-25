@@ -117,10 +117,10 @@ final class StandbyWidgetLayoutController {
         root.setOrientation(LinearLayout.HORIZONTAL);
         root.setGravity(Gravity.CENTER_VERTICAL);
         root.setPadding(dp(d, 18), dp(d, 10), dp(d, 18), dp(d, 10));
-        setSize(root, dp(d, 700), dp(d, 104));
+        setSize(root, dp(d, 840), dp(d, 104));
 
         LinearLayout clockDate = row(c, d, Gravity.CENTER_VERTICAL);
-        LinearLayout.LayoutParams left = new LinearLayout.LayoutParams(0, -1, 1.05f);
+        LinearLayout.LayoutParams left = new LinearLayout.LayoutParams(dp(d, 250), -1);
         clockDate.addView(s.clock, new LinearLayout.LayoutParams(dp(d, 112), -2));
         LinearLayout dateStack = column(c, d, Gravity.CENTER_VERTICAL);
         dateStack.addView(s.date, matchWrap());
@@ -137,7 +137,7 @@ final class StandbyWidgetLayoutController {
         root.addView(s.prayer, new LinearLayout.LayoutParams(dp(d, 184), dp(d, 62)));
         root.addView(separator(c, d, true), new LinearLayout.LayoutParams(dp(d, 1), dp(d, 66)));
         styleScheduleHorizontal(s, d, 13f, 16f);
-        root.addView(s.schedule, new LinearLayout.LayoutParams(0, dp(d, 72), 1.8f));
+        root.addView(s.schedule, new LinearLayout.LayoutParams(dp(d, 372), dp(d, 72)));
     }
 
     private static void buildColumn(Context c, LinearLayout root, Snapshot s, float d) {
@@ -268,7 +268,8 @@ final class StandbyWidgetLayoutController {
             s.times[i].setTextColor(s.timeColors[i]);
             s.times[i].setGravity(s.timeGravities[i]);
             item.setOrientation(LinearLayout.VERTICAL);
-            item.setGravity(Gravity.CENTER);
+            item.setGravity(s.itemGravities[i]);
+            item.setBackground(s.itemBackgrounds[i]);
             item.addView(s.labels[i], s.labelParams[i]);
             item.addView(s.times[i], s.timeParams[i]);
         }
@@ -276,6 +277,7 @@ final class StandbyWidgetLayoutController {
         for (int i = 0; i < s.scheduleItems.length; i++) {
             s.schedule.addView(s.scheduleItems[i], s.scheduleItemParams[i]);
             if (i < s.scheduleDividers.length) {
+                s.scheduleDividers[i].setBackground(s.dividerBackgrounds[i]);
                 s.schedule.addView(s.scheduleDividers[i], s.scheduleDividerParams[i]);
             }
         }
@@ -391,11 +393,20 @@ final class StandbyWidgetLayoutController {
         final TextView prayer, date, hijri, clock;
         final LinearLayout schedule;
         final android.graphics.drawable.Drawable prayerBackground, scheduleBackground;
+        final android.graphics.drawable.Drawable[] itemBackgrounds = new android.graphics.drawable.Drawable[5];
+        final android.graphics.drawable.Drawable[] dividerBackgrounds = new android.graphics.drawable.Drawable[4];
+        final Typeface prayerTypeface;
+        final android.text.TextUtils.TruncateAt prayerEllipsize;
+        final int prayerGravity, prayerMaxLines, clockGravity, dateGravity, hijriGravity;
+        final int prayerPaddingLeft, prayerPaddingTop, prayerPaddingRight, prayerPaddingBottom;
+        final float clockShadowRadius, clockShadowDx, clockShadowDy;
+        final int clockShadowColor;
         final int prayerColor, clockColor, dateColor, hijriColor;
         final float prayerSize, clockSize, dateSize, hijriSize;
         final int scheduleOrientation, scheduleGravity;
         final LinearLayout[] scheduleItems = new LinearLayout[5];
         final View[] scheduleDividers = new View[4];
+        final int[] itemGravities = new int[5];
         final TextView[] labels = new TextView[5];
         final TextView[] times = new TextView[5];
         final ViewGroup.LayoutParams[] scheduleItemParams = new ViewGroup.LayoutParams[5];
@@ -422,6 +433,21 @@ final class StandbyWidgetLayoutController {
             clock = content.findViewById(R.id.nightstandClock);
             schedule = content.findViewById(R.id.nightstandPrayerSchedule);
             prayerBackground = prayer.getBackground();
+            prayerTypeface = prayer.getTypeface();
+            prayerEllipsize = prayer.getEllipsize();
+            prayerGravity = prayer.getGravity();
+            prayerMaxLines = prayer.getMaxLines();
+            prayerPaddingLeft = prayer.getPaddingLeft();
+            prayerPaddingTop = prayer.getPaddingTop();
+            prayerPaddingRight = prayer.getPaddingRight();
+            prayerPaddingBottom = prayer.getPaddingBottom();
+            clockGravity = clock.getGravity();
+            dateGravity = date.getGravity();
+            hijriGravity = hijri.getGravity();
+            clockShadowRadius = clock.getShadowRadius();
+            clockShadowDx = clock.getShadowDx();
+            clockShadowDy = clock.getShadowDy();
+            clockShadowColor = clock.getShadowColor();
             prayerColor = prayer.getCurrentTextColor();
             prayerSize = prayer.getTextSize() / content.getResources().getDisplayMetrics().scaledDensity;
             clockColor = clock.getCurrentTextColor();
@@ -441,6 +467,8 @@ final class StandbyWidgetLayoutController {
                 if (child instanceof LinearLayout && item < 5) {
                     scheduleItems[item] = (LinearLayout) child;
                     scheduleItemParams[item] = child.getLayoutParams();
+                    itemBackgrounds[item] = child.getBackground();
+                    itemGravities[item] = child.getGravity();
                     labels[item] = child.findViewById(labelIds[item]);
                     times[item] = child.findViewById(timeIds[item]);
                     labelParams[item] = labels[item].getLayoutParams();
@@ -455,6 +483,7 @@ final class StandbyWidgetLayoutController {
                 } else if (divider < 4) {
                     scheduleDividers[divider] = child;
                     scheduleDividerParams[divider] = child.getLayoutParams();
+                    dividerBackgrounds[divider] = child.getBackground();
                     divider++;
                 }
             }
@@ -471,9 +500,15 @@ final class StandbyWidgetLayoutController {
             prayer.setTextSize(prayerSize);
             prayer.setTextColor(prayerColor);
             prayer.setBackground(prayerBackground);
-            clock.setGravity(Gravity.CENTER);
-            date.setGravity(Gravity.CENTER);
-            hijri.setGravity(Gravity.CENTER);
+            prayer.setGravity(prayerGravity);
+            prayer.setMaxLines(prayerMaxLines);
+            prayer.setEllipsize(prayerEllipsize);
+            prayer.setTypeface(prayerTypeface);
+            prayer.setPadding(prayerPaddingLeft, prayerPaddingTop, prayerPaddingRight, prayerPaddingBottom);
+            clock.setGravity(clockGravity);
+            clock.setShadowLayer(clockShadowRadius, clockShadowDx, clockShadowDy, clockShadowColor);
+            date.setGravity(dateGravity);
+            hijri.setGravity(hijriGravity);
             schedule.setOrientation(scheduleOrientation);
             schedule.setGravity(scheduleGravity);
             schedule.setBackground(scheduleBackground);
