@@ -87,6 +87,24 @@ public class ClassicModeContractTest {
     }
 
     @Test
+    public void classicDockReorderAlsoUpdatesTheSingleGlobalAppOrder() {
+        assertTrue(DockPreferences.savePinnedState(context,
+                Arrays.asList(one, two), Arrays.asList(three)));
+        assertTrue(adapter.beginMoveTransaction());
+        assertTrue(adapter.moveDock(0, 1));
+
+        assertEquals(two, adapter.dockSnapshot().dockItems.get(0).component.flattenToShortString());
+        assertEquals("", context.getSharedPreferences("tiles", Context.MODE_PRIVATE)
+                .getString("order", ""));
+
+        assertTrue(adapter.commitMoveTransaction());
+
+        assertEquals(two + "\n" + one + "\n" + three,
+                context.getSharedPreferences("tiles", Context.MODE_PRIVATE).getString("order", ""));
+        assertEquals(Arrays.asList(two, one), DockPreferences.loadPinnedKeys(context));
+    }
+
+    @Test
     public void okCommitsPreviewedGridOrderAndDockMembership() {
         assertTrue(adapter.beginMoveTransaction());
         assertTrue(adapter.move(0, 1));
