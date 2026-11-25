@@ -74,6 +74,7 @@ final class StandbyWidgetLayoutController {
         dateStack.addView(s.date, matchWrap());
         dateStack.addView(s.hijri, matchWrap());
         clockDate.addView(dateStack, new LinearLayout.LayoutParams(0, -2, 1f));
+        styleHeader(s, 42f, 15f, 11f);
         root.addView(clockDate, left);
         root.addView(separator(c, d, true), new LinearLayout.LayoutParams(dp(d, 1), dp(d, 66)));
 
@@ -95,6 +96,7 @@ final class StandbyWidgetLayoutController {
         dates.addView(s.date, matchWrap());
         dates.addView(s.hijri, matchWrap());
         header.addView(dates, new LinearLayout.LayoutParams(0, -2, 1f));
+        styleHeader(s, 43f, 14f, 11f);
         root.addView(header, new LinearLayout.LayoutParams(-1, dp(d, 66)));
         root.addView(separator(c, d, false), new LinearLayout.LayoutParams(-1, dp(d, 1)));
         stylePrayer(s.prayer, d, 15f);
@@ -118,6 +120,7 @@ final class StandbyWidgetLayoutController {
         dates.addView(s.date, matchWrap());
         dates.addView(s.hijri, matchWrap());
         header.addView(dates, new LinearLayout.LayoutParams(0, -2, 1f));
+        styleHeader(s, 74f, 19f, 15f);
         root.addView(header, new LinearLayout.LayoutParams(-1, dp(d, 104)));
         View rule = separator(c, d, false);
         LinearLayout.LayoutParams ruleLp = new LinearLayout.LayoutParams(dp(d, 360), dp(d, 1));
@@ -137,8 +140,10 @@ final class StandbyWidgetLayoutController {
     }
 
     private static void buildScheduleRows(Context c, LinearLayout root, Snapshot s, float d) {
-        LinearLayout schedule = column(c, d, Gravity.CENTER);
-        schedule.setId(R.id.nightstandPrayerSchedule);
+        s.schedule.removeAllViews();
+        LinearLayout schedule = s.schedule;
+        schedule.setOrientation(LinearLayout.VERTICAL);
+        schedule.setGravity(Gravity.CENTER);
         for (int i = 0; i < s.labels.length; i++) {
             LinearLayout line = row(c, d, Gravity.CENTER_VERTICAL);
             TextView label = s.labels[i];
@@ -164,6 +169,7 @@ final class StandbyWidgetLayoutController {
     }
 
     private static void styleScheduleHorizontal(Snapshot s, float d, float labelSize, float timeSize) {
+        s.schedule.removeAllViews();
         s.schedule.setOrientation(LinearLayout.HORIZONTAL);
         s.schedule.setGravity(Gravity.CENTER);
         s.schedule.setBackground(pill(d, 0x5531CDE5, 0xAA45EAF4, 30));
@@ -258,6 +264,34 @@ final class StandbyWidgetLayoutController {
         return bg;
     }
 
+    private static void styleHeader(Snapshot s, float clockSize, float dateSize, float hijriSize) {
+        s.clock.setTextSize(clockSize);
+        s.clock.setTextColor(0xFFF7FBFF);
+        s.clock.setShadowLayer(3f, 0f, 1f, 0x9900152B);
+        s.date.setTextSize(dateSize);
+        s.date.setTextColor(0xFFF3FAFF);
+        s.date.setGravity(Gravity.CENTER_VERTICAL);
+        s.hijri.setTextSize(hijriSize);
+        s.hijri.setTextColor(0xFFFFE52B);
+        s.hijri.setGravity(Gravity.CENTER_VERTICAL);
+    }
+
+    private static int nextPrayerIndex(TextView[] times) {
+        java.util.Calendar now = java.util.Calendar.getInstance();
+        int current = now.get(java.util.Calendar.HOUR_OF_DAY) * 60
+                + now.get(java.util.Calendar.MINUTE);
+        int best = -1, bestDelta = Integer.MAX_VALUE;
+        for (int i = 0; i < times.length; i++) {
+            try {
+                String[] parts = times[i].getText().toString().split(":");
+                int minute = Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
+                int delta = minute - current;
+                if (delta >= 0 && delta < bestDelta) { best = i; bestDelta = delta; }
+            } catch (Exception ignored) { }
+        }
+        return best >= 0 ? best : 0;
+    }
+
     private static void stylePrayer(TextView v, float d, float size) {
         v.setTextSize(size);
         v.setTextColor(0xFFF5FBFF);
@@ -292,6 +326,10 @@ final class StandbyWidgetLayoutController {
         final int gravity;
         final TextView prayer, date, hijri, clock;
         final LinearLayout schedule;
+        final android.graphics.drawable.Drawable prayerBackground, scheduleBackground;
+        final int prayerColor, clockColor, dateColor, hijriColor;
+        final float prayerSize, clockSize, dateSize, hijriSize;
+        final int scheduleOrientation, scheduleGravity;
         final LinearLayout[] scheduleItems = new LinearLayout[5];
         final View[] scheduleDividers = new View[4];
         final TextView[] labels = new TextView[5];
@@ -303,7 +341,7 @@ final class StandbyWidgetLayoutController {
         final float[] labelSizes = new float[5], timeSizes = new float[5];
         final int[] labelColors = new int[5], timeColors = new int[5];
         final int[] labelGravities = new int[5], timeGravities = new int[5];
-        final int activePrayerIndex = 3;
+        final int activePrayerIndex;
 
         Snapshot(LinearLayout content) {
             orientation = content.getOrientation();
@@ -319,6 +357,18 @@ final class StandbyWidgetLayoutController {
             hijri = content.findViewById(R.id.nightstandHijri);
             clock = content.findViewById(R.id.nightstandClock);
             schedule = content.findViewById(R.id.nightstandPrayerSchedule);
+            prayerBackground = prayer.getBackground();
+            prayerColor = prayer.getCurrentTextColor();
+            prayerSize = prayer.getTextSize() / content.getResources().getDisplayMetrics().scaledDensity;
+            clockColor = clock.getCurrentTextColor();
+            clockSize = clock.getTextSize() / content.getResources().getDisplayMetrics().scaledDensity;
+            dateColor = date.getCurrentTextColor();
+            dateSize = date.getTextSize() / content.getResources().getDisplayMetrics().scaledDensity;
+            hijriColor = hijri.getCurrentTextColor();
+            hijriSize = hijri.getTextSize() / content.getResources().getDisplayMetrics().scaledDensity;
+            scheduleBackground = schedule.getBackground();
+            scheduleOrientation = schedule.getOrientation();
+            scheduleGravity = schedule.getGravity();
             int[] labelIds = {R.id.nightstandFajrLabel,R.id.nightstandDhuhrLabel,R.id.nightstandAsrLabel,R.id.nightstandMaghribLabel,R.id.nightstandIshaLabel};
             int[] timeIds = {R.id.nightstandFajrTime,R.id.nightstandDhuhrTime,R.id.nightstandAsrTime,R.id.nightstandMaghribTime,R.id.nightstandIshaTime};
             int item = 0, divider = 0;
@@ -344,17 +394,25 @@ final class StandbyWidgetLayoutController {
                     divider++;
                 }
             }
+            activePrayerIndex = nextPrayerIndex(times);
         }
 
         void restoreClockDateHijriPrayer() {
-            // Original XML attributes are restored explicitly after alternate compositions.
-            clock.setTextSize(48f);
-            date.setTextSize(12f);
-            hijri.setTextSize(9f);
-            prayer.setTextSize(9f);
+            clock.setTextSize(clockSize);
+            clock.setTextColor(clockColor);
+            date.setTextSize(dateSize);
+            date.setTextColor(dateColor);
+            hijri.setTextSize(hijriSize);
+            hijri.setTextColor(hijriColor);
+            prayer.setTextSize(prayerSize);
+            prayer.setTextColor(prayerColor);
+            prayer.setBackground(prayerBackground);
             clock.setGravity(Gravity.CENTER);
             date.setGravity(Gravity.CENTER);
             hijri.setGravity(Gravity.CENTER);
+            schedule.setOrientation(scheduleOrientation);
+            schedule.setGravity(scheduleGravity);
+            schedule.setBackground(scheduleBackground);
         }
     }
 }
