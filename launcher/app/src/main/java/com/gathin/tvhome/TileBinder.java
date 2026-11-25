@@ -47,6 +47,20 @@ final class TileBinder {
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             return;
         }
+        if (entry.kind == AppAdapter.Entry.SYSTEM_HOME) {
+            try {
+                android.content.pm.ActivityInfo info = context.getPackageManager().getActivityInfo(
+                        entry.component, android.content.pm.PackageManager.MATCH_DISABLED_COMPONENTS);
+                if (!info.enabled || !info.applicationInfo.enabled) {
+                    openSystemHomeAppDetails(entry);
+                    return;
+                }
+                context.startActivity(ClassicSystemHome.launchIntent(info));
+            } catch (Exception unavailable) {
+                openSystemHomeAppDetails(entry);
+            }
+            return;
+        }
         if (ChildModeManager.isAppLocked(context, entry.pkg)) {
             Context localized = LocaleContext.wrap(context);
             ChildModeManager.promptPin(localized,
@@ -64,6 +78,16 @@ final class TileBinder {
             return;
         }
         performLaunch(entry);
+    }
+
+    private void openSystemHomeAppDetails(AppAdapter.Entry entry) {
+        try {
+            context.startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    android.net.Uri.parse("package:" + entry.pkg))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (Exception ignored) {
+            TvFeedback.show(context, context.getString(R.string.cant_open, entry.label), Toast.LENGTH_SHORT);
+        }
     }
 
     private void performLaunch(AppAdapter.Entry entry) {
