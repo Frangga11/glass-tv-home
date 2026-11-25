@@ -53,6 +53,13 @@ public class ClassicModeContractTest {
     }
 
     @Test
+    public void classicGridOwnsFocusScrollingAndSuppressesRecyclerViewAutoScroll() {
+        FocusControlledGridLayoutManager layout =
+                new FocusControlledGridLayoutManager(context, 5);
+        assertTrue(layout.onRequestChildFocus(null, null, null, null));
+    }
+
+    @Test
     public void backCancelsPreviewWithoutPersistingGridOrderOrDockPins() {
         assertTrue(adapter.beginMoveTransaction());
         assertTrue(adapter.move(0, 1));
