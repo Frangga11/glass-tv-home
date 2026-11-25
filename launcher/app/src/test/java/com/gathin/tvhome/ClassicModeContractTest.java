@@ -132,10 +132,9 @@ public class ClassicModeContractTest {
                 .getString("order", ""));
 
         assertTrue(adapter.commitMoveTransaction());
-        assertEquals(two + "\n" + three + "\n" + fourth.component.flattenToShortString()
-                        + "\n" + fifth.component.flattenToShortString() + "\n"
-                        + sixth.component.flattenToShortString() + "\n" + one + "\n"
-                        + seventh.component.flattenToShortString(),
+        assertEquals(pkg(two) + "\n" + pkg(three) + "\n" + fourth.pkg
+                        + "\n" + fifth.pkg + "\n" + sixth.pkg + "\n" + pkg(one)
+                        + "\n" + seventh.pkg,
                 context.getSharedPreferences("tiles", Context.MODE_PRIVATE).getString("order", ""));
         assertEquals(Arrays.asList(one), DockPreferences.loadPinnedKeys(context));
     }
@@ -161,9 +160,13 @@ public class ClassicModeContractTest {
     }
 
     private AppAdapter.Entry entry(String name) {
-        ComponentName component = new ComponentName("com.example.classic",
-                "com.example.classic." + name + "Activity");
+        String pkg = "com.example.classic." + name.toLowerCase(java.util.Locale.ROOT);
+        ComponentName component = new ComponentName(pkg, pkg + "." + name + "Activity");
         return new AppAdapter.Entry(name, component, null, null);
+    }
+
+    private String pkg(String componentKey) {
+        return componentKey.substring(0, componentKey.indexOf('/'));
     }
 
     @SuppressWarnings("unchecked")
