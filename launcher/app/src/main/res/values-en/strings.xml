@@ -23,6 +23,7 @@
     <string name="vpn">VPN</string>
     <string name="vpn_off">VPN off</string>
     <string name="home_settings">Default home screen</string>
+    <string name="system_home">System Home</string>
     <string name="home_settings_help">Choose a home screen in system settings, then press Home.</string>
     <string name="input_key_service_description">Opens the TV input switcher and observes foreground-app changes so Glass TV can adapt its Live TV, HDMI and Azan behavior.</string>
     <string name="home_key_name">Home button</string>
