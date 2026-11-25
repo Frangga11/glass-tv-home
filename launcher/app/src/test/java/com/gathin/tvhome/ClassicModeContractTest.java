@@ -159,6 +159,20 @@ public class ClassicModeContractTest {
         assertFalse(adapter.isMoveTransactionActive());
     }
 
+    @Test
+    public void classicModePersistsLegacyComponentKeyMigrationAsPackageOrder() {
+        String legacy = "com.example.legacy/.MainActivity@/data/app/legacy/base.apk\\n"
+                + "com.example.second/.LauncherActivity";
+        context.getSharedPreferences("tiles", Context.MODE_PRIVATE).edit()
+                .putString("order", legacy).commit();
+
+        AppAdapter migrated = new AppAdapter(context, null, 4, Config.load(context));
+        migrated.setClassicVerticalMode(true);
+
+        assertEquals("com.example.legacy\\ncom.example.second",
+                context.getSharedPreferences("tiles", Context.MODE_PRIVATE).getString("order", ""));
+    }
+
     private AppAdapter.Entry entry(String name) {
         String pkg = "com.example.classic." + name.toLowerCase(java.util.Locale.ROOT);
         ComponentName component = new ComponentName(pkg, pkg + "." + name + "Activity");
