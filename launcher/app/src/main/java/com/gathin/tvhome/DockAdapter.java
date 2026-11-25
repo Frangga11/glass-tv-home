@@ -65,6 +65,8 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         notifyDataSetChanged();
     }
 
+    int dockCapacity() { return capacity; }
+
     void setVertical(boolean vertical) {
         if (this.vertical == vertical) return;
         this.vertical = vertical;
