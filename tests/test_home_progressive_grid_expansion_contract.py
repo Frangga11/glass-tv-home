@@ -30,6 +30,16 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertNotIn("classicHomeScroll.requestLayout()", method)
         self.assertIn("if (classicHomeHostActive) updateClassicDockSpacer();", MAIN)
 
+    def test_classic_layout_pass_does_not_refresh_dock_adapter_or_rebuild_focus_targets(self):
+        start = MAIN.index("private boolean parkDock()")
+        end = MAIN.index("\n    }", start) + len("\n    }")
+        method = MAIN[start:end]
+        classic = method[method.index("if (classicHomeHostActive)"):]
+        self.assertIn("updateClassicDockSpacer();", classic)
+        self.assertNotIn("applyDockLayout();", classic)
+        self.assertIn("applyDockLayout();", method[method.index("        }\n        applyDockLayout();"):])
+
+
     def test_column_change_recreates_atomic_grid_and_restores_stable_focus_identity(self):
         start = MAIN.index("protected void onResume()")
         end = MAIN.index("\n    @Override", start + 30)
