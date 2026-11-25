@@ -161,7 +161,7 @@ public class ClassicModeContractTest {
 
     @Test
     public void classicModePersistsLegacyComponentKeyMigrationAsPackageOrder() {
-        String legacy = "com.example.legacy/.MainActivity@/data/app/legacy/base.apk\\n"
+        String legacy = "com.example.legacy/.MainActivity@/data/app/legacy/base.apk\n"
                 + "com.example.second/.LauncherActivity";
         context.getSharedPreferences("tiles", Context.MODE_PRIVATE).edit()
                 .putString("order", legacy).commit();
@@ -169,7 +169,7 @@ public class ClassicModeContractTest {
         AppAdapter migrated = new AppAdapter(context, null, 4, Config.load(context));
         migrated.setClassicVerticalMode(true);
 
-        assertEquals("com.example.legacy\\ncom.example.second",
+        assertEquals("com.example.legacy\ncom.example.second",
                 context.getSharedPreferences("tiles", Context.MODE_PRIVATE).getString("order", ""));
     }
 
