@@ -377,5 +377,32 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
 
 
 
+
+    def test_horizontal_app_mode_keeps_a_real_dock_and_grid_partition(self):
+        start = MAIN.index("private void applyDockLayout()")
+        end = MAIN.index("private boolean sameLayoutParams", start)
+        layout = MAIN[start:end]
+        self.assertIn("boolean classicOrderedMode = preferences.orientation == DockPreferences.Orientation.VERTICAL;", layout)
+        self.assertIn("horizontalCarouselMode = false;", layout)
+        self.assertIn("adapter.refreshPresentation();", layout)
+        self.assertIn("dockAdapter.setCarouselMode(false);", layout)
+        self.assertIn("activateClassicHomeHost();", layout)
+        self.assertNotIn("dockAdapter.setCarouselMode(horizontalCarouselMode);", layout)
+
+    def test_classic_grid_scrolls_before_requesting_focus(self):
+        start = MAIN.index("private void focusClassicGridTileWhenLaidOut")
+        end = MAIN.index("private void focusTileWhenLaidOut", start)
+        method = MAIN[start:end]
+        self.assertLess(method.index("scrollClassicHomeToRow(position, card);"),
+                        method.index("card.requestFocus()"))
+        self.assertIn("card.requestFocus() && card.isFocused()", method)
+
+    def test_mode_change_invalidates_the_shared_partition_and_notifies_grid(self):
+        start = APP_ADAPTER.index("void refreshPresentation()")
+        end = APP_ADAPTER.index("boolean isClassicVerticalMode()", start)
+        method = APP_ADAPTER[start:end]
+        self.assertIn("presentationSnapshot = null;", method)
+        self.assertIn("notifyDataSetChanged();", method)
+
 if __name__ == "__main__":
     unittest.main()
