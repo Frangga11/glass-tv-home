@@ -2797,7 +2797,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Behind the shelf's text, the pills and the tiles, so it never draws over any of them.
         root.addView(glider, root.indexOfChild(heroShelf), new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        // The Glider is the only moving focus cursor; the retired GlassView is no longer inflated.
+        // The Glider is the only moving focus cursor; no secondary focus overlay is inflated.
     }
 
     private String topPillKeyForView(View view) {
