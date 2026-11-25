@@ -47,7 +47,7 @@ public class ClassicModeContractTest {
     public void classicGridDpadMappingHasHardEdgesAndClampsIncompleteRows() {
         assertEquals(-1, DockLayoutModel.gridNeighborPosition(0, -1, 5, 12));
         assertEquals(1, DockLayoutModel.gridNeighborPosition(0, 1, 5, 12));
-        assertEquals(-1, DockLayoutModel.gridNeighborPosition(5, -2, 5, 12));
+        assertEquals(0, DockLayoutModel.gridNeighborPosition(5, -2, 5, 12));
         assertEquals(11, DockLayoutModel.gridNeighborPosition(7, 2, 5, 12));
         assertEquals(-1, DockLayoutModel.gridNeighborPosition(11, 1, 5, 12));
     }
