@@ -1034,9 +1034,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         // Recalculate the two independent regions when the host receives a new size.
         gridWrap.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
-            // The Classic ScrollView is installed before the first measured frame. Recompute
-            // its Dock spacer and viewport geometry after the host receives real dimensions.
-            if (classicHomeHostActive) updateClassicDockSpacer();
+            // One geometry owner handles both hosts. In Classic mode this updates only the
+            // measured spacer; it must not rebuild the Dock adapter during a layout callback.
             parkDock();
             updateTopFade();
             if (l != ol || t != ot || r != or || b != ob) {
@@ -3045,6 +3044,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean parkDock() {
         if (gridWrap == null || grid == null || dockRecycler == null || dockAdapter == null
                 || gridWrap.getWidth() <= 0 || gridWrap.getHeight() <= 0) return false;
+        if (classicHomeHostActive) {
+            // Classic already owns the ScrollView hierarchy and adapter partition. A layout
+            // pass is geometry-only: refreshing the adapter here would rebind every tile,
+            // interrupt focus ownership and invalidate the Dock tray during focus movement.
+            updateClassicDockSpacer();
+            return true;
+        }
         applyDockLayout();
         return true;
     }
