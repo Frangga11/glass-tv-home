@@ -3085,8 +3085,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockRecycler.setLayoutManager(new CarouselLinearLayoutManager(this,
                 android.widget.LinearLayout.HORIZONTAL, false));
         dockRecycler.setManualHorizontalFocus(false);
-        dockRecycler.setCarouselMode(false);
-        dockRecycler.setVertical(false);
         dockRecycler.setClipChildren(false);
         dockRecycler.setClipToPadding(false);
         dockRecycler.setTranslationX(0f);
@@ -3196,6 +3194,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockAdapter.refresh();
         dockAdapter.setVertical(false);
         dockAdapter.setCarouselMode(horizontalCarouselMode);
+        dockRecycler.setClipChildren(horizontalCarouselMode);
         if (!horizontalCarouselMode) {
             dockVertical = false;
             horizontalGridExpanded = true;
