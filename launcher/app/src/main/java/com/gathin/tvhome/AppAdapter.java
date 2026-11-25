@@ -475,7 +475,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (moveTransactionActive) {
             Map<String, Entry> entriesByKey = new HashMap<>();
             for (Entry entry : snapshot.dockItems) {
-                entriesByKey.put(entry.component.flattenToShortString(), entry);
+                if (entry.component != null) {
+                    entriesByKey.put(entry.component.flattenToShortString(), entry);
+                }
             }
             List<Entry> orderedDock = new ArrayList<>();
             for (String key : reordered) {
