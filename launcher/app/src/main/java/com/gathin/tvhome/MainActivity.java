@@ -2521,9 +2521,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (adapter != null && adapter.isClassicVerticalMode()) {
             ClassicGridNavigationPolicy.Target target = ClassicGridNavigationPolicy.fromDock(
                     position, keyCode, count, adapter.getItemCount(), -1);
-            if (target.dock && target.position < 0) focusTopBarFallback();
-            else if (target.dock && target.position != position) focusDockTile(target.position);
-            else if (!target.dock && target.position != position) focusTile(target.position);
+            if (!target.dock) {
+                // Dock and Grid positions belong to different adapters. A Dock slot 0 -> Grid
+                // slot 0 is still a region change and must always hand focus to the Grid.
+                focusTile(target.position);
+            } else if (target.position < 0) {
+                focusTopBarFallback();
+            } else if (target.position != position) {
+                focusDockTile(target.position);
+            }
             return true;
         }
         if (horizontalCarouselMode) {
