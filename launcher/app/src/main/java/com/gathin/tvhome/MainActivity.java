@@ -2518,19 +2518,33 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int position = dockAdapter.positionOf(key);
         if (position < 0) return false;
         int count = dockAdapter.getItemCount();
-        if (classicHomeHostActive) {
-            // Dock and Grid use the same authoritative neighbour policy. A negative Dock
-            // target is the sole top-shelf exit; no second inline DPAD graph is maintained here.
+        if (adapter != null && adapter.isClassicVerticalMode()) {
             ClassicGridNavigationPolicy.Target target = ClassicGridNavigationPolicy.fromDock(
-                    position, keyCode, count, adapter == null ? 0 : adapter.getItemCount(), -1);
-            if (target.dock && target.position < 0) {
-                focusTopBarFallback();
-            } else if (target.dock) {
-                if (target.position != position) focusDockTile(target.position);
-            } else if (target.position != position) {
-                focusTile(target.position);
-            }
+                    position, keyCode, count, adapter.getItemCount(), -1);
+            if (target.dock && target.position < 0) focusTopBarFallback();
+            else if (target.dock && target.position != position) focusDockTile(target.position);
+            else if (!target.dock && target.position != position) focusTile(target.position);
             return true;
+        }
+        // Horizontal mode owns a separate Dock/Grid transition policy. It must not enter
+        // the Classic neighbour graph merely because both modes share the same scroll host.
+        if (classicHomeHostActive && adapter != null && !adapter.isClassicVerticalMode()) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                int step = keyCode == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : 1;
+                int target = position + step;
+                if (target >= 0 && target < count) focusDockTile(target);
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                focusTopBarFallback();
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                int target = DockLayoutModel.gridPositionForDock(
+                        position, false, COLUMNS, adapter.getItemCount());
+                if (target >= 0) focusTile(target);
+                return true;
+            }
         }
         if (horizontalCarouselMode) {
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
@@ -4468,14 +4482,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int count = adapter == null ? 0 : adapter.getItemCount();
         if (count <= 0) return true;
 
-        // Classic vertical mode uses Home Universal's explicit focus graph. Horizontal mode
-        // retains Glass TV Home's independent measured-row transition controller.
-        if (classicHomeHostActive) {
+        // The two orientations deliberately own different DPAD graphs. The shared Classic
+        // ScrollView is only a rendering/scroll host; it does not select navigation semantics.
+        if (adapter != null && adapter.isClassicVerticalMode()) {
             ClassicGridNavigationPolicy.Target classicTarget = ClassicGridNavigationPolicy.fromGrid(
                     position, keyCode, COLUMNS, count,
                     dockAdapter == null ? 0 : dockAdapter.getItemCount());
             if (classicTarget.dock) focusDockTile(classicTarget.position);
-            else focusTile(classicTarget.position);
+            else if (classicTarget.position != position) focusTile(classicTarget.position);
+            return true;
+        }
+        if (classicHomeHostActive && adapter != null && !adapter.isClassicVerticalMode()) {
+            int target = DockLayoutModel.gridNeighborPosition(position,
+                    keyCode == KeyEvent.KEYCODE_DPAD_LEFT ? -1
+                    : keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ? 1
+                    : keyCode == KeyEvent.KEYCODE_DPAD_UP ? -2
+                    : keyCode == KeyEvent.KEYCODE_DPAD_DOWN ? 2 : 0,
+                    COLUMNS, count);
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && position < COLUMNS
+                    && dockAdapter != null && dockAdapter.getItemCount() > 0) {
+                focusDockTile(Math.min(position % COLUMNS, dockAdapter.getItemCount() - 1));
+            } else if (target >= 0 && target != position) {
+                requestHorizontalGridRow(target);
+            }
             return true;
         }
 
