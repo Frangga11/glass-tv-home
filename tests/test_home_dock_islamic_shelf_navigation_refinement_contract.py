@@ -178,27 +178,29 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
 
 
 class HomeAppModeContractTest(unittest.TestCase):
-    def test_vertical_and_horizontal_modes_both_keep_the_progressive_dock_grid_host(self):
+    def test_vertical_classic_and_horizontal_carousel_modes_are_distinct(self):
         self.assertIn("dockVertical = false;", MAIN)
         self.assertIn("boolean classicOrderedMode = preferences.orientation == DockPreferences.Orientation.VERTICAL;", MAIN)
-        self.assertIn("horizontalCarouselMode = false;", MAIN)
+        self.assertIn("horizontalCarouselMode = preferences.orientation == DockPreferences.Orientation.HORIZONTAL;", MAIN)
+        self.assertIn("dockAdapter.setCarouselMode(horizontalCarouselMode);", MAIN)
         self.assertIn("adapter.refreshPresentation();", MAIN)
         self.assertIn("adapter.reload(cards);", MAIN)
-        self.assertIn("activateClassicHomeHost();", MAIN)
+        layout = MAIN[MAIN.index("private void applyDockLayout"):MAIN.index("private boolean sameLayoutParams")]
+        self.assertIn("activateClassicHomeHost();", layout)
+        self.assertIn("if (!horizontalCarouselMode)", layout)
         keys = MAIN[MAIN.index("public boolean onDockTileKey"):MAIN.index("public boolean onDockTileHeld")]
         self.assertIn("ClassicGridNavigationPolicy.fromDock(", keys)
-        self.assertIn("focusTile(target.position)", keys)
+        self.assertIn("if (horizontalCarouselMode)", keys)
+        self.assertIn("focusDockTile(position + 1)", keys)
 
-    def test_horizontal_mode_uses_saved_pinned_dock_and_remaining_grid_inventory(self):
+    def test_horizontal_mode_uses_complete_inventory_in_carousel(self):
         dock = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockAdapter.java").read_text(encoding="utf-8")
         adapter = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
         self.assertIn("entries = carouselMode ? source.allEntriesSnapshot()", dock)
-        self.assertIn("entries = carouselMode ?", dock)
-        self.assertIn("source.dockSnapshot()", dock)
-        self.assertIn("DockPreferences.load(ctx).capacity", adapter)
+        self.assertIn("dockAdapter.setCarouselMode(horizontalCarouselMode);", MAIN)
         self.assertIn("DockLayoutModel.split(items, pinnedComponentKeys, capacity", adapter)
-        self.assertIn("dockAdapter.setCarouselMode(false);", MAIN)
-        self.assertIn("classicHomeContent.addView(grid)", MAIN)
+        self.assertIn("setKeepAllCarouselItems(horizontalCarouselMode, carouselPrelayoutExtent)", MAIN)
+        self.assertIn("setManualHorizontalFocus(horizontalCarouselMode)", MAIN)
 
     def test_carousel_matches_universal_focus_scroll_contract(self):
         carousel = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/CarouselRecyclerView.java").read_text(encoding="utf-8")
