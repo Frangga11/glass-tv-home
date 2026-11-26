@@ -66,7 +66,10 @@ final class Glider extends View {
     private final android.graphics.RectF shape = new android.graphics.RectF();
     private int style = DARK;
     private boolean paneHidden;
-    /** Quick Settings paints the shared Glider only inside each capsule's clipped companion. */
+    /**
+     * Paint only through clipped companion surfaces when the root layer would bleed through
+     * transparent Home overlays. The geometry and animation remain owned by this one Glider.
+     */
     private boolean companionOnly;
     /** A capsule gets one glass rim, not a second cyan focus stroke stacked on top. */
     private boolean singleGlassRim;
@@ -256,7 +259,7 @@ final class Glider extends View {
         changed();
     }
 
-    /** Restricts drawing to capsule companions when a popup needs clipped focus geometry. */
+    /** Restricts painting to registered, clipped companions without creating another cursor. */
     void setCompanionOnly(boolean companionOnly) {
         if (this.companionOnly == companionOnly) return;
         this.companionOnly = companionOnly;
