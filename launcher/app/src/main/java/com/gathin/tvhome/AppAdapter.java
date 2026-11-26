@@ -235,25 +235,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         PackageManager pm = ctx.getPackageManager();
         Intent probe = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
         List<ResolveInfo> found = new ArrayList<>(pm.queryIntentActivities(probe, 0));
-        // Home Universal Classic inventories both TV and ordinary launcher activities, then
-        // keeps the first launchable activity for each package. Horizontal mode retains the
-        // previous TV-first/favourites fallback catalog.
-        if (classicVerticalMode) {
-            found.addAll(pm.queryIntentActivities(new Intent(Intent.ACTION_MAIN)
-                    .addCategory(Intent.CATEGORY_LAUNCHER), 0));
-        } else {
-            Set<String> listed = new HashSet<>();
-            for (ResolveInfo ri : found) if (ri.activityInfo != null) listed.add(ri.activityInfo.packageName);
-            for (String pkg : favourites) {
-                if (listed.contains(pkg)) continue;
-                Intent phone = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setPackage(pkg);
-                List<ResolveInfo> more = pm.queryIntentActivities(phone, 0);
-                if (!more.isEmpty() && more.get(0).activityInfo != null) {
-                    found.add(more.get(0));
-                    listed.add(pkg);
-                }
-            }
-        }
+        // Match Home Universal's complete app catalog in both modes: TV launcher activities
+        // first, then ordinary launcher activities. The first launchable activity per package
+        // is authoritative in both the Classic Grid and the Horizontal all-app Carousel.
+        found.addAll(pm.queryIntentActivities(new Intent(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_LAUNCHER), 0));
         // The install path moves when an app is updated, so it stands in for the version: an update
         // that brought a new banner still gets a rebuild.
         List<String> parts = new ArrayList<>();
@@ -282,11 +268,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         for (Cards.Card c : cards) cardByPkg.put(c.pkg, c);
         List<Entry> fresh = new ArrayList<>();
         Map<String, Entry> apps = new HashMap<>();
-        Set<String> classicPackages = new HashSet<>();
+        Set<String> seenPackages = new HashSet<>();
         for (ResolveInfo ri : found) {
             if (ri.activityInfo == null) continue;
             String pkg = ri.activityInfo.packageName;
-            if (classicVerticalMode && !classicPackages.add(pkg)) continue;
+            if (!seenPackages.add(pkg)) continue;
             if (pkg.equals(ctx.getPackageName()) || hidden.contains(pkg) || ChildModeManager.isAppHidden(ctx, pkg)) continue;
             ComponentName component = new ComponentName(pkg, ri.activityInfo.name);
             Cards.Card card = cardByPkg.get(pkg);
