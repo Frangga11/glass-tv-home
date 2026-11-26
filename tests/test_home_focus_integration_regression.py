@@ -70,6 +70,18 @@ class HomeFocusIntegrationRegressionTest(unittest.TestCase):
         self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider));", MAIN)
         self.assertNotIn("glider.addCompanion(grid);", MAIN)
 
+    def test_header_focus_uses_capsule_companion_without_root_glider_bleed(self):
+        top = MAIN[MAIN.index("private void moveTopHighlight(View pill)"):
+                   MAIN.index("private void setHeroText", MAIN.index("private void moveTopHighlight(View pill)"))]
+        app = MAIN[MAIN.index("private void handleTileFocused"):
+                   MAIN.index("@Override", MAIN.index("private void handleTileFocused"))]
+        self.assertIn("glider.setCompanionOnly(true);", top)
+        self.assertIn("glider.setCompanionOnly(false);", app)
+        draw = GLIDER[GLIDER.index("protected void onDraw(Canvas canvas)"):
+                      GLIDER.index("\n    }", GLIDER.index("protected void onDraw(Canvas canvas)"))]
+        self.assertIn("if (companionOnly) return;", draw)
+        self.assertIn("glider.drawShape(canvas", (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/GliderFocusDrawable.java").read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()
