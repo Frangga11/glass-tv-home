@@ -2889,7 +2889,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Up to the top menu it is dark at once, and travels that way.
         gliderOnPill = true;
         glider.setStyle(Glider.DARK);
-        glider.moveTo(l, t, l + pill.getWidth(), t + pill.getHeight(), Math.min(20f * density, pill.getHeight() / 2f));
+        // Crossing from the app shelf to the header is a focus-region handoff, not a
+        // spatial animation. Snap the one Glider to its new owner so it never floats
+        // through the transparent Hero content or leaves a transient arc behind.
+        glider.appearAt(l, t, l + pill.getWidth(), t + pill.getHeight(),
+                Math.min(20f * density, pill.getHeight() / 2f));
     }
 
     /** The shelf's two lines. An empty description takes no room, so the title keeps its place. */
