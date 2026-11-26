@@ -378,19 +378,20 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
 
 
 
-    def test_horizontal_app_mode_keeps_a_real_dock_and_grid_partition(self):
+    def test_horizontal_app_mode_uses_universal_all_app_carousel_and_classic_uses_grid(self):
         start = MAIN.index("private void applyDockLayout()")
         end = MAIN.index("private boolean sameLayoutParams", start)
         layout = MAIN[start:end]
         self.assertIn("boolean classicOrderedMode = preferences.orientation == DockPreferences.Orientation.VERTICAL;", layout)
-        self.assertIn("horizontalCarouselMode = false;", layout)
+        self.assertIn("horizontalCarouselMode = preferences.orientation == DockPreferences.Orientation.HORIZONTAL;", layout)
         self.assertIn("adapter.refreshPresentation();", layout)
         self.assertIn("adapter.invalidateCache();", layout)
         self.assertIn("adapter.reload(cards);", layout)
-        self.assertIn("dockAdapter.setCarouselMode(false);", layout)
+        self.assertIn("dockAdapter.setCarouselMode(horizontalCarouselMode);", layout)
+        self.assertIn("if (!horizontalCarouselMode)", layout)
         self.assertIn("activateClassicHomeHost();", layout)
         self.assertIn("dockAdapter.dockCapacity()", MAIN)
-        self.assertNotIn("dockAdapter.setCarouselMode(horizontalCarouselMode);", layout)
+        self.assertIn("setKeepAllCarouselItems(horizontalCarouselMode, carouselPrelayoutExtent)", layout)
 
     def test_classic_grid_scrolls_before_requesting_focus(self):
         start = MAIN.index("private void focusClassicGridTileWhenLaidOut")
