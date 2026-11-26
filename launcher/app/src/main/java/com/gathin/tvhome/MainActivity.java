@@ -476,6 +476,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (weatherAirQualityView != null) {
             weatherAirQualityView.setVisibility(enabled ? View.VISIBLE : View.GONE);
         }
+        reassertThreeRowChrome();
     }
 
     @Override
@@ -5760,6 +5761,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         Location.Zone zone = Location.chosen(this);
         if (zone == null || zone.town == null || zone.town.trim().isEmpty()) {
             pill.setVisibility(View.GONE);
+            reassertThreeRowChrome();
             return;
         }
         pill.setVisibility(View.VISIBLE);
@@ -5778,6 +5780,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (mountain != null) mountain.setVisibility(View.GONE);
         }
         if (root != null) root.post(this::applyHeaderWidths);
+        reassertThreeRowChrome();
     }
 
     private void updateHomeTabIndicator() {
@@ -5841,6 +5844,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             nav.setLayoutParams(navParams);
         }
         if (nav.getVisibility() != View.VISIBLE) nav.setVisibility(View.VISIBLE);
+        reassertThreeRowChrome();
         if (nav.getLayoutParams() instanceof android.widget.RelativeLayout.LayoutParams) {
             android.widget.RelativeLayout.LayoutParams params =
                     (android.widget.RelativeLayout.LayoutParams) nav.getLayoutParams();
