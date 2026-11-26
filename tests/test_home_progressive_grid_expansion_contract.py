@@ -99,31 +99,31 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertIn("currentRow, windowStartRow, rowPitch, currentTopOffset", MAIN)
         self.assertIn("int expectedWindowStartRow = gridWindowStartRow(position / COLUMNS);", MAIN)
 
-    def test_three_row_mode_hides_home_chrome_but_keeps_clock_and_date(self):
+    def test_expanded_grid_hides_all_home_chrome_including_clock_and_restores_alpha(self):
         start = MAIN.index("private void setThreeRowFrameChromeHidden")
         end = MAIN.index("private void hideGlass()", start)
         method = MAIN[start:end]
-        for view_id in ("R.id.heroShelf", "R.id.islamicShelf", "R.id.locationPill",
+        for view_id in ("R.id.heroShelf", "R.id.islamicShelf", "R.id.leftBlock", "R.id.locationPill",
                         "R.id.weatherAirQuality", "R.id.navPill", "R.id.topButtons",
                         "R.id.nowPlayingCard", "R.id.prayerTimes"):
             self.assertIn(view_id, method)
         self.assertIn("View.INVISIBLE", method)
         self.assertIn("threeRowOriginalVisibility.get(i)", method)
-        self.assertNotIn("R.id.leftBlock", method)
+        self.assertIn("threeRowOriginalAlphas.get(i)", method)
+        self.assertIn(".alpha(alpha)", method)
         self.assertIn("setThreeRowFrameChromeHidden(false)", MAIN)
         self.assertIn("private void reassertThreeRowChrome()", MAIN)
 
-    def test_three_row_navigation_triggers_chrome_hide_only_at_row_three(self):
-        start = MAIN.index("private void startHorizontalGridRowTransition")
-        end = MAIN.index("private void animateHorizontalGridRowScroll", start)
-        method = MAIN[start:end]
-        # Row three joins the frame through animateGridViewportRows(true, ...), which hides the chrome.
-        self.assertIn("gridViewportRowsFor(target / COLUMNS) > horizontalGridViewportRows", method)
-        self.assertIn("animateGridViewportRows(true", method)
-        self.assertNotIn("targetRow >= 2", method)
-        grow = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
-        self.assertIn("if (grow) setThreeRowFrameChromeHidden(true);", grow)
-        self.assertIn("horizontalGridViewportRows = 2;", grow)
+    def test_home_chrome_hides_from_initial_dock_to_grid_reveal_and_stays_hidden_through_row_changes(self):
+        expand = MAIN[MAIN.index("private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration, String moveKey)"):
+                      MAIN.index("private void collapseHorizontalOverflowToHomeHeader")]
+        self.assertIn("horizontalGridExpanded = true;", expand)
+        self.assertIn("setThreeRowFrameChromeHidden(true);", expand)
+        viewport = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
+        self.assertIn("if (grow) setThreeRowFrameChromeHidden(true);", viewport)
+        end = viewport[viewport.index("@Override public void onAnimationEnd"):viewport.index("animator.start();")]
+        self.assertNotIn("setThreeRowFrameChromeHidden(false)", end)
+        self.assertIn("setThreeRowFrameChromeHidden(horizontalGridExpanded);", MAIN)
 
     def test_moved_grid_identity_is_revealed_without_ending_move_mode(self):
         start = MAIN.index("private void restoreMovingTile")
@@ -265,15 +265,15 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("if (!moveHandoffPending) syncFocusedAppGlider();", dock)
         self.assertIn("syncFocusedDockGlider();", collapse)
 
-    def test_home_chrome_restores_only_after_three_row_shrink_finishes(self):
-        method = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
-        # Growing hides chrome before motion; shrinking must not restore it until final geometry
-        # has committed in the animator end callback.
-        self.assertIn("if (grow) setThreeRowFrameChromeHidden(true);", method)
-        self.assertNotIn("setThreeRowFrameChromeHidden(grow);", method)
-        end = method[method.index("@Override public void onAnimationEnd"):method.index("animator.start();")]
-        self.assertLess(end.index("horizontalGridViewportRows = 1;"), end.index("setThreeRowFrameChromeHidden(false);"))
-        self.assertIn("if (!grow) setThreeRowFrameChromeHidden(false);", end)
+    def test_home_chrome_restores_only_after_the_complete_grid_frame_collapses(self):
+        viewport = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
+        end = viewport[viewport.index("@Override public void onAnimationEnd"):viewport.index("animator.start();")]
+        self.assertNotIn("setThreeRowFrameChromeHidden(false)", end)
+        collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse"):MAIN.index("private void abortHorizontalDockCollapse")]
+        self.assertIn("horizontalGridExpanded = false;", collapse)
+        self.assertIn("setThreeRowFrameChromeHidden(false);", collapse)
+        self.assertLess(collapse.index("horizontalGridExpanded = false;"),
+                        collapse.index("setThreeRowFrameChromeHidden(false);"))
 
     def test_move_mode_dock_down_uses_live_dock_slot(self):
         step = MAIN[MAIN.index("private void stepMove(int keyCode)"):MAIN.index("public void onUserInteraction()")]

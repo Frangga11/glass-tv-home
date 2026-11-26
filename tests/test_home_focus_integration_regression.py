@@ -70,25 +70,27 @@ class HomeFocusIntegrationRegressionTest(unittest.TestCase):
         self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider));", MAIN)
         self.assertNotIn("glider.addCompanion(grid);", MAIN)
 
-    def test_header_handoff_snaps_single_glider_instead_of_floating_across_hero(self):
+    def test_header_handoff_springs_from_dock_to_navigation_and_switches_to_capsule_after_arrival(self):
         start = MAIN.index("private void moveTopHighlight(View pill)")
         end = MAIN.index("private void setHeroText", start)
         method = MAIN[start:end]
-        self.assertIn("glider.setCompanionOnly(true);", method)
+        self.assertIn("glider.setCompanionOnly(false);", method)
         self.assertIn("if (pill == null || glider == null) return;", method)
         self.assertNotIn("if (resuming) return;", method)
-        self.assertIn("glider.appearAt(l, t,", method)
-        self.assertNotIn("glider.moveTo(l, t,", method)
+        self.assertIn("glider.moveToScreen(l, t,", method)
+        self.assertIn("glider.onArrive(() ->", method)
+        self.assertIn("if (gliderOnPill) glider.setCompanionOnly(true);", method)
         self.assertIn("glider.setCompanionOnly(false);", MAIN[
             MAIN.index("private void handleTileFocused"):
             MAIN.index("private void moveTopHighlight", MAIN.index("private void handleTileFocused"))
         ])
 
-    def test_header_focus_uses_capsule_companion_without_root_glider_bleed(self):
+    def test_header_focus_uses_root_glider_during_travel_then_capsule_companion_at_rest(self):
         top = MAIN[MAIN.index("private void moveTopHighlight(View pill)"):
                    MAIN.index("private void setHeroText", MAIN.index("private void moveTopHighlight(View pill)"))]
         app = MAIN[MAIN.index("private void handleTileFocused"):
                    MAIN.index("@Override", MAIN.index("private void handleTileFocused"))]
+        self.assertIn("glider.setCompanionOnly(false);", top)
         self.assertIn("glider.setCompanionOnly(true);", top)
         self.assertIn("glider.setCompanionOnly(false);", app)
         draw = GLIDER[GLIDER.index("protected void onDraw(Canvas canvas)"):
