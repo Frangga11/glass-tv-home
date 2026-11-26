@@ -2876,11 +2876,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Sends the focus shape onto a pill: from a tile it glides up and narrows into the pill. */
     private void moveTopHighlight(View pill) {
-        if (resuming) return;
+        if (pill == null || glider == null) return;
         // A transparent hero shelf must not reveal the root Glider as a stray partial arc.
         // The same Glider is now painted only by the focused header capsule companion.
         glider.setCompanionOnly(true);
-        SoundEffects.playNav();
+        if (!resuming) SoundEffects.playNav();
         pill.getLocationInWindow(pillAt);
         glider.getLocationInWindow(rootAt);
         float l = pillAt[0] - rootAt[0], t = pillAt[1] - rootAt[1];
