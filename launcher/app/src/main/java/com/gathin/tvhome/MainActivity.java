@@ -3455,8 +3455,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.width = dockViewportWidth;
                 dockAdapter.setHorizontalViewportWidth(dockViewportWidth);
                 dockParams.rightMargin = 0;
-                // Preserve the approved baseline dimensions and positions in both app modes.
-                // Only the one-row inventory/navigation behavior differs in Horizontal mode.
+                // Keep the approved Dock geometry. Horizontal renders the full inventory
+                // in this Carousel; Classic keeps its Dock partition and separate Grid.
                 int gridTileWidth = DockGeometry.horizontalTileWidthPx(inner, preferences.capacity, density);
                 int dockTileWidth = DockGeometry.horizontalDockTileWidthPx(inner, preferences.capacity, density);
                 int dockTileHeight = DockGeometry.tileHeightPx(dockTileWidth);
