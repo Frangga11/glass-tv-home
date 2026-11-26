@@ -2526,16 +2526,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             else if (!target.dock && target.position != position) focusTile(target.position);
             return true;
         }
-        // Horizontal mode owns a separate Dock/Grid transition policy. It must not enter
-        // the Classic neighbour graph merely because both modes share the same scroll host.
-        if (classicHomeHostActive && adapter != null && !adapter.isClassicVerticalMode()) {
-            HorizontalGridNavigationPolicy.Target target = HorizontalGridNavigationPolicy.fromDock(
-                    position, keyCode, count, adapter.getItemCount(), COLUMNS, horizontalGridExpanded);
-            if (target.dock && target.position < 0) focusTopBarFallback();
-            else if (target.dock && target.position != position) focusDockTile(target.position);
-            else if (!target.dock && target.position != position) focusTile(target.position);
-            return true;
-        }
         if (horizontalCarouselMode) {
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (position > 0) focusDockTile(position - 1);
@@ -4479,15 +4469,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             else if (classicTarget.position != position) focusTile(classicTarget.position);
             return true;
         }
-        if (classicHomeHostActive && adapter != null && !adapter.isClassicVerticalMode()) {
-            HorizontalGridNavigationPolicy.Target target = HorizontalGridNavigationPolicy.fromGrid(
-                    position, keyCode, count, COLUMNS,
-                    dockAdapter == null ? 0 : dockAdapter.getItemCount());
-            if (target.dock) focusDockTile(target.position);
-            else if (target.position != position) focusTile(target.position);
-            return true;
-        }
-
         // During a measured row transition, the pending destination is the logical cursor.
         // Every direction is resolved from it so a quick LEFT/RIGHT cannot be answered by
         // Android's geometric focus search against a RecyclerView that is still scrolling.
