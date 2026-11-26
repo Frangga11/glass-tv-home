@@ -70,6 +70,18 @@ class HomeFocusIntegrationRegressionTest(unittest.TestCase):
         self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider));", MAIN)
         self.assertNotIn("glider.addCompanion(grid);", MAIN)
 
+    def test_header_handoff_snaps_single_glider_instead_of_floating_across_hero(self):
+        start = MAIN.index("private void moveTopHighlight(View pill)")
+        end = MAIN.index("private void setHeroText", start)
+        method = MAIN[start:end]
+        self.assertIn("glider.setCompanionOnly(true);", method)
+        self.assertIn("glider.appearAt(l, t,", method)
+        self.assertNotIn("glider.moveTo(l, t,", method)
+        self.assertIn("glider.setCompanionOnly(false);", MAIN[
+            MAIN.index("private void handleTileFocused"):
+            MAIN.index("private void moveTopHighlight", MAIN.index("private void handleTileFocused"))
+        ])
+
     def test_header_focus_uses_capsule_companion_without_root_glider_bleed(self):
         top = MAIN[MAIN.index("private void moveTopHighlight(View pill)"):
                    MAIN.index("private void setHeroText", MAIN.index("private void moveTopHighlight(View pill)"))]
