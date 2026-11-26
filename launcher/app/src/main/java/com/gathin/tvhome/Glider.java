@@ -124,6 +124,10 @@ final class Glider extends View {
      * from there: the Inputs menu's selection handing over to the top menu as the menu closes.
      */
     void appearAt(float l, float t, float r, float b, float radius) {
+        // This is a coordinate-owner handoff (for example, app/Dock to the fixed Home header).
+        // Any prior RecyclerView scroll compensation belongs to the old owner and must not
+        // leak into later Dock/Grid focus targets after the Classic ScrollView takes ownership.
+        yShift = 0f;
         float[] to = aim(l, t, r, b, radius);
         for (int i = 0; i < springs.length; i++) {
             springs[i].cancel();
