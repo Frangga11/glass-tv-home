@@ -3230,7 +3230,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             int[] cardAt = new int[2];
             parent.getLocationInWindow(parentAt);
             card.getLocationInWindow(cardAt);
-            int start = Math.max(0, cardAt[0] - parentAt[0]);
+            int start = Math.max(0, cardAt[0] - parentAt[0] - parent.getPaddingStart());
             ViewGroup.LayoutParams raw = appsLabel.getLayoutParams();
             if (!(raw instanceof ViewGroup.MarginLayoutParams)) return;
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) raw;
