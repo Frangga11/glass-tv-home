@@ -2529,22 +2529,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Horizontal mode owns a separate Dock/Grid transition policy. It must not enter
         // the Classic neighbour graph merely because both modes share the same scroll host.
         if (classicHomeHostActive && adapter != null && !adapter.isClassicVerticalMode()) {
-            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                int step = keyCode == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : 1;
-                int target = position + step;
-                if (target >= 0 && target < count) focusDockTile(target);
-                return true;
-            }
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                focusTopBarFallback();
-                return true;
-            }
-            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                int target = DockLayoutModel.gridPositionForDock(
-                        position, false, COLUMNS, adapter.getItemCount());
-                if (target >= 0) focusTile(target);
-                return true;
-            }
+            HorizontalGridNavigationPolicy.Target target = HorizontalGridNavigationPolicy.fromDock(
+                    position, keyCode, count, adapter.getItemCount(), COLUMNS, horizontalGridExpanded);
+            if (target.dock && target.position < 0) focusTopBarFallback();
+            else if (target.dock && target.position != position) focusDockTile(target.position);
+            else if (!target.dock && target.position != position) focusTile(target.position);
+            return true;
         }
         if (horizontalCarouselMode) {
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
@@ -4493,20 +4483,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return true;
         }
         if (classicHomeHostActive && adapter != null && !adapter.isClassicVerticalMode()) {
-            int target = DockLayoutModel.gridNeighborPosition(position,
-                    keyCode == KeyEvent.KEYCODE_DPAD_LEFT ? -1
-                    : keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ? 1
-                    : keyCode == KeyEvent.KEYCODE_DPAD_UP ? -2
-                    : keyCode == KeyEvent.KEYCODE_DPAD_DOWN ? 2 : 0,
-                    COLUMNS, count);
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && position < COLUMNS
-                    && dockAdapter != null && dockAdapter.getItemCount() > 0) {
-                focusDockTile(Math.min(position % COLUMNS, dockAdapter.getItemCount() - 1));
-            } else if (target >= 0 && target != position) {
-                // This mode's grid is measured inside the shared ScrollView, so resolve the
-                // destination through the host-aware focus executor, not the detached RV scroller.
-                focusTile(target);
-            }
+            HorizontalGridNavigationPolicy.Target target = HorizontalGridNavigationPolicy.fromGrid(
+                    position, keyCode, count, COLUMNS,
+                    dockAdapter == null ? 0 : dockAdapter.getItemCount());
+            if (target.dock) focusDockTile(target.position);
+            else if (target.position != position) focusTile(target.position);
             return true;
         }
 
