@@ -5,10 +5,10 @@ import android.content.SharedPreferences;
 
 /**
  * Persisted Home app-navigation mode and Dock capacity.
- * VERTICAL selects the Home Universal ordered inventory; HORIZONTAL selects
- * the saved pinned Dock partition. Both modes retain a separate, reachable Grid
- * beneath the horizontal Dock. Capacity controls Dock slots only; MainActivity.COLUMNS
- * remains the independent Grid span.
+ * VERTICAL selects the Home Universal ordered Classic Dock + Grid.
+ * HORIZONTAL selects the Home Universal all-app horizontal Carousel Dock.
+ * Capacity controls the carousel viewport and Classic Dock slots; MainActivity.COLUMNS
+ * remains the independent Grid span for Classic mode.
  */
 final class DockPreferences {
     enum Orientation { VERTICAL, HORIZONTAL }
