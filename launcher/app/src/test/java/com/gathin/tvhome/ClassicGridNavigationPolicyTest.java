@@ -63,6 +63,20 @@ public class ClassicGridNavigationPolicyTest {
         assertEquals(2, target.position);
     }
 
+    @Test public void dockDownIntoGridAtSameNumericPositionStillTransfersRegion() {
+        ClassicGridNavigationPolicy.Target target =
+                ClassicGridNavigationPolicy.fromDock(0, android.view.KeyEvent.KEYCODE_DPAD_DOWN, 5, 12, -1);
+        assertFalse(target.dock);
+        assertEquals(0, target.position);
+        assertTrue(ClassicGridNavigationPolicy.transfersOutOfDock(target, 0));
+    }
+
+    @Test public void unchangedDockTargetDoesNotRequestRedundantTransfer() {
+        ClassicGridNavigationPolicy.Target target =
+                ClassicGridNavigationPolicy.fromDock(0, android.view.KeyEvent.KEYCODE_DPAD_LEFT, 5, 12, -1);
+        assertFalse(ClassicGridNavigationPolicy.transfersOutOfDock(target, 0));
+    }
+
     @Test public void dockUpUsesTheSingleTopShelfExitTarget() {
         ClassicGridNavigationPolicy.Target target =
                 ClassicGridNavigationPolicy.fromDock(1, android.view.KeyEvent.KEYCODE_DPAD_UP, 4, 7, -1);
