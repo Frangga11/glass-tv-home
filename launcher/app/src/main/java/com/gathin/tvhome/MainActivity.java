@@ -3832,8 +3832,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** Reassert hidden Home chrome after focus callbacks or other UI refreshes. */
     private void reassertThreeRowChrome() {
         if (!horizontalThreeRowFrameActive) return;
-        for (View view : threeRowHiddenViews) {
+        for (int i = 0; i < threeRowHiddenViews.size(); i++) {
+            View view = threeRowHiddenViews.get(i);
             if (view == null) continue;
+            // Preserve dynamic GONE decisions (e.g. disabled weather or unavailable location)
+            // so restoring the expanded frame does not resurrect a control that was removed.
+            if (view.getVisibility() == View.GONE) {
+                threeRowOriginalVisibility.set(i, View.GONE);
+                threeRowOriginalAlphas.set(i, view.getAlpha());
+                continue;
+            }
             view.animate().cancel();
             view.setAlpha(0f);
             if (view.getVisibility() != View.INVISIBLE) view.setVisibility(View.INVISIBLE);
