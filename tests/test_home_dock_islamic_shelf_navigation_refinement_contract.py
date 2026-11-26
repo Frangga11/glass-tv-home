@@ -199,6 +199,9 @@ class HomeAppModeContractTest(unittest.TestCase):
         self.assertIn("entries = carouselMode ? source.allEntriesSnapshot()", dock)
         self.assertIn("dockAdapter.setCarouselMode(horizontalCarouselMode);", MAIN)
         self.assertIn("DockLayoutModel.split(items, pinnedComponentKeys, capacity", adapter)
+        self.assertIn("found.addAll(pm.queryIntentActivities(new Intent(Intent.ACTION_MAIN)", adapter)
+        self.assertIn(".addCategory(Intent.CATEGORY_LAUNCHER), 0));", adapter)
+        self.assertIn("if (!seenPackages.add(pkg)) continue;", adapter)
         self.assertIn("setKeepAllCarouselItems(horizontalCarouselMode, carouselPrelayoutExtent)", MAIN)
         self.assertIn("setManualHorizontalFocus(horizontalCarouselMode)", MAIN)
 
