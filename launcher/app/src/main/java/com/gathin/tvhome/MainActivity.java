@@ -3274,14 +3274,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void applyDockLayout() {
         if (gridWrap == null || grid == null || dockRecycler == null || dockAdapter == null) return;
         DockPreferences preferences = DockPreferences.load(this);
-        // "Vertikal" now means the existing progressive Classic app-navigation mode.
-        // The physical Dock is always horizontal and bottom-anchored in both modes.
+        // Home Universal app modes are distinct presentation and navigation contracts:
+        // VERTICAL = ordered Classic Dock + progressive Grid; HORIZONTAL = all-app Carousel Dock.
         dockVertical = false;
-        // Both app modes keep a real Dock + Grid. VERTICAL uses the single Classic ordered
-        // inventory; HORIZONTAL uses the saved pinned partition. The old all-app carousel
-        // path hid the Grid and swallowed DOWN, so it is not an app-navigation mode anymore.
         boolean classicOrderedMode = preferences.orientation == DockPreferences.Orientation.VERTICAL;
-        horizontalCarouselMode = false;
+        horizontalCarouselMode = preferences.orientation == DockPreferences.Orientation.HORIZONTAL;
         boolean appModeChanged = adapter.isClassicVerticalMode() != classicOrderedMode;
         adapter.setClassicVerticalMode(classicOrderedMode);
         if (appModeChanged) {
@@ -3289,9 +3286,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             adapter.reload(cards);
         }
         adapter.refreshPresentation();
-        dockAdapter.refresh();
         dockAdapter.setVertical(false);
-        dockAdapter.setCarouselMode(false);
+        dockAdapter.setCarouselMode(horizontalCarouselMode);
+        dockAdapter.refresh();
         dockRecycler.setClipChildren(horizontalCarouselMode);
         if (!horizontalCarouselMode) {
             dockVertical = false;
