@@ -4503,7 +4503,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     && dockAdapter != null && dockAdapter.getItemCount() > 0) {
                 focusDockTile(Math.min(position % COLUMNS, dockAdapter.getItemCount() - 1));
             } else if (target >= 0 && target != position) {
-                requestHorizontalGridRow(target);
+                // This mode's grid is measured inside the shared ScrollView, so resolve the
+                // destination through the host-aware focus executor, not the detached RV scroller.
+                focusTile(target);
             }
             return true;
         }
