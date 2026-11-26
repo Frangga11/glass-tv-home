@@ -75,6 +75,8 @@ class HomeFocusIntegrationRegressionTest(unittest.TestCase):
         end = MAIN.index("private void setHeroText", start)
         method = MAIN[start:end]
         self.assertIn("glider.setCompanionOnly(true);", method)
+        self.assertIn("if (pill == null || glider == null) return;", method)
+        self.assertNotIn("if (resuming) return;", method)
         self.assertIn("glider.appearAt(l, t,", method)
         self.assertNotIn("glider.moveTo(l, t,", method)
         self.assertIn("glider.setCompanionOnly(false);", MAIN[
