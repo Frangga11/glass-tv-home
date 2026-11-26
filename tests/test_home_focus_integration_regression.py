@@ -5,17 +5,17 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text(encoding="utf-8")
 ADAPTER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
-BORDER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockBreathingBorderView.java").read_text(encoding="utf-8")
+GLIDER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Glider.java").read_text(encoding="utf-8")
 
 
 class HomeFocusIntegrationRegressionTest(unittest.TestCase):
-    def test_grid_and_dock_share_the_same_cyan_focus_view(self):
-        self.assertIn("if (focused) {", ADAPTER)
-        self.assertNotIn("focused && dockTile", ADAPTER)
-        self.assertIn("breathingBorder.setVisibility(View.VISIBLE);", ADAPTER)
-        self.assertIn("breathingBorder.setVisibility(View.GONE);", ADAPTER)
-        self.assertIn("breathAnimator.setDuration(1600)", BORDER)
-        self.assertIn("TvUiTokens.ACCENT_CYAN", BORDER)
+    def test_grid_and_dock_share_one_glider_focus_cursor(self):
+        self.assertIn("card.setOnFocusChangeListener", ADAPTER)
+        self.assertNotIn("DockBreathingBorderView", ADAPTER)
+        self.assertNotIn("breathingBorder", ADAPTER)
+        self.assertIn("private final GlassRim rim;", GLIDER)
+        self.assertIn("rim = new GlassRim(", GLIDER)
+        self.assertIn("dockRecycler, tray.area", MAIN)
 
     def test_collapse_owns_focus_until_idle_geometry_is_committed(self):
         focus_start = MAIN.index("private void focusDockTile(int position)")
@@ -69,6 +69,32 @@ class HomeFocusIntegrationRegressionTest(unittest.TestCase):
     def test_grid_has_no_competing_static_focus_overlay(self):
         self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider));", MAIN)
         self.assertNotIn("glider.addCompanion(grid);", MAIN)
+
+    def test_header_handoff_snaps_single_glider_instead_of_floating_across_hero(self):
+        start = MAIN.index("private void moveTopHighlight(View pill)")
+        end = MAIN.index("private void setHeroText", start)
+        method = MAIN[start:end]
+        self.assertIn("glider.setCompanionOnly(true);", method)
+        self.assertIn("if (pill == null || glider == null) return;", method)
+        self.assertNotIn("if (resuming) return;", method)
+        self.assertIn("glider.appearAt(l, t,", method)
+        self.assertNotIn("glider.moveTo(l, t,", method)
+        self.assertIn("glider.setCompanionOnly(false);", MAIN[
+            MAIN.index("private void handleTileFocused"):
+            MAIN.index("private void moveTopHighlight", MAIN.index("private void handleTileFocused"))
+        ])
+
+    def test_header_focus_uses_capsule_companion_without_root_glider_bleed(self):
+        top = MAIN[MAIN.index("private void moveTopHighlight(View pill)"):
+                   MAIN.index("private void setHeroText", MAIN.index("private void moveTopHighlight(View pill)"))]
+        app = MAIN[MAIN.index("private void handleTileFocused"):
+                   MAIN.index("@Override", MAIN.index("private void handleTileFocused"))]
+        self.assertIn("glider.setCompanionOnly(true);", top)
+        self.assertIn("glider.setCompanionOnly(false);", app)
+        draw = GLIDER[GLIDER.index("protected void onDraw(Canvas canvas)"):
+                      GLIDER.index("\n    }", GLIDER.index("protected void onDraw(Canvas canvas)"))]
+        self.assertIn("if (companionOnly) return;", draw)
+        self.assertIn("glider.drawShape(canvas", (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/GliderFocusDrawable.java").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

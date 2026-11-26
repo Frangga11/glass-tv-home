@@ -58,7 +58,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     static final class Entry {
-        static final int APP = 0, HOME_SETTINGS = 1, CARD = 2;
+        static final int APP = 0, HOME_SETTINGS = 1, CARD = 2, SYSTEM_HOME = 3;
 
         final int kind;
         final String label;
@@ -87,13 +87,18 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         }
     }
 
-    /** Visual focus never scales a tile; keep the historical reservation for unchanged layout geometry. */
-    static final float FOCUS_SCALE = 1.0f;
+    /** Classic Home Universal focus zoom: Dock 1.12x, Grid 1.10x. */
+    static final float DOCK_FOCUS_SCALE = 1.12f;
+    static final float GRID_FOCUS_SCALE = 1.10f;
+    /** Keep the existing layout reservation so normal icon dimensions and spacing do not change. */
     static final float LAYOUT_FOCUS_RESERVATION_SCALE = 1.07f;
+    static float focusScale(boolean dockTile) {
+        return dockTile ? DOCK_FOCUS_SCALE : GRID_FOCUS_SCALE;
+    }
     /** Shared by every tile's zoom, so a focus move makes no new objects. */
     private static final DecelerateInterpolator ZOOM_REDUCED = new DecelerateInterpolator();
-    private static final OvershootInterpolator ZOOM_IN = new OvershootInterpolator(1.6f);
-    private static final OvershootInterpolator ZOOM_OUT = new OvershootInterpolator(0f);
+    private static final OvershootInterpolator ZOOM_IN = new OvershootInterpolator(1.8f);
+    private static final DecelerateInterpolator ZOOM_OUT = new DecelerateInterpolator();
     /** Design size of a tile (dp); tiles shrink from here when the columns don't fit, see tileWidthPx. */
     static final float DESIGN_W_DP = 180f, DESIGN_H_DP = 101f;
 
@@ -135,7 +140,17 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             entry -> entry.component.flattenToShortString());
     /** The order someone arranged the tiles in, by key (see {@link #keyAt}); empty until they do. */
     private final List<String> arranged = new ArrayList<>();
+    /** Vertical Classic mode derives Dock membership from one ordered app list, as Home Universal does. */
+    private boolean classicVerticalMode;
     private DockLayoutModel.Snapshot<Entry> presentationSnapshot;
+    /** Classic Move Mode edits are previews until OK commits; BACK restores this snapshot. */
+    private boolean moveTransactionActive;
+    private List<Entry> moveOriginalItems;
+    private List<String> moveOriginalArranged;
+    private List<String> moveOriginalPinnedKeys;
+    private List<String> moveOriginalUnpinnedKeys;
+    private List<String> movePreviewPinnedKeys;
+    private List<String> movePreviewUnpinnedKeys;
     private static final String ORDER_PREFS = "tiles", ORDER_KEY = "order";
     AppAdapter(Context ctx, TileListener listener, int gridColumns, Config cfg) {
         this.ctx = ctx;
@@ -179,23 +194,52 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      *
      * @return whether the tiles were rebuilt
      */
+    void setClassicVerticalMode(boolean enabled) {
+        if (classicVerticalMode == enabled) return;
+        classicVerticalMode = enabled;
+        if (enabled) {
+            // Home Universal persists package names. Convert legacy Glass component keys once,
+            // so the Classic inventory and its saved order share the same identity model.
+            List<String> packages = new ArrayList<>();
+            for (String savedKey : arranged) {
+                int slash = savedKey.indexOf('/');
+                String pkg = slash > 0 ? savedKey.substring(0, slash) : savedKey;
+                int at = pkg.indexOf('@');
+                if (at >= 0) pkg = pkg.substring(0, at);
+                if (!pkg.isEmpty() && !packages.contains(pkg)) packages.add(pkg);
+            }
+            if (!arranged.equals(packages)) {
+                arranged.clear();
+                arranged.addAll(packages);
+                // Persist the migration immediately; otherwise each process start would
+                // re-parse the legacy component-key format before the first catalog reload.
+                ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
+                        .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
+            }
+        }
+        presentationSnapshot = null;
+    }
+
+    /** Publish a fresh Dock/Grid partition after mode or capacity preferences change. */
+    void refreshPresentation() {
+        presentationSnapshot = null;
+        notifyDataSetChanged();
+    }
+
+    boolean isClassicVerticalMode() { return classicVerticalMode; }
+    int classicDockCapacity() { return gridColumns; }
+
     boolean reload(List<Cards.Card> cards) {
+        // A package/catalog refresh invalidates adapter positions; never carry a preview across it.
+        if (moveTransactionActive) cancelMoveTransaction();
         PackageManager pm = ctx.getPackageManager();
         Intent probe = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
         List<ResolveInfo> found = new ArrayList<>(pm.queryIntentActivities(probe, 0));
-        // A phone-only app named in dock_apps (e.g. the phone Play Store some boxes ship) has no leanback
-        // entry; take its ordinary launcher activity instead. Apps not named stay hidden.
-        Set<String> listed = new HashSet<>();
-        for (ResolveInfo ri : found) if (ri.activityInfo != null) listed.add(ri.activityInfo.packageName);
-        for (String pkg : favourites) {
-            if (listed.contains(pkg)) continue;
-            Intent phone = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setPackage(pkg);
-            List<ResolveInfo> more = pm.queryIntentActivities(phone, 0);
-            if (!more.isEmpty() && more.get(0).activityInfo != null) {
-                found.add(more.get(0));
-                listed.add(pkg);
-            }
-        }
+        // Match Home Universal's complete app catalog in both modes: TV launcher activities
+        // first, then ordinary launcher activities. The first launchable activity per package
+        // is authoritative in both the Classic Grid and the Horizontal all-app Carousel.
+        found.addAll(pm.queryIntentActivities(new Intent(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_LAUNCHER), 0));
         // The install path moves when an app is updated, so it stands in for the version: an update
         // that brought a new banner still gets a rebuild.
         List<String> parts = new ArrayList<>();
@@ -208,6 +252,14 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             parts.add('#' + c.pkg + '/' + c.component.flattenToShortString() + '|' + c.label + '|'
                     + c.caption + '|' + c.accent);
         }
+        android.content.pm.ActivityInfo classicNativeHome = classicVerticalMode
+                ? ClassicSystemHome.resolve(ctx) : null;
+        if (classicNativeHome != null) {
+            parts.add("@system-home:" + classicNativeHome.packageName + "/" + classicNativeHome.name);
+        }
+        // The same installed packages can expose different launchable activities by app mode.
+        // Include the catalog policy in the signature so switching modes cannot reuse a stale inventory.
+        parts.add("@classic-mode:" + classicVerticalMode);
         Collections.sort(parts);
         String signature = android.text.TextUtils.join(";", parts);
         if (signature.equals(builtFrom) && !items.isEmpty()) return false;
@@ -216,9 +268,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         for (Cards.Card c : cards) cardByPkg.put(c.pkg, c);
         List<Entry> fresh = new ArrayList<>();
         Map<String, Entry> apps = new HashMap<>();
+        Set<String> seenPackages = new HashSet<>();
         for (ResolveInfo ri : found) {
             if (ri.activityInfo == null) continue;
             String pkg = ri.activityInfo.packageName;
+            if (!seenPackages.add(pkg)) continue;
             if (pkg.equals(ctx.getPackageName()) || hidden.contains(pkg) || ChildModeManager.isAppHidden(ctx, pkg)) continue;
             ComponentName component = new ComponentName(pkg, ri.activityInfo.name);
             Cards.Card card = cardByPkg.get(pkg);
@@ -244,11 +298,52 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             }
         }
         builtApps = apps;
+        Entry classicSystemHomeEntry = null;
+        if (classicNativeHome != null) {
+            // Keep System Home in the same movable, persisted inventory. It used to be appended
+            // after sorting, which silently discarded a user-moved position on the next reload.
+            for (int i = fresh.size() - 1; i >= 0; i--) {
+                if (classicNativeHome.packageName.equals(fresh.get(i).pkg)) fresh.remove(i);
+            }
+            ComponentName homeComponent = new ComponentName(
+                    classicNativeHome.packageName, classicNativeHome.name);
+            classicSystemHomeEntry = new Entry(Entry.SYSTEM_HOME, ctx.getString(R.string.system_home),
+                    homeComponent, ctx.getDrawable(R.drawable.classic_system_home_banner), null, null, 0);
+        }
+
+        List<String> classicOrder = null;
         Map<String, Integer> place = new HashMap<>();
-        for (int i = 0; i < arranged.size(); i++) place.put(arranged.get(i), i);
+        if (classicVerticalMode) {
+            List<Entry> alphabeticalApps = new ArrayList<>(fresh);
+            Collections.sort(alphabeticalApps, (a, b) -> {
+                int byLabel = a.label.compareToIgnoreCase(b.label);
+                return byLabel != 0 ? byLabel : a.pkg.compareTo(b.pkg);
+            });
+            List<String> installedPackages = new ArrayList<>();
+            for (Entry entry : alphabeticalApps) installedPackages.add(entry.pkg);
+            if (classicNativeHome != null && !installedPackages.contains(classicNativeHome.packageName)) {
+                // Preserve the existing default: System Home starts after ordinary apps unless
+                // a saved Classic order explicitly places it elsewhere.
+                installedPackages.add(classicNativeHome.packageName);
+            }
+            classicOrder = ClassicAppOrder.merge(arranged, favourites, installedPackages);
+            if (!moveTransactionActive && !arranged.equals(classicOrder)) {
+                arranged.clear();
+                arranged.addAll(classicOrder);
+                ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
+                        .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
+            }
+            for (int i = 0; i < classicOrder.size(); i++) place.put(classicOrder.get(i), i);
+        } else {
+            for (int i = 0; i < arranged.size(); i++) place.put(arranged.get(i), i);
+        }
         Collections.sort(fresh, (a, b) -> {
-            // The order someone arranged comes first; apps it has not seen yet go after it.
-            Integer pa = place.get(a.component.flattenToShortString()), pb = place.get(b.component.flattenToShortString());
+            // Classic persists package order like Home Universal. Accept that package order
+            // when switching to Horizontal; legacy component-key orders remain supported too.
+            Integer pa = place.get(a.component.flattenToShortString());
+            Integer pb = place.get(b.component.flattenToShortString());
+            if (pa == null) pa = place.get(a.pkg);
+            if (pb == null) pb = place.get(b.pkg);
             if (pa != null || pb != null) {
                 if (pa == null) return 1;
                 if (pb == null) return -1;
@@ -265,8 +360,14 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             if (ca != cb) return ca ? -1 : 1;
             return a.label.compareToIgnoreCase(b.label);
         });
-        // Optional "Default home" tile (config.xml), only when this TV actually has a home-screen picker.
-        if (showHomeSettings
+        if (classicVerticalMode) {
+            if (classicSystemHomeEntry != null) {
+                Integer homePosition = place.get(classicSystemHomeEntry.pkg);
+                int insertAt = homePosition == null ? fresh.size()
+                        : Math.max(0, Math.min(homePosition, fresh.size()));
+                fresh.add(insertAt, classicSystemHomeEntry);
+            }
+        } else if (showHomeSettings
                 && pm.resolveActivity(new Intent(Settings.ACTION_HOME_SETTINGS), 0) != null) {
             fresh.add(new Entry(Entry.HOME_SETTINGS, ctx.getString(R.string.home_settings),
                     new ComponentName(ctx, HomeSettingsActivity.class), null,
@@ -364,6 +465,79 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         return last;
     }
 
+    /** Begin an in-memory Classic Move Mode transaction. */
+    boolean beginMoveTransaction() {
+        if (moveTransactionActive) return true;
+        moveOriginalItems = new ArrayList<>(items.snapshot());
+        moveOriginalArranged = new ArrayList<>(arranged);
+        moveOriginalPinnedKeys = currentPinnedKeys();
+        moveOriginalUnpinnedKeys = DockPreferences.loadUnpinnedKeys(ctx);
+        movePreviewPinnedKeys = new ArrayList<>(moveOriginalPinnedKeys);
+        movePreviewUnpinnedKeys = new ArrayList<>(moveOriginalUnpinnedKeys);
+        moveTransactionActive = true;
+        presentationSnapshot = null;
+        return true;
+    }
+
+    boolean isMoveTransactionActive() {
+        return moveTransactionActive;
+    }
+
+    /** Commit the preview only after the user presses OK. */
+    boolean commitMoveTransaction() {
+        if (!moveTransactionActive) return true;
+        if (!classicVerticalMode
+                && !DockPreferences.savePinnedState(ctx, movePreviewPinnedKeys, movePreviewUnpinnedKeys)) {
+            return false;
+        }
+        boolean orderSaved = ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
+                .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged))
+                .commit();
+        if (!orderSaved) {
+            DockPreferences.savePinnedState(ctx, moveOriginalPinnedKeys, moveOriginalUnpinnedKeys);
+            return false;
+        }
+        clearMoveTransaction();
+        presentationSnapshot = null;
+        notifyDataSetChanged();
+        return true;
+    }
+
+    /** Discard every previewed reorder when the user presses BACK. */
+    void cancelMoveTransaction() {
+        if (!moveTransactionActive) return;
+        items.replace(moveOriginalItems);
+        arranged.clear();
+        arranged.addAll(moveOriginalArranged);
+        clearMoveTransaction();
+        presentationSnapshot = null;
+        notifyDataSetChanged();
+    }
+
+    private void clearMoveTransaction() {
+        moveTransactionActive = false;
+        moveOriginalItems = null;
+        moveOriginalArranged = null;
+        moveOriginalPinnedKeys = null;
+        moveOriginalUnpinnedKeys = null;
+        movePreviewPinnedKeys = null;
+        movePreviewUnpinnedKeys = null;
+    }
+
+    private List<String> currentUnpinnedKeys() {
+        return moveTransactionActive
+                ? new ArrayList<>(movePreviewUnpinnedKeys)
+                : DockPreferences.loadUnpinnedKeys(ctx);
+    }
+
+    private boolean savePinnedState(List<String> pinned, List<String> unpinned) {
+        if (!moveTransactionActive) return DockPreferences.savePinnedState(ctx, pinned, unpinned);
+        movePreviewPinnedKeys = new ArrayList<>(DockPreferences.normalizePinnedKeys(pinned));
+        movePreviewUnpinnedKeys = new ArrayList<>(DockPreferences.normalizePinnedKeys(unpinned));
+        presentationSnapshot = null;
+        return true;
+    }
+
     /**
      * Moves the tile at {@code from} to {@code to}, the tiles between shifting to make room, and keeps
      * the new order. Returns false when it cannot go there.
@@ -384,9 +558,25 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (from == to || from < 0 || to < 0 || from >= snapshot.dockItems.size()
                 || to >= snapshot.dockItems.size() || from >= pinned.size() || to >= pinned.size()) return false;
         List<String> reordered = DockLayoutModel.movePinnedKey(pinned, from, to, snapshot.dockItems.size());
-        if (reordered.equals(pinned) || !DockPreferences.savePinnedState(ctx, reordered, DockPreferences.loadUnpinnedKeys(ctx))) return false;
-        presentationSnapshot = null;
-        notifyDataSetChanged();
+        if (reordered.equals(pinned) || !savePinnedState(reordered, currentUnpinnedKeys())) return false;
+        if (moveTransactionActive) {
+            Map<String, Entry> entriesByKey = new HashMap<>();
+            for (Entry entry : snapshot.dockItems) {
+                if (entry.component != null) {
+                    entriesByKey.put(entry.component.flattenToShortString(), entry);
+                }
+            }
+            List<Entry> orderedDock = new ArrayList<>();
+            for (String key : reordered) {
+                Entry entry = entriesByKey.get(key);
+                if (entry != null) orderedDock.add(entry);
+            }
+            // Classic Mode is one ordered list: Dock first, then Grid, just like Home Universal.
+            replacePresentationOrder(orderedDock, snapshot.gridItems);
+        } else {
+            presentationSnapshot = null;
+            notifyDataSetChanged();
+        }
         return true;
     }
 
@@ -395,22 +585,30 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         List<String> pinned = currentPinnedKeys();
         List<String> updated = DockLayoutModel.pinKey(pinned, key, requestedPosition, DockPreferences.load(ctx).capacity);
         if (updated.equals(pinned)) return false;
-        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        List<String> excluded = currentUnpinnedKeys();
         excluded.remove(key);
-        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
-        presentationSnapshot = null;
-        notifyDataSetChanged();
+        if (!savePinnedState(updated, excluded)) return false;
+        if (moveTransactionActive) {
+            DockLayoutModel.Snapshot<Entry> snapshot = dockSnapshot();
+            replacePresentationOrder(snapshot.dockItems, snapshot.gridItems);
+        } else {
+            presentationSnapshot = null;
+            notifyDataSetChanged();
+        }
         return true;
     }
 
     boolean unpinFromDock(String key) {
         if (key == null || key.trim().isEmpty()) return false;
+        if (moveTransactionActive) {
+            return unpinFromDockAtGridPosition(key, dockSnapshot().gridItems.size());
+        }
         List<String> pinned = currentPinnedKeys();
         List<String> updated = DockLayoutModel.unpinKey(pinned, key);
         if (updated.equals(pinned)) return false;
-        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        List<String> excluded = currentUnpinnedKeys();
         if (!excluded.contains(key)) excluded.add(key);
-        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
+        if (!savePinnedState(updated, excluded)) return false;
         presentationSnapshot = null;
         notifyDataSetChanged();
         return true;
@@ -438,9 +636,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         List<String> pinned = currentPinnedKeys();
         List<String> updated = DockLayoutModel.unpinKey(pinned, key);
         if (updated.equals(pinned)) return false;
-        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        List<String> excluded = currentUnpinnedKeys();
         if (!excluded.contains(key)) excluded.add(key);
-        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
+        if (!savePinnedState(updated, excluded)) return false;
 
         // Re-split after the Dock vacancy is created. An overflow-pinned entry may be promoted
         // into the freed Dock slot; that promotion must happen BEFORE the Grid insertion index
@@ -467,9 +665,13 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         items.replace(ordered);
         presentationSnapshot = null;
         arranged.clear();
-        for (Entry x : ordered) if (x.kind != Entry.HOME_SETTINGS) arranged.add(x.component.flattenToShortString());
-        ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
-                .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
+        for (Entry x : ordered) if (x.kind != Entry.HOME_SETTINGS) {
+            arranged.add(classicVerticalMode ? x.pkg : x.component.flattenToShortString());
+        }
+        if (!moveTransactionActive) {
+            ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
+                    .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
+        }
         notifyDataSetChanged();
     }
 
@@ -480,7 +682,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     DockLayoutModel.Snapshot<Entry> dockSnapshot() {
         if (presentationSnapshot == null) {
-            int capacity = DockPreferences.load(ctx).capacity;
+            int capacity = classicVerticalMode ? gridColumns : DockPreferences.load(ctx).capacity;
             List<String> pinnedComponentKeys = currentPinnedKeys();
             presentationSnapshot = DockLayoutModel.split(items, pinnedComponentKeys, capacity,
                     entry -> entry.component.flattenToShortString());
@@ -506,19 +708,41 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         int last = ordered.size() - 1;
         while (last >= 0 && ordered.get(last).kind == Entry.HOME_SETTINGS) last--;
         if (from < 0 || from > last || to < 0 || to > last || from == to) return false;
-        Entry moved = ordered.remove(from);
-        ordered.add(to, moved);
-        replacePresentationOrder(Collections.emptyList(), ordered);
+        List<String> keys = new ArrayList<>(ordered.size());
+        Map<String, Entry> byKey = new HashMap<>();
+        for (Entry entry : ordered) {
+            String key = entry.component.flattenToShortString();
+            keys.add(key);
+            byKey.put(key, entry);
+        }
+        String movedKey = keys.get(from);
+        ClassicAppOrder.move(keys, movedKey, to);
+        List<Entry> reordered = new ArrayList<>(ordered.size());
+        for (String key : keys) {
+            Entry entry = byKey.get(key);
+            if (entry != null) reordered.add(entry);
+        }
+        replacePresentationOrder(Collections.emptyList(), reordered);
         return true;
     }
 
     private List<String> currentPinnedKeys() {
-        List<String> explicit = DockPreferences.loadPinnedKeys(ctx);
+        if (classicVerticalMode) {
+            List<String> classicDock = new ArrayList<>();
+            for (Entry entry : items) {
+                if (entry.kind == Entry.HOME_SETTINGS) continue;
+                if (classicDock.size() >= gridColumns) break;
+                classicDock.add(entry.component.flattenToShortString());
+            }
+            return classicDock;
+        }
+        List<String> explicit = moveTransactionActive
+                ? new ArrayList<>(movePreviewPinnedKeys) : DockPreferences.loadPinnedKeys(ctx);
         List<String> defaults = DockLayoutModel.orderedPinnedKeys(items, favourites, arranged,
                 entry -> entry.component.flattenToShortString(),
                 entry -> entry.kind == Entry.HOME_SETTINGS ? null : entry.pkg);
         List<String> merged = DockLayoutModel.mergePinnedKeys(
-                explicit, defaults, DockPreferences.loadUnpinnedKeys(ctx));
+                explicit, defaults, currentUnpinnedKeys());
         List<String> resolved = DockLayoutModel.orderedExplicitPinnedKeys(items, merged,
                 entry -> entry.component.flattenToShortString());
         List<String> inventoryKeys = new ArrayList<>();
@@ -526,7 +750,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         // Patch 4.1 contract: configured favourites lead, then fill the remaining Dock slots
         // from the same ordered inventory. A short/empty favourites list must not erase the Dock.
         return new ArrayList<>(DockLayoutModel.fillDockSlots(
-                resolved, inventoryKeys, DockPreferences.loadUnpinnedKeys(ctx),
+                resolved, inventoryKeys, currentUnpinnedKeys(),
                 DockPreferences.load(ctx).capacity));
     }
 
@@ -637,7 +861,6 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         final ImageView icon;
         final TextView label;
         final TextView name;
-        final DockBreathingBorderView breathingBorder;
         final boolean reducedMotion;
         private final boolean dockTile;
         private boolean iconAnimationsEnabled;
@@ -650,7 +873,6 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             icon = v.findViewById(R.id.icon);
             label = v.findViewById(R.id.label);
             name = v.findViewById(R.id.name);
-            breathingBorder = v.findViewById(R.id.dockBreathingBorder);
             this.reducedMotion = reducedMotion;
             this.iconAnimationsEnabled = iconAnimationsEnabled;
             this.dockTile = dockTile;
@@ -674,19 +896,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             });
 
             card.setOnFocusChangeListener((view, focused) -> {
-                if (breathingBorder != null) {
-                    // The Dock breathing rim is the canonical Home app-focus treatment.
-                    // Use the exact same view/animation for Dock row and expanded Grid rows;
-                    // row identity must not change focus appearance.
-                    if (focused) {
-                        float r = cornerRadius(view.getWidth(), density);
-                        breathingBorder.setCornerRadiusDp(r / density);
-                        breathingBorder.setVisibility(View.VISIBLE);
-                    } else {
-                        breathingBorder.setVisibility(View.GONE);
-                    }
-                }
-                float s = focused && iconAnimationsEnabled ? FOCUS_SCALE : 1.0f;
+                float s = focused && iconAnimationsEnabled ? focusScale() : 1.0f;
                 view.animate().cancel();
                 name.animate().cancel();
                 if (!iconAnimationsEnabled) {
@@ -704,7 +914,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     name.animate().alpha(focused ? 1f : 0f).setDuration(100).start();
                 } else {
                     view.animate().scaleX(s).scaleY(s)
-                            .setDuration(focused ? 260 : 180)
+                            .setDuration(focused ? 320 : 200)
                             .setInterpolator(focused ? ZOOM_IN : ZOOM_OUT)
                             .withLayer()
                             .start();
@@ -719,6 +929,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             });
         }
 
+        float focusScale() {
+            return AppAdapter.focusScale(dockTile);
+        }
+
         void setIconAnimationsEnabled(boolean enabled) {
             iconAnimationsEnabled = enabled;
             card.animate().cancel();
@@ -730,8 +944,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 name.setAlpha(focused ? 1f : 0f);
                 name.setTranslationY(0f);
             } else if (focused) {
-                card.setScaleX(FOCUS_SCALE);
-                card.setScaleY(FOCUS_SCALE);
+                card.setScaleX(focusScale());
+                card.setScaleY(focusScale());
                 name.setAlpha(1f);
             }
         }

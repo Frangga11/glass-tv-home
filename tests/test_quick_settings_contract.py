@@ -14,6 +14,24 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 
 class QuickSettingsContractTest(unittest.TestCase):
+    def test_settings_button_routes_to_quick_control_popup_without_full_activity_test_harness(self):
+        start = MAIN.index("if (btnSettings != null)")
+        end = MAIN.index("\n        }", start) + len("\n        }")
+        settings_binding = MAIN[start:end]
+        self.assertIn("btnSettings.setOnClickListener(v -> showQuickControlPopup());", settings_binding)
+        self.assertIn("private void showQuickControlPopup(int initialFocus)", MAIN)
+        self.assertIn("showQuickSettingsDialog(initialFocus);", MAIN)
+
+    def test_tv_input_service_is_only_queried_on_leanback_devices(self):
+        start = MAIN.index("private TvInputManager tvInputManagerOrNull()")
+        end = MAIN.index("\n    }", start) + len("\n    }")
+        lookup = MAIN[start:end]
+        feature_check = lookup.index("hasSystemFeature(PackageManager.FEATURE_LEANBACK)")
+        service_lookup = lookup.index("getSystemService(TV_INPUT_SERVICE)")
+        self.assertLess(feature_check, service_lookup)
+        self.assertIn("catch (RuntimeException unavailableOnDevice)", lookup)
+        self.assertNotIn("catch (Exception", lookup)
+
     def test_focus_keeps_white_text_and_uses_dark_halo_on_glass(self):
         focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
@@ -260,7 +278,7 @@ class QuickSettingsContractTest(unittest.TestCase):
     def test_quick_settings_waits_for_safe_horizontal_dock_collapse(self):
         opener = MAIN[MAIN.index("private void showQuickControlPopup(int initialFocus)"):
                       MAIN.index("private void showQuickSettingsDialog(int initialFocus)")]
-        self.assertIn("if (!dockVertical && horizontalGridExpanded)", opener)
+        self.assertIn("if (!classicHomeHostActive && !dockVertical && horizontalGridExpanded)", opener)
         self.assertIn("pendingQuickSettingsOpen = () -> showQuickSettingsDialog(initialFocus);", opener)
         self.assertIn("collapseHorizontalOverflowToDock(dockPosition);", opener)
         collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse("):

@@ -23,6 +23,7 @@
     <string name="vpn">VPN</string>
     <string name="vpn_off">VPN off</string>
     <string name="home_settings">Default home screen</string>
+    <string name="system_home">System Home</string>
     <string name="home_settings_help">Choose a home screen in system settings, then press Home.</string>
     <string name="input_key_service_description">Opens the TV input switcher and observes foreground-app changes so Glass TV can adapt its Live TV, HDMI and Azan behavior.</string>
     <string name="home_key_name">Home button</string>
@@ -718,6 +719,8 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wifi_security_secured">Secured network</string>
     <string name="wifi_security_open">Open network</string>
     <string name="wifi_signal_bars">%1$d</string>
+    <string name="apps_other_label">APLIKASI LAINNYA • TAHAN OK UNTUK ATUR</string>
+    <string name="app_move_hint">Move with the arrow keys. OK: save. Back: cancel.</string>
     <string name="global_settings_header">Launcher Settings</string>
     <string name="quick_settings_language_title">Language</string>
     <string name="quick_settings_input_title">Input</string>

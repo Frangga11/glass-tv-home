@@ -9,9 +9,57 @@ GLIDER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Glider.java").rea
 
 
 class ProgressiveGridExpansionContractTest(unittest.TestCase):
+    def test_classic_scroll_host_recalculates_bottom_dock_spacer_after_measurement(self):
+        start = MAIN.index("gridWrap.addOnLayoutChangeListener")
+        end = MAIN.index("// Resolve the bottom anchor", start)
+        layout_listener = MAIN[start:end]
+        self.assertIn("parkDock();", layout_listener)
+        park = MAIN[MAIN.index("private boolean parkDock()"):MAIN.index("/** Applies the 30dp", MAIN.index("private boolean parkDock()"))]
+        self.assertIn("if (classicHomeHostActive)", park)
+        self.assertIn("updateClassicDockSpacer();", park)
+
+        host = MAIN[MAIN.index("private void activateClassicHomeHost"):
+                    MAIN.index("private void deactivateClassicHomeHost")]
+        self.assertIn("classicHomeContent.addView(classicDockSpacer", host)
+        self.assertIn("classicHomeContent.addView(dockRecycler, 1)", host)
+        self.assertIn("classicHomeContent.addView(grid)", host)
+
+    def test_classic_dock_spacer_update_is_idempotent_and_does_not_force_layout(self):
+        start = MAIN.index("private void updateClassicDockSpacer()")
+        end = MAIN.index("private void scrollClassicHomeToRow", start)
+        method = MAIN[start:end]
+        self.assertIn("if (dockLayoutChanged) dockRecycler.setLayoutParams(dockParams);", method)
+        self.assertIn("if (spacerParams != null && spacerParams.height != wanted)", method)
+        self.assertNotIn("classicHomeScroll.requestLayout()", method)
+        park = MAIN[MAIN.index("private boolean parkDock()"):MAIN.index("/** Applies the 30dp", MAIN.index("private boolean parkDock()"))]
+        self.assertIn("updateClassicDockSpacer();", park)
+
+    def test_classic_layout_pass_does_not_refresh_dock_adapter_or_rebuild_focus_targets(self):
+        start = MAIN.index("private boolean parkDock()")
+        end = MAIN.index("/** Applies the 30dp", start)
+        method = MAIN[start:end]
+        classic = method[method.index("if (classicHomeHostActive)"):method.index("        applyDockLayout();")]
+        self.assertIn("updateClassicDockSpacer();", classic)
+        self.assertNotIn("dockAdapter.refresh()", classic)
+        self.assertNotIn("applyDockLayout();", classic)
+        self.assertIn("applyDockLayout();", method)
+
+
+    def test_column_change_recreates_atomic_grid_and_restores_stable_focus_identity(self):
+        start = MAIN.index("protected void onResume()")
+        end = MAIN.index("\n    @Override", start + 30)
+        on_resume = MAIN[start:end]
+        self.assertIn("Config latestConfig = Config.load(this);", on_resume)
+        self.assertIn("if (latestConfig.columns != COLUMNS)", on_resume)
+        self.assertIn("recreate();", on_resume)
+        self.assertIn("return;", on_resume)
+        self.assertIn("COLUMNS = cfg.columns;", MAIN)
+        self.assertIn("navigationPrefs.getString(NavigationState.HOME_FOCUS_KEY, null)", MAIN)
+        self.assertIn("putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey)", MAIN)
+
     def test_dock_tracks_grid_scroll_by_the_same_pixel_delta(self):
         start = MAIN.index("grid.addOnScrollListener")
-        end = MAIN.index("// Liquid feel:", start)
+        end = MAIN.index("btnInputs = findViewById", start)
         listener = MAIN[start:end]
         self.assertIn("measuredGridScrollPixels(horizontalGridScrollPixels + dy)", listener)
         self.assertIn("dockRecycler.setTranslationY(dockRaisedTranslationY())", listener)
@@ -203,7 +251,7 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("if (inDock) glider.moveToScreen(", MAIN)
 
     def test_grid_scroll_does_not_apply_to_dock_owned_glider(self):
-        listener = MAIN[MAIN.index("grid.addOnScrollListener"):MAIN.index("// Liquid feel:")]
+        listener = MAIN[MAIN.index("grid.addOnScrollListener"):MAIN.index("btnInputs = findViewById")]
         self.assertIn("isCurrentFocusInside(dockRecycler)", listener)
         self.assertIn("syncFocusedDockGlider();", listener)
         self.assertIn("glider.scrolled(dy);", listener)
@@ -246,7 +294,7 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("insertAtPosition(finalGrid, selected, gridPosition)", method)
 
     def test_row_scroll_holds_glider_until_destination_focus_settles(self):
-        listener = MAIN[MAIN.index("grid.addOnScrollListener"):MAIN.index("// Liquid feel:")]
+        listener = MAIN[MAIN.index("grid.addOnScrollListener"):MAIN.index("btnInputs = findViewById")]
         self.assertIn("else if (!horizontalGridTransitionRunning)", listener)
         self.assertIn("glider.scrolled(dy);", listener)
         self.assertIn("private void syncFocusedAppGlider()", MAIN)
@@ -273,18 +321,20 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("hideShelfImmediately();", start)
 
 
-    def test_move_mode_uses_the_same_black_shadow_for_dock_and_grid_rows(self):
+    def test_move_mode_uses_one_glider_and_removes_black_shadow(self):
         start = MAIN[MAIN.index("private void startMove(String key"):MAIN.index("private void startMoveWhenLaidOut")]
         restore = MAIN[MAIN.index("private void restoreMovingTile"):MAIN.index("private void stepMove")]
-        finish = MAIN[MAIN.index("private void finishMove()"):MAIN.index("private void moveTileAcrossRegion")]
+        finish = MAIN[MAIN.index("private void finishMoveState(boolean preserveMoveGlider)"):MAIN.index("private void moveTileAcrossRegion")]
         self.assertIn("glider.setMoveModeActive(true, isGlassEffectsEnabled());", start)
         self.assertIn("glider.setMoveModeActive(true, isGlassEffectsEnabled());", restore)
-        finish = MAIN[MAIN.index("private void finishMoveState(boolean preserveMoveGlider)"):MAIN.index("private void moveTileAcrossRegion")]
-        self.assertIn("if (!preserveMoveGlider) glider.setMoveModeActive(false, isGlassEffectsEnabled());", finish)
+        self.assertIn("if (!preserveMoveGlider) {", finish)
+        self.assertIn("glider.setMoveModeActive(false, isGlassEffectsEnabled());", finish)
         mode = GLIDER[GLIDER.index("void setMoveModeActive"):GLIDER.index("void setStyle")]
-        self.assertIn("style = GLASS;", mode)
-        self.assertIn("shadowMix = 1f;", mode)
-        self.assertIn("paneHidden = true;", mode)
+        self.assertIn("style = active || glassEnabled ? GLASS : DARK;", mode)
+        self.assertIn("paneHidden = false;", mode)
+        self.assertNotIn("shadowMix", GLIDER)
+        self.assertNotIn("drawShadow", GLIDER)
+        self.assertNotIn("Bitmap shadow", GLIDER)
 
     def test_grid_focus_glide_is_spring_retargeted_without_snapping_each_frame(self):
         sync = MAIN[MAIN.index("private void syncFocusedAppGlider()"):
@@ -295,7 +345,7 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("if (!moveHandoffPending) syncFocusedAppGlider();", MAIN)
         self.assertIn("Math.max(240, 240 * Math.abs(targetRow - currentRow))", MAIN)
 
-    def test_cross_region_move_keeps_one_shadow_and_springs_from_source_to_target(self):
+    def test_cross_region_move_keeps_one_glider_and_rim_springs_from_source_to_target(self):
         across = MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")]
         self.assertIn("finishMoveForHandoff();", across)
         self.assertIn("moveHandoffPending = true;", across)
@@ -303,7 +353,8 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertNotIn("glider.hideNow()", transfer)
         finish = MAIN[MAIN.index("private void finishMoveForHandoff"):MAIN.index("private void moveTileAcrossRegion")]
         self.assertIn("finishMoveState(true);", finish)
-        self.assertIn("if (!preserveMoveGlider) glider.setMoveModeActive(false", finish)
+        self.assertIn("if (!preserveMoveGlider) {", finish)
+        self.assertIn("glider.setMoveModeActive(false, isGlassEffectsEnabled());", finish)
         self.assertIn("if (!moveHandoffPending) syncFocusedAppGlider();", MAIN)
 
     def test_normal_dock_to_grid_glide_starts_from_dock_after_reveal(self):
@@ -325,6 +376,37 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("islamicShelf.setAlpha(1f);", restore)
 
 
+
+
+    def test_horizontal_app_mode_uses_universal_all_app_carousel_and_classic_uses_grid(self):
+        start = MAIN.index("private void applyDockLayout()")
+        end = MAIN.index("private boolean sameLayoutParams", start)
+        layout = MAIN[start:end]
+        self.assertIn("boolean classicOrderedMode = preferences.orientation == DockPreferences.Orientation.VERTICAL;", layout)
+        self.assertIn("horizontalCarouselMode = preferences.orientation == DockPreferences.Orientation.HORIZONTAL;", layout)
+        self.assertIn("adapter.refreshPresentation();", layout)
+        self.assertIn("adapter.invalidateCache();", layout)
+        self.assertIn("adapter.reload(cards);", layout)
+        self.assertIn("dockAdapter.setCarouselMode(horizontalCarouselMode);", layout)
+        self.assertIn("if (!horizontalCarouselMode)", layout)
+        self.assertIn("activateClassicHomeHost();", layout)
+        self.assertIn("dockAdapter.dockCapacity()", MAIN)
+        self.assertIn("setKeepAllCarouselItems(horizontalCarouselMode, carouselPrelayoutExtent)", layout)
+
+    def test_classic_grid_scrolls_before_requesting_focus(self):
+        start = MAIN.index("private void focusClassicGridTileWhenLaidOut")
+        end = MAIN.index("private void focusTileWhenLaidOut", start)
+        method = MAIN[start:end]
+        self.assertLess(method.index("scrollClassicHomeToRow(position, card);"),
+                        method.index("card.requestFocus()"))
+        self.assertIn("card.requestFocus() && card.isFocused()", method)
+
+    def test_mode_change_invalidates_the_shared_partition_and_notifies_grid(self):
+        start = APP_ADAPTER.index("void refreshPresentation()")
+        end = APP_ADAPTER.index("boolean isClassicVerticalMode()", start)
+        method = APP_ADAPTER[start:end]
+        self.assertIn("presentationSnapshot = null;", method)
+        self.assertIn("notifyDataSetChanged();", method)
 
 if __name__ == "__main__":
     unittest.main()

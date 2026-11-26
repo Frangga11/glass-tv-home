@@ -2,7 +2,6 @@ package com.gathin.tvhome;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -67,26 +66,18 @@ final class Glider extends View {
     private final android.graphics.RectF shape = new android.graphics.RectF();
     private int style = DARK;
     private boolean paneHidden;
-    /** Quick Settings paints the shared Glider only inside each capsule's clipped companion. */
+    /**
+     * Paint only through clipped companion surfaces when the root layer would bleed through
+     * transparent Home overlays. The geometry and animation remain owned by this one Glider.
+     */
     private boolean companionOnly;
     /** A capsule gets one glass rim, not a second cyan focus stroke stacked on top. */
     private boolean singleGlassRim;
-    /**
-     * The selected app's drop shadow, drawn by the glass glider behind it: soft and even all round,
-     * where the system's shadow fell mostly below the tile and was trimmed at its sides. Drawn once
-     * per tile size into a bitmap, since a blur cannot be drawn live on this TV's GPU.
-     */
-    private Bitmap shadow;
-    private int shadowW, shadowH;
-    private final Paint shadowPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
-    private final float shadowBlur, shadowDrop;
-    /** How far the shadow is shown: it comes in as the glider turns to glass, and goes with the dark. */
-    private float shadowMix;
-    private ValueAnimator shadowFade;
+    /** The Glider owns one glass body and one rim; app cards do not add a second cursor. */
     private final List<View> companions = new ArrayList<>();
     /** Per companion, the part of it the shape matters to (in its own coordinates), or null for all of it. */
     private final List<RectF> companionAreas = new ArrayList<>();
-    /** Where the shape was last drawn and where it is now, shadow included, in this view's coordinates. */
+    /** Where the shape was last drawn and where it is now, in this view's coordinates. */
     private final RectF drawn = new RectF(), dirty = new RectF(), area = new RectF();
     private final int[] gliderAt = new int[2], companionAt = new int[2];
     private final float[] target = new float[5];
@@ -108,8 +99,6 @@ final class Glider extends View {
         focusStroke.setStrokeWidth(2f * density);
         focusStroke.setColor(TvUiTokens.FOCUS_BORDER);
         rim = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF);
-        shadowBlur = 22f * density;
-        shadowDrop = 8f * density;
         Backdrop.watch(this);
         setFocusable(false);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -135,6 +124,10 @@ final class Glider extends View {
      * from there: the Inputs menu's selection handing over to the top menu as the menu closes.
      */
     void appearAt(float l, float t, float r, float b, float radius) {
+        // This is a coordinate-owner handoff (for example, app/Dock to the fixed Home header).
+        // Any prior RecyclerView scroll compensation belongs to the old owner and must not
+        // leak into later Dock/Grid focus targets after the Classic ScrollView takes ownership.
+        yShift = 0f;
         float[] to = aim(l, t, r, b, radius);
         for (int i = 0; i < springs.length; i++) {
             springs[i].cancel();
@@ -251,8 +244,8 @@ final class Glider extends View {
     }
 
     /**
-     * While an app is being moved it wiggles, and the glass pane behind it would show at its corners:
-     * then only the app's shadow is drawn.
+     * Allows a caller to suppress the glass fill while retaining the focus perimeter.
+     * Move Mode does not use this path; its one Glider body and Rim remain visible.
      */
     void setPaneHidden(boolean hidden) {
         if (paneHidden == hidden) return;
@@ -261,28 +254,16 @@ final class Glider extends View {
     }
 
     /**
-     * Move Mode always uses the same black drop shadow for Dock and Grid cards. A Dock tile can
-     * arrive from the dark header-focus path while a Grid tile already uses GLASS; normalize both
-     * before hiding the pane so the shadow is identical in every row.
+     * Move Mode keeps the same single Glider and Rim visible across Dock/Grid hand-off.
+     * It never creates a second black shadow or hides the glass body.
      */
     void setMoveModeActive(boolean active, boolean glassEnabled) {
-        if (shadowFade != null) {
-            shadowFade.cancel();
-            shadowFade = null;
-        }
-        if (active) {
-            style = GLASS;
-            shadowMix = 1f;
-            paneHidden = true;
-        } else {
-            paneHidden = false;
-            style = glassEnabled ? GLASS : DARK;
-            shadowMix = glassEnabled ? 1f : 0f;
-        }
+        paneHidden = false;
+        style = active || glassEnabled ? GLASS : DARK;
         changed();
     }
 
-    /** Restricts this Glider to its capsule companions; prevents the full-window shadow bleeding at corners. */
+    /** Restricts painting to registered, clipped companions without creating another cursor. */
     void setCompanionOnly(boolean companionOnly) {
         if (this.companionOnly == companionOnly) return;
         this.companionOnly = companionOnly;
@@ -305,7 +286,7 @@ final class Glider extends View {
         changed();
     }
 
-    /** Switches look at once; there is no blend between the two. The shadow eases in with the glass. */
+    /** Switches the Glider material without adding a second shadow layer. */
     void setFocusStrokeWidth(float widthPx) {
         focusStroke.setStrokeWidth(Math.max(1f, widthPx));
         changed();
@@ -314,18 +295,7 @@ final class Glider extends View {
     void setStyle(int style) {
         if (this.style == style) return;
         this.style = style;
-        if (shadowFade != null) shadowFade.cancel();
-        if (style == GLASS) {
-            shadowFade = ValueAnimator.ofFloat(shadowMix, 1f);
-            shadowFade.setDuration(reducedMotion ? 100 : 200);
-            shadowFade.addUpdateListener(a -> {
-                shadowMix = (float) a.getAnimatedValue();
-                changed();
-            });
-            shadowFade.start();
-        } else {
-            shadowMix = 0f;
-        }
+        paneHidden = false;
         changed();
     }
 
@@ -390,9 +360,7 @@ final class Glider extends View {
             canvas.drawRoundRect(shape, Math.max(0f, r - half), Math.max(0f, r - half), focusStroke);
             return;
         }
-        // Glass: the selected app's shadow, what is behind it softened, an even veil, and the
-        // shining edge.
-        drawShadow(canvas, r);
+        // Glass: what is behind it softened, an even veil, and the shining edge.
         if (paneHidden) return;
         glass.draw(canvas, canvasOwner, shape, r, opacity);
         veil.setAlpha(Math.round(0x14 * opacity));
@@ -423,34 +391,6 @@ final class Glider extends View {
         canvas.drawRoundRect(shape, Math.max(0f, r - half), Math.max(0f, r - half), focusStroke);
     }
 
-    private void drawShadow(Canvas canvas, float radius) {
-        if (shadowMix <= 0f) return;
-        int w = Math.round(shape.width()), h = Math.round(shape.height());
-        if (w <= 0 || h <= 0) return;
-        int pad = (int) Math.ceil(shadowBlur * 2);
-        if (shadow != null && (w != shadowW || h != shadowH) && moving()) {
-            // Changing size mid-glide: stretch the shadow it has rather than blur a new one every
-            // frame; the right one is made once the shape comes to rest.
-            shadowPaint.setColor(0xFF000000);
-            shadowPaint.setAlpha(Math.round(0x9A * opacity * shadowMix));
-            area.set(shape.left - pad, shape.top - pad + shadowDrop, shape.right + pad, shape.bottom + pad + shadowDrop);
-            canvas.drawBitmap(shadow, null, area, shadowPaint);
-            return;
-        }
-        if (shadow == null || w != shadowW || h != shadowH) {
-            shadow = Bitmap.createBitmap(w + 2 * pad, h + 2 * pad, Bitmap.Config.ALPHA_8);
-            Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-            p.setColor(0xFF000000);
-            p.setMaskFilter(new android.graphics.BlurMaskFilter(shadowBlur, android.graphics.BlurMaskFilter.Blur.NORMAL));
-            new Canvas(shadow).drawRoundRect(pad, pad, pad + w, pad + h, radius, radius, p);
-            shadowW = w;
-            shadowH = h;
-        }
-        shadowPaint.setColor(0xFF000000);
-        shadowPaint.setAlpha(Math.round(0x9A * opacity * shadowMix));
-        canvas.drawBitmap(shadow, shape.left - pad, shape.top - pad + shadowDrop, shadowPaint);
-    }
-
     private void fadeTo(float to, long ms) {
         if (fade != null) fade.cancel();
         fade = ValueAnimator.ofFloat(opacity, to);
@@ -476,7 +416,7 @@ final class Glider extends View {
         if (companions.isEmpty()) return;
         dirty.set(drawn);
         if (isShowing()) {
-            float reach = 2f * shadowBlur + shadowDrop + 2f;
+            float reach = Math.max(4f, focusStroke.getStrokeWidth() + rim.paint.getStrokeWidth());
             drawn.set(edges[LEFT] - reach, edges[TOP] + yShift - reach,
                     edges[RIGHT] + reach, edges[BOTTOM] + yShift + reach);
             dirty.union(drawn);
