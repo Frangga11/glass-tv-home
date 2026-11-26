@@ -180,6 +180,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean horizontalThreeRowFrameActive;
     private final ArrayList<View> threeRowHiddenViews = new ArrayList<>();
     private final ArrayList<Integer> threeRowOriginalVisibility = new ArrayList<>();
+    private final ArrayList<Float> threeRowOriginalAlphas = new ArrayList<>();
     /** One semantic DPAD intent captured during collapse; never replay synthetic Android key events. */
     private int pendingDockCollapseDirection = -1;
     /** Monotonic token prevents delayed layout callbacks from stealing focus from a newer DPAD target. */
@@ -2879,23 +2880,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** Sends the focus shape onto a pill: from a tile it glides up and narrows into the pill. */
     private void moveTopHighlight(View pill) {
         if (pill == null || glider == null) return;
-        // A transparent hero shelf must not reveal the root Glider as a stray partial arc.
-        // The same Glider is now painted only by the focused header capsule companion.
-        glider.setCompanionOnly(true);
+        // Keep the root Glider visible while it crosses the gap from Dock to header.
+        // The capsule companion paints the same shape above its glass once it reaches the pill;
+        // after arrival, companion-only mode prevents a stray shape behind transparent Home chrome.
+        glider.setCompanionOnly(false);
         if (!resuming) SoundEffects.playNav();
         pill.getLocationInWindow(pillAt);
         glider.getLocationInWindow(rootAt);
         float l = pillAt[0] - rootAt[0], t = pillAt[1] - rootAt[1];
-        // The pills do not scroll with the grid, so the shape stops following the grid's scroll.
         glassShown = false;
-        // Up to the top menu it is dark at once, and travels that way.
         gliderOnPill = true;
         glider.setStyle(Glider.DARK);
-        // Crossing from the app shelf to the header is a focus-region handoff, not a
-        // spatial animation. Snap the one Glider to its new owner so it never floats
-        // through the transparent Hero content or leaves a transient arc behind.
-        glider.appearAt(l, t, l + pill.getWidth(), t + pill.getHeight(),
+        // Header coordinates are absolute to the root, so preserve the same geometry while
+        // clearing the old Grid scroll compensation. moveToScreen uses the existing Glider spring.
+        glider.moveToScreen(l, t, l + pill.getWidth(), t + pill.getHeight(),
                 Math.min(20f * density, pill.getHeight() / 2f));
+        glider.onArrive(() -> {
+            if (gliderOnPill) glider.setCompanionOnly(true);
+        });
     }
 
     /** The shelf's two lines. An empty description takes no room, so the title keeps its place. */
@@ -3211,6 +3213,33 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         classicHomeHostActive = false;
     }
 
+    /**
+     * Align the "Aplikasi lainnya" label to the actual first app card, not a screen-wide
+     * guessed inset. The card is centered in its Grid column, so use its measured window
+     * coordinate after RecyclerView has completed layout.
+     */
+    private void alignAppsLabelWithFirstGridCard() {
+        if (appsLabel == null || grid == null || appsLabel.getVisibility() != View.VISIBLE) return;
+        grid.post(() -> {
+            if (appsLabel == null || grid == null || appsLabel.getVisibility() != View.VISIBLE) return;
+            RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(0);
+            View card = holder == null ? null : holder.itemView.findViewById(R.id.card);
+            View parent = appsLabel.getParent() instanceof View ? (View) appsLabel.getParent() : null;
+            if (card == null || parent == null || card.getWidth() <= 0) return;
+            int[] parentAt = new int[2];
+            int[] cardAt = new int[2];
+            parent.getLocationInWindow(parentAt);
+            card.getLocationInWindow(cardAt);
+            int start = Math.max(0, cardAt[0] - parentAt[0]);
+            ViewGroup.LayoutParams raw = appsLabel.getLayoutParams();
+            if (!(raw instanceof ViewGroup.MarginLayoutParams)) return;
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) raw;
+            if (params.getMarginStart() == start) return;
+            params.setMarginStart(start);
+            appsLabel.setLayoutParams(params);
+        });
+    }
+
     private void updateClassicDockSpacer() {
         if (!classicHomeHostActive || classicDockSpacer == null || gridWrap == null
                 || classicHomeScroll == null || dockRecycler == null) return;
@@ -3346,6 +3375,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     classicHomeScroll.scrollTo(0, 0);
                     updateTopFade();
                     updateHomeShelfAnchor();
+                    alignAppsLabelWithFirstGridCard();
                 }
             });
             return;
@@ -3379,6 +3409,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             boolean showAppsLabel = !horizontalCarouselMode && horizontalGridExpanded
                     && adapter != null && adapter.getItemCount() > 0;
             appsLabel.setVisibility(showAppsLabel ? View.VISIBLE : View.GONE);
+            if (showAppsLabel) alignAppsLabelWithFirstGridCard();
         }
         boolean gridVisibilityChanged = grid.getVisibility() != wantedGridVisibility;
         grid.setVisibility(wantedGridVisibility);
@@ -3756,15 +3787,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
-    /** Preserve original visibility; every Home overlay is hidden while the three-row app frame is active. */
+    /** Preserve original state while all Home header chrome is hidden during an expanded Grid frame. */
     private void setThreeRowFrameChromeHidden(boolean hidden) {
         if (hidden == horizontalThreeRowFrameActive) return;
         horizontalThreeRowFrameActive = hidden;
         if (hidden) {
             threeRowHiddenViews.clear();
             threeRowOriginalVisibility.clear();
-            // Clock and date (leftBlock) remain visible; hide only Home chrome around them.
-            int[] ids = { R.id.heroShelf, R.id.islamicShelf, R.id.locationPill,
+            threeRowOriginalAlphas.clear();
+            // Hide clock/date together with every header capsule from the first Grid reveal.
+            int[] ids = { R.id.heroShelf, R.id.islamicShelf, R.id.leftBlock, R.id.locationPill,
                     R.id.weatherAirQuality, R.id.navPill, R.id.topButtons,
                     R.id.nowPlayingCard, R.id.prayerTimes };
             for (int id : ids) {
@@ -3772,15 +3804,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (view == null || view.getVisibility() != View.VISIBLE) continue;
                 threeRowHiddenViews.add(view);
                 threeRowOriginalVisibility.add(view.getVisibility());
+                threeRowOriginalAlphas.add(view.getAlpha());
+                view.animate().cancel();
+                view.setAlpha(0f);
                 view.setVisibility(View.INVISIBLE);
             }
         } else {
             for (int i = 0; i < threeRowHiddenViews.size(); i++) {
                 View view = threeRowHiddenViews.get(i);
-                if (view != null) view.setVisibility(threeRowOriginalVisibility.get(i));
+                if (view == null) continue;
+                float alpha = threeRowOriginalAlphas.get(i);
+                view.animate().cancel();
+                view.setAlpha(0f);
+                view.setVisibility(threeRowOriginalVisibility.get(i));
+                view.animate().alpha(alpha)
+                        .setDuration(reducedMotion ? 100 : 180)
+                        .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                        .start();
             }
             threeRowHiddenViews.clear();
             threeRowOriginalVisibility.clear();
+            threeRowOriginalAlphas.clear();
         }
     }
 
@@ -3788,7 +3832,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void reassertThreeRowChrome() {
         if (!horizontalThreeRowFrameActive) return;
         for (View view : threeRowHiddenViews) {
-            if (view != null && view.getVisibility() != View.INVISIBLE) view.setVisibility(View.INVISIBLE);
+            if (view == null) continue;
+            view.animate().cancel();
+            view.setAlpha(0f);
+            if (view.getVisibility() != View.INVISIBLE) view.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -4853,6 +4900,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // content plane or make the Dock glass appear to change material.
         horizontalGridViewportRows = 1;
         horizontalGridExpanded = true;
+        // The header must clear as soon as row two starts entering, not only when row three joins.
+        setThreeRowFrameChromeHidden(true);
         applyDockLayout();
         grid.setVisibility(View.VISIBLE);
         grid.requestLayout();
@@ -5152,7 +5201,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         grid.setTranslationY(0f);
         dockRecycler.setTranslationY(dockRaisedTranslationY());
         syncDockFrameAlpha();
-        setThreeRowFrameChromeHidden(rows >= 2);
+        setThreeRowFrameChromeHidden(horizontalGridExpanded);
     }
 
     /**
@@ -5216,9 +5265,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 grid.setTranslationY(0f);
                 dockRecycler.setTranslationY(dockRaisedTranslationY());
                 syncDockFrameAlpha();
-                // Commit the one-row geometry first, then restore the Home chrome. This keeps
-                // the three-row scene visually coherent through the final animation frame.
-                if (!grow) setThreeRowFrameChromeHidden(false);
+                // Header chrome stays hidden while any expanded Grid row remains on screen.
+                // It is restored only after the complete Dock/Grid frame collapses.
                 if (!cancelled && onDone != null) onDone.run();
             }
         });
