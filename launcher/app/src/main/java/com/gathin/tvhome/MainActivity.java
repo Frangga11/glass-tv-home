@@ -2436,6 +2436,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void handleTileFocused(String key, int position, View card, boolean inDock) {
         if (key == null || card == null) return;
+        // App/Dock focus uses the root Glider drawing path. Header capsules are the only
+        // drawing owners while a top navigation target is focused.
+        glider.setCompanionOnly(false);
         if (!resuming && hasWindowFocus()) SoundEffects.playNav();
         lastFocused = position;
         lastFocusedDock = inDock;
@@ -2874,6 +2877,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** Sends the focus shape onto a pill: from a tile it glides up and narrows into the pill. */
     private void moveTopHighlight(View pill) {
         if (resuming) return;
+        // A transparent hero shelf must not reveal the root Glider as a stray partial arc.
+        // The same Glider is now painted only by the focused header capsule companion.
+        glider.setCompanionOnly(true);
         SoundEffects.playNav();
         pill.getLocationInWindow(pillAt);
         glider.getLocationInWindow(rootAt);
