@@ -42,6 +42,11 @@ final class ClassicGridNavigationPolicy {
         }
     }
 
+    /** Adapter positions are local: every Grid target changes region even when its index matches Dock. */
+    static boolean transfersOutOfDock(Target target, int currentDockPosition) {
+        return target != null && (!target.dock || target.position != currentDockPosition);
+    }
+
     static Target fromDock(int position, int keyCode, int dockCount, int gridCount, int topTarget) {
         if (position < 0 || position >= dockCount) return new Target(true, position);
         switch (keyCode) {
