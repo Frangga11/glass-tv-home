@@ -21,4 +21,14 @@ final class ClassicAppMovePolicy {
         }
         return index;
     }
+
+    /** A bump is emitted only for a valid selection whose requested target is its current slot. */
+    static boolean isBoundaryBump(int currentIndex, int targetIndex) {
+        return currentIndex >= 0 && targetIndex == currentIndex;
+    }
+
+    /** Internal launcher overlays must not cancel an in-progress Classic preview on pause. */
+    static boolean shouldCancelOnPause(boolean moveTransactionActive, boolean internalOverlayShowing) {
+        return moveTransactionActive && !internalOverlayShowing;
+    }
 }
