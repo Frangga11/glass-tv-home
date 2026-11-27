@@ -5912,7 +5912,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // geometry underneath the active focus/glider.
         if (!classicGridChromeHidden) {
             setClassicGridChromeHidden(true);
-            classicHomeScroll.postOnAnimation(
+            runAfterClassicHomeLayout(
                     () -> focusClassicGridTileWhenLaidOut(position, requestGeneration, attemptsRemaining));
             return;
         }
@@ -5940,6 +5940,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         } else {
             android.util.Log.w("TvHome.Classic", "Unable to resolve Classic Grid focus at " + position);
         }
+    }
+
+    /** Runs only after Android has measured and laid out the header/Grid height change. */
+    private void runAfterClassicHomeLayout(Runnable action) {
+        if (classicHomeScroll == null || action == null) return;
+        ViewTreeObserver observer = classicHomeScroll.getViewTreeObserver();
+        if (!observer.isAlive()) {
+            classicHomeScroll.post(action);
+            return;
+        }
+        observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override public boolean onPreDraw() {
+                ViewTreeObserver current = classicHomeScroll.getViewTreeObserver();
+                if (current.isAlive()) current.removeOnPreDrawListener(this);
+                classicHomeScroll.post(action);
+                return true;
+            }
+        });
+        classicHomeScroll.requestLayout();
     }
 
     private int classicHomeScrollTarget(int position, View card) {
