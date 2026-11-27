@@ -77,9 +77,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -1781,7 +1783,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (screensaverActive) dismissScreensaver();
             if (cardPrompt != null) cardPrompt.dismiss();
             if (openPopup != null) openPopup.dismiss();
-            if (movingPos >= 0) finishMove();
+            boolean classicMoveActive = adapter != null && adapter.isClassicVerticalMode()
+                    && adapter.isMoveTransactionActive();
+            if (movingPos >= 0 && !classicMoveActive) finishMove();
             if (openMenu != null) {
                 closeMenu(false);
             } else {
@@ -2104,8 +2108,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
     }
 
+    private boolean isInternalMoveOverlayShowing() {
+        return openMenu != null
+                || (openPopup != null && openPopup.isShowing())
+                || (quickSettingsDialog != null && quickSettingsDialog.isShowing())
+                || (cardPrompt != null && cardPrompt.isShowing())
+                || (qrUploadDialog != null && qrUploadDialog.isShowing());
+    }
+
     @Override
     protected void onPause() {
+        boolean classicMoveActive = adapter != null && adapter.isClassicVerticalMode()
+                && adapter.isMoveTransactionActive();
+        boolean internalMoveOverlayShowing = isInternalMoveOverlayShowing();
         if (standbyCoordinator != null) standbyCoordinator.onHomePaused();
         super.onPause();
         // Invalidate focus work queued before Home yielded the window to another Activity.
@@ -2136,7 +2151,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             prayerPopupRestoreFocusPending = true;
         }
         closeMenu(false);
-        finishMove();
+        if (!classicMoveActive || ClassicAppMovePolicy.shouldCancelOnPause(
+                classicMoveActive, internalMoveOverlayShowing)) {
+            finishMove();
+        }
     }
 
     @Override
@@ -3910,6 +3928,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** Picks up one tile in its own region; identity remains stable while its position changes. */
     private boolean movingDock;
     private RecyclerView movingRecycler;
+    /** Only the positional reflow animators are tracked; focus scale and Move Mode wiggle stay independent. */
+    private final Map<View, android.animation.AnimatorSet> classicMoveReflowAnimations = new java.util.IdentityHashMap<>();
+    private int classicMoveReflowGeneration;
 
     private void startMove(String key, boolean inDock) {
         RecyclerView recycler = inDock ? dockRecycler : grid;
@@ -3985,6 +4006,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (classicSession) {
             boolean completed = commit ? adapter.commitMoveTransaction() : cancelClassicMoveTransaction();
             if (!completed) return;
+            if (commit) SoundEffects.playSelect();
+            else SoundEffects.playNav();
             if (dockAdapter != null) dockAdapter.refresh();
             applyDockLayout();
         }
@@ -4037,6 +4060,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void finishMoveState(boolean preserveMoveGlider) {
+        if (!preserveMoveGlider) cancelClassicMoveReflowAnimations();
         if (movingPos < 0 && movingCard == null && movingRecycler == null && !moveHandoffPending) {
             if (!preserveMoveGlider) {
                 moveSessionKey = null;
@@ -4149,6 +4173,108 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         glider.setMoveModeActive(true, isGlassEffectsEnabled());
     }
 
+    /** Capture visible Dock and Grid card rectangles before the ordered inventory is rebound. */
+    private Map<String, Rect> captureClassicMoveCardRects() {
+        cancelClassicMoveReflowAnimations();
+        Map<String, Rect> before = new HashMap<>();
+        captureClassicMoveRects(dockRecycler, dockAdapter, before);
+        captureClassicMoveRects(grid, adapter, before);
+        return before;
+    }
+
+    private void captureClassicMoveRects(RecyclerView recycler, Object source, Map<String, Rect> before) {
+        if (recycler == null || source == null) return;
+        boolean dock = source instanceof DockAdapter;
+        int count = recycler.getAdapter() == null ? 0 : recycler.getAdapter().getItemCount();
+        for (int position = 0; position < count; position++) {
+            RecyclerView.ViewHolder holder = recycler.findViewHolderForAdapterPosition(position);
+            if (holder == null) continue;
+            String key = dock ? dockAdapter.keyAt(position) : adapter.keyAt(position);
+            View card = holder.itemView.findViewById(R.id.card);
+            if (key == null || card == null) continue;
+            Rect bounds = new Rect();
+            if (card.getGlobalVisibleRect(bounds)) before.put(key, bounds);
+        }
+    }
+
+    /**
+     * Match Home Universal's 170ms decelerating positional reflow. The single focused View and
+     * Glider remain owned by the existing focus path; only translation properties are animated.
+     */
+    private void animateClassicMoveReflow(Map<String, Rect> before) {
+        if (before == null || before.isEmpty()) return;
+        final int generation = classicMoveReflowGeneration;
+        final View decor = getWindow().getDecorView();
+        ViewTreeObserver observer = decor.getViewTreeObserver();
+        if (!observer.isAlive()) {
+            decor.post(() -> animateClassicMoveReflow(before));
+            return;
+        }
+        observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override public boolean onPreDraw() {
+                ViewTreeObserver current = decor.getViewTreeObserver();
+                if (current.isAlive()) current.removeOnPreDrawListener(this);
+                if (generation != classicMoveReflowGeneration) return true;
+                animateClassicMoveReflowInRecycler(before, dockRecycler, true);
+                animateClassicMoveReflowInRecycler(before, grid, false);
+                return true;
+            }
+        });
+    }
+
+    private void animateClassicMoveReflowInRecycler(Map<String, Rect> before,
+                                                      RecyclerView recycler, boolean dock) {
+        if (recycler == null || recycler.getAdapter() == null) return;
+        int count = recycler.getAdapter().getItemCount();
+        for (int position = 0; position < count; position++) {
+            RecyclerView.ViewHolder holder = recycler.findViewHolderForAdapterPosition(position);
+            if (holder == null) continue;
+            String key = dock ? dockAdapter.keyAt(position) : adapter.keyAt(position);
+            Rect previous = key == null ? null : before.get(key);
+            View card = holder.itemView.findViewById(R.id.card);
+            if (previous == null || card == null) continue;
+            Rect current = new Rect();
+            if (!card.getGlobalVisibleRect(current)) continue;
+            float dx = previous.left - current.left;
+            float dy = previous.top - current.top;
+            if (Math.abs(dx) < 1f && Math.abs(dy) < 1f) continue;
+
+            card.setTranslationX(dx);
+            card.setTranslationY(dy);
+            android.animation.ObjectAnimator x = android.animation.ObjectAnimator.ofFloat(
+                    card, View.TRANSLATION_X, dx, 0f);
+            android.animation.ObjectAnimator y = android.animation.ObjectAnimator.ofFloat(
+                    card, View.TRANSLATION_Y, dy, 0f);
+            android.animation.AnimatorSet slide = new android.animation.AnimatorSet();
+            slide.playTogether(x, y);
+            slide.setDuration(170L);
+            slide.setInterpolator(new android.view.animation.DecelerateInterpolator());
+            classicMoveReflowAnimations.put(card, slide);
+            slide.addListener(new android.animation.AnimatorListenerAdapter() {
+                @Override public void onAnimationEnd(android.animation.Animator animation) {
+                    if (classicMoveReflowAnimations.get(card) == slide) {
+                        classicMoveReflowAnimations.remove(card);
+                    }
+                }
+            });
+            slide.start();
+        }
+    }
+
+    /** Cancel only the reflow translations; never cancel focus scale or the Move Mode wiggle. */
+    private void cancelClassicMoveReflowAnimations() {
+        classicMoveReflowGeneration++;
+        if (classicMoveReflowAnimations.isEmpty()) return;
+        List<Map.Entry<View, android.animation.AnimatorSet>> running =
+                new ArrayList<>(classicMoveReflowAnimations.entrySet());
+        classicMoveReflowAnimations.clear();
+        for (Map.Entry<View, android.animation.AnimatorSet> entry : running) {
+            entry.getValue().cancel();
+            entry.getKey().setTranslationX(0f);
+            entry.getKey().setTranslationY(0f);
+        }
+    }
+
     private void stepMove(int keyCode) {
         if (movingPos < 0 || movingRecycler == null) return;
         if (!horizontalCarouselMode) {
@@ -4194,7 +4320,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     : keyCode == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0;
             int target = ClassicAppMovePolicy.target(
                     currentIndex, movableCount, COLUMNS, dx, dy);
-            if (target == currentIndex || !adapter.moveAllEntries(currentIndex, target)) return;
+            if (ClassicAppMovePolicy.isBoundaryBump(currentIndex, target)) {
+                SoundEffects.playNav();
+                return;
+            }
+            Map<String, Rect> previousRects = captureClassicMoveCardRects();
+            if (!adapter.moveAllEntries(currentIndex, target)) return;
+            SoundEffects.playNav();
 
             View previousCard = movingCard;
             dockAdapter.refresh();
@@ -4203,6 +4335,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             // transfers a Dock app into the Grid, reveal that destination before restoring focus.
             if (!nowInDock) horizontalGridExpanded = true;
             applyDockLayout();
+            animateClassicMoveReflow(previousRects);
             int resolved = nowInDock ? dockAdapter.positionOf(movingKey) : adapter.positionOf(movingKey);
             if (resolved < 0) {
                 finishMove();
