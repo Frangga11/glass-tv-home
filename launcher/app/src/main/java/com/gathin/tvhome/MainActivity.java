@@ -3335,9 +3335,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             applyDockLayout();
             return;
         }
-        // AppAdapter.moveAllEntries() already notified the Grid. Refresh only the independent Dock
-        // adapter; the Dock host, ScrollView offset, spacer and measured geometry stay untouched.
-        dockAdapter.refresh();
+        // Both adapters have already been refreshed by the transaction caller. Only reconcile
+        // decoration visibility here; never detach/rebuild the host or reset its ScrollView offset.
         int count = dockAdapter.getItemCount();
         if (tray != null && (lastDockDecorationCount != count || lastDockDecorationVertical)) {
             tray.update(count, false);
