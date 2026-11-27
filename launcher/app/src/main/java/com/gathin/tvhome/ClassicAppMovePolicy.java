@@ -21,4 +21,26 @@ final class ClassicAppMovePolicy {
         }
         return index;
     }
+
+    /** A bump is emitted only for a valid selection whose requested target is its current slot. */
+    static boolean isBoundaryBump(int currentIndex, int targetIndex) {
+        return currentIndex >= 0 && targetIndex == currentIndex;
+    }
+
+    /** Classic chrome follows normal Grid/Dock focus, but stays steady during a move hand-off. */
+    static boolean shouldHideClassicChrome(boolean classicHostActive, boolean gridFocused,
+                                            boolean moveActive, boolean wasHidden) {
+        if (!classicHostActive) return false;
+        return moveActive ? wasHidden : gridFocused;
+    }
+
+    /** Focus may transfer only after the Classic ScrollView reaches its measured target. */
+    static boolean isScrollSettled(int currentY, int targetY) {
+        return Math.abs(currentY - targetY) <= 2;
+    }
+
+    /** Internal launcher overlays must not cancel an in-progress Classic preview on pause. */
+    static boolean shouldCancelOnPause(boolean moveTransactionActive, boolean internalOverlayShowing) {
+        return moveTransactionActive && !internalOverlayShowing;
+    }
 }
