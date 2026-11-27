@@ -4271,6 +4271,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
      */
     private void animateClassicMoveReflow(Map<String, Rect> before) {
         if (before == null || before.isEmpty()) return;
+        classicMoveReflowPending = true;
         final int generation = classicMoveReflowGeneration;
         final View decor = getWindow().getDecorView();
         ViewTreeObserver observer = decor.getViewTreeObserver();
@@ -4309,12 +4310,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
             card.setTranslationX(dx);
             card.setTranslationY(dy);
-            android.animation.ObjectAnimator x = android.animation.ObjectAnimator.ofFloat(
-                    card, View.TRANSLATION_X, dx, 0f);
-            android.animation.ObjectAnimator y = android.animation.ObjectAnimator.ofFloat(
-                    card, View.TRANSLATION_Y, dy, 0f);
+            // Keep the single Glider locked to the selected card's real translated bounds.
+            // A spring retargeted from the old un-translated layout lags one DPAD step behind.
+            if (card == movingCard && movingPos >= 0) syncFocusedAppGliderImmediately();
+            android.animation.ValueAnimator progress = android.animation.ValueAnimator.ofFloat(0f, 1f);
+            progress.addUpdateListener(value -> {
+                float fraction = (Float) value.getAnimatedValue();
+                card.setTranslationX(dx * (1f - fraction));
+                card.setTranslationY(dy * (1f - fraction));
+                if (card == movingCard && movingPos >= 0) syncFocusedAppGliderImmediately();
+            });
             android.animation.AnimatorSet slide = new android.animation.AnimatorSet();
-            slide.playTogether(x, y);
+            slide.playTogether(progress);
             slide.setDuration(170L);
             slide.setInterpolator(new android.view.animation.DecelerateInterpolator());
             classicMoveReflowAnimations.put(card, slide);
@@ -4322,6 +4329,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 @Override public void onAnimationEnd(android.animation.Animator animation) {
                     if (classicMoveReflowAnimations.get(card) == slide) {
                         classicMoveReflowAnimations.remove(card);
+                    }
+                    if (classicMoveReflowAnimations.isEmpty()) {
+                        classicMoveReflowPending = false;
+                        if (movingPos >= 0) syncFocusedAppGliderImmediately();
                     }
                 }
             });
@@ -4332,6 +4343,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** Cancel only the reflow translations; never cancel focus scale or the Move Mode wiggle. */
     private void cancelClassicMoveReflowAnimations() {
         classicMoveReflowGeneration++;
+        classicMoveReflowPending = false;
         if (classicMoveReflowAnimations.isEmpty()) return;
         List<Map.Entry<View, android.animation.AnimatorSet>> running =
                 new ArrayList<>(classicMoveReflowAnimations.entrySet());
