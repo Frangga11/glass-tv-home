@@ -22,4 +22,16 @@ public class ClassicAppMovePolicyTest {
         assertEquals(-1, ClassicAppMovePolicy.target(-1, 10, 4, 1, 0));
         assertEquals(3, ClassicAppMovePolicy.target(3, 10, 0, 0, 1));
     }
+    @Test public void bumpOnlyPlaysWhenValidMoveTargetsCurrentSlot() {
+        org.junit.Assert.assertTrue(ClassicAppMovePolicy.isBoundaryBump(4, 4));
+        org.junit.Assert.assertFalse(ClassicAppMovePolicy.isBoundaryBump(4, 5));
+        org.junit.Assert.assertFalse(ClassicAppMovePolicy.isBoundaryBump(-1, -1));
+    }
+
+    @Test public void pauseCancelsClassicPreviewOnlyWhenNoInternalOverlayIsShowing() {
+        org.junit.Assert.assertTrue(ClassicAppMovePolicy.shouldCancelOnPause(true, false));
+        org.junit.Assert.assertFalse(ClassicAppMovePolicy.shouldCancelOnPause(true, true));
+        org.junit.Assert.assertFalse(ClassicAppMovePolicy.shouldCancelOnPause(false, false));
+    }
+
 }
