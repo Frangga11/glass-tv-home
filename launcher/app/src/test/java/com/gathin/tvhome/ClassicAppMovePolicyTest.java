@@ -47,4 +47,11 @@ public class ClassicAppMovePolicyTest {
                 ClassicAppMovePolicy.shouldHideClassicChrome(false, true, false, false));
     }
 
+    @Test public void classicGridFocusWaitsForScrollToSettle() {
+        org.junit.Assert.assertTrue(ClassicAppMovePolicy.isScrollSettled(100, 102));
+        org.junit.Assert.assertTrue(ClassicAppMovePolicy.isScrollSettled(102, 100));
+        org.junit.Assert.assertFalse(ClassicAppMovePolicy.isScrollSettled(100, 103));
+        org.junit.Assert.assertFalse(ClassicAppMovePolicy.isScrollSettled(100, 140));
+    }
+
 }
