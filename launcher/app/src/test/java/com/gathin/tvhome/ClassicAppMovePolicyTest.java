@@ -34,4 +34,17 @@ public class ClassicAppMovePolicyTest {
         org.junit.Assert.assertFalse(ClassicAppMovePolicy.shouldCancelOnPause(false, false));
     }
 
+    @Test public void classicChromeFollowsGridFocusAndStaysStableDuringMove() {
+        org.junit.Assert.assertTrue(
+                ClassicAppMovePolicy.shouldHideClassicChrome(true, true, false, false));
+        org.junit.Assert.assertFalse(
+                ClassicAppMovePolicy.shouldHideClassicChrome(true, false, false, true));
+        org.junit.Assert.assertTrue(
+                ClassicAppMovePolicy.shouldHideClassicChrome(true, false, true, true));
+        org.junit.Assert.assertFalse(
+                ClassicAppMovePolicy.shouldHideClassicChrome(true, true, true, false));
+        org.junit.Assert.assertFalse(
+                ClassicAppMovePolicy.shouldHideClassicChrome(false, true, false, false));
+    }
+
 }
