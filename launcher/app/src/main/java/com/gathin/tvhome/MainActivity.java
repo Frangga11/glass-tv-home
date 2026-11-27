@@ -2464,6 +2464,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         lastFocusedDock = inDock;
         // Classic Grid is an expanded app surface: remove the complete header row from layout.
         // Keep the current state stable while a picked-up app crosses Dock/Grid during Move Mode.
+        boolean classicChromeWasHidden = classicGridChromeHidden;
         if (classicHomeHostActive) {
             boolean hideClassicChrome = ClassicAppMovePolicy.shouldHideClassicChrome(
                     true, !inDock, movingPos >= 0, classicGridChromeHidden);
@@ -2526,7 +2527,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
         } else {
             showAmbient(adapter.ambientColorAt(position));
-            if (classicHomeHostActive) scrollClassicHomeToRow(position, card);
+            if (classicHomeHostActive) {
+                if (!inDock && !classicChromeWasHidden && classicGridChromeHidden) {
+                    // Header removal changes gridWrap height and the bottom Dock spacer. Scroll
+                    // only after that geometry has completed its next layout pass.
+                    classicHomeScroll.postOnAnimation(() -> {
+                        if (!classicHomeHostActive || !classicGridChromeHidden || adapter == null) return;
+                        int resolved = adapter.positionOf(key);
+                        RecyclerView.ViewHolder holder = resolved < 0
+                                ? null : grid.findViewHolderForAdapterPosition(resolved);
+                        View currentCard = holder == null ? null : holder.itemView.findViewById(R.id.card);
+                        if (currentCard != null) scrollClassicHomeToRow(resolved, currentCard);
+                    });
+                } else {
+                    scrollClassicHomeToRow(position, card);
+                }
+            }
             // Horizontal Dock mode owns a fixed one-row viewport. Revealing the enlarged
             // focus rectangle can scroll the active row away from the glass baseline.
             // Row placement is controlled explicitly by focusTile() in this mode.
