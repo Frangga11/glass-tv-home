@@ -2412,6 +2412,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     public void onDockTileFocused(String key, View card) {
         if (dockAdapter == null || card == null) return;
+        classicDockGridHandoffPending = false;
         int position = dockAdapter.positionOf(key);
         if (position < 0) return;
         // Dock is a newer, authoritative focus destination; cancel every queued Grid request.
@@ -2486,6 +2487,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (!resuming && hasWindowFocus()) SoundEffects.playNav();
         lastFocused = position;
         lastFocusedDock = inDock;
+        if (!inDock) classicDockGridHandoffPending = false;
         // Classic Grid is an expanded app surface: remove the complete header row from layout.
         // Keep the current state stable while a picked-up app crosses Dock/Grid during Move Mode.
         boolean classicChromeWasHidden = classicGridChromeHidden;
@@ -2592,8 +2594,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     position, keyCode, count, adapter.getItemCount(), -1);
             if (ClassicGridNavigationPolicy.transfersOutOfDock(target, position)) {
                 if (!target.dock) {
-                    // Dock and Grid positions belong to different adapters. A Dock slot 0 -> Grid
-                    // slot 0 is still a region change and must always hand focus to the Grid.
+                    // A held DPAD key can deliver repeated DOWN events while the ScrollView is
+                    // travelling. Start one handoff only; repeats must not invalidate its focus token.
+                    if (classicDockGridHandoffPending) return true;
+                    classicDockGridHandoffPending = true;
                     focusTile(target.position);
                 } else if (target.position < 0) {
                     focusTopBarFallback();
@@ -3096,6 +3100,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean classicHomeHostActive;
     /** Header row is removed from layout while Classic Grid owns normal DPAD focus. */
     private boolean classicGridChromeHidden;
+    /** Debounces repeated DPAD_DOWN events while the Dock-to-Grid focus handoff is settling. */
+    private boolean classicDockGridHandoffPending;
     /** True while visible cards are being reflowed for one Classic Move Mode step. */
     private boolean classicMoveReflowPending;
     private int classicGridHeaderOriginalVisibility = View.VISIBLE;
@@ -5952,6 +5958,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             grid.postOnAnimation(() -> focusClassicGridTileWhenLaidOut(
                     position, requestGeneration, attemptsRemaining - 1));
         } else {
+            classicDockGridHandoffPending = false;
             android.util.Log.w("TvHome.Classic", "Unable to resolve Classic Grid focus at " + position);
         }
     }
