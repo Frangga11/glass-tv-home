@@ -445,6 +445,7 @@
         android:clipToPadding="false">
 
         <RelativeLayout
+            android:id="@+id/homeHeaderRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
