@@ -393,13 +393,27 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("dockAdapter.dockCapacity()", MAIN)
         self.assertIn("setKeepAllCarouselItems(horizontalCarouselMode, carouselPrelayoutExtent)", layout)
 
-    def test_classic_grid_scrolls_before_requesting_focus(self):
+    def test_classic_grid_waits_for_header_layout_and_scroll_before_requesting_focus(self):
         start = MAIN.index("private void focusClassicGridTileWhenLaidOut")
         end = MAIN.index("private void focusTileWhenLaidOut", start)
         method = MAIN[start:end]
-        self.assertLess(method.index("scrollClassicHomeToRow(position, card);"),
-                        method.index("card.requestFocus()"))
-        self.assertIn("card.requestFocus() && card.isFocused()", method)
+        self.assertLess(method.index("setClassicGridChromeHidden(true)"),
+                        method.index("runAfterClassicHomeLayout("))
+        self.assertIn("classicHomeScroll.smoothScrollTo(0, targetScrollY)", method)
+        self.assertIn("settleClassicGridFocusAfterScroll(", method)
+        self.assertLess(method.index("isScrollSettled("),
+                        method.index("commitClassicGridFocus(position, card)"))
+        self.assertIn("card.requestFocus()", MAIN[MAIN.index("private void commitClassicGridFocus"):MAIN.index("private void focusTileWhenLaidOut")])
+        self.assertIn("private void runAfterClassicHomeLayout", MAIN)
+
+    def test_classic_move_reflow_hard_syncs_glider_to_translated_focused_card(self):
+        sync = MAIN[MAIN.index("private void syncFocusedAppGliderImmediately"):
+                    MAIN.index("private boolean shouldAnchorHorizontalCarouselGlider")]
+        self.assertIn("glider.moveToVisualImmediately(", sync)
+        self.assertIn("syncFocusedAppGliderImmediately();", MAIN)
+        self.assertIn("card.setTranslationX(dx * (1f - fraction));", MAIN)
+        self.assertIn("card.setTranslationY(dy * (1f - fraction));", MAIN)
+        self.assertIn("if (classicMoveReflowPending) return;", MAIN)
 
     def test_mode_change_invalidates_the_shared_partition_and_notifies_grid(self):
         start = APP_ADAPTER.index("void refreshPresentation()")
