@@ -2376,19 +2376,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
-    /** Synchronize the one focus shape with the focused Dock OR Grid card during container motion. */
+    /** Synchronize normal Grid focus with a spring; Dock cards remain pixel-locked. */
     private void syncFocusedAppGlider() {
-        syncFocusedAppGlider(false);
-    }
-
-    /** Move Mode reflow owns both the card translation and its one Glider outline frame-by-frame. */
-    private void syncFocusedAppGliderImmediately() {
-        syncFocusedAppGlider(true);
-    }
-
-    private void syncFocusedAppGlider(boolean immediate) {
-        if (!glassShown || glider == null || root == null
-                || (classicMoveReflowPending && !immediate)) return;
+        if (!glassShown || glider == null || root == null || classicMoveReflowPending) return;
         View card = focusedCardFromCurrentFocus();
         if (card == null) return;
         boolean inDock = dockRecycler != null && isDescendantOf(card, dockRecycler);
@@ -2406,9 +2396,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         float radius = AppAdapter.cornerRadius(card.getWidth(), density) * scale;
         if (inDock) {
             glider.moveToScreenImmediately(left + pad, top + pad,
-                    left + width - pad, top + height - pad, radius);
-        } else if (immediate) {
-            glider.moveToVisualImmediately(left + pad, top + pad,
                     left + width - pad, top + height - pad, radius);
         } else {
             glider.moveTo(left + pad, top + pad,
@@ -2439,6 +2426,33 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         deferHorizontalCarouselGliderMove = false;
         horizontalCarouselGliderAnchored = preserveGlider;
         if (horizontalCarouselMode) alignHorizontalCarousel(position, true);
+    }
+
+    /** Hard-sync the one Glider to the currently translated card during Classic Move Mode reflow. */
+    private void syncFocusedAppGliderImmediately() {
+        if (!glassShown || glider == null || root == null) return;
+        View card = focusedCardFromCurrentFocus();
+        if (card == null) return;
+        boolean inDock = dockRecycler != null && isDescendantOf(card, dockRecycler);
+        boolean inGrid = grid != null && isDescendantOf(card, grid);
+        if (!inDock && !inGrid) return;
+        Rect bounds = new Rect(0, 0, card.getWidth(), card.getHeight());
+        root.offsetDescendantRectToMyCoords(card, bounds);
+        offsetByAncestorTranslation(card, bounds);
+        float pad = 6f * density;
+        float scale = isIconAnimationsEnabled() ? AppAdapter.focusScale(inDock) : 1f;
+        float width = card.getWidth() * scale + 2f * pad;
+        float height = card.getHeight() * scale + 2f * pad;
+        float left = bounds.exactCenterX() - width / 2f;
+        float top = bounds.exactCenterY() - height / 2f;
+        float radius = AppAdapter.cornerRadius(card.getWidth(), density) * scale;
+        if (inDock) {
+            glider.moveToScreenImmediately(left + pad, top + pad,
+                    left + width - pad, top + height - pad, radius);
+        } else {
+            glider.moveToVisualImmediately(left + pad, top + pad,
+                    left + width - pad, top + height - pad, radius);
+        }
     }
 
     /** True only for an established Dock selection that is about to move under the focus lane. */
