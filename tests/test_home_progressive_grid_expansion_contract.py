@@ -413,7 +413,7 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("syncFocusedAppGliderImmediately();", MAIN)
         self.assertIn("card.setTranslationX(dx * (1f - fraction));", MAIN)
         self.assertIn("card.setTranslationY(dy * (1f - fraction));", MAIN)
-        self.assertIn("if (classicMoveReflowPending) return;", MAIN)
+        self.assertIn("|| classicMoveReflowPending) return;", MAIN)
 
     def test_mode_change_invalidates_the_shared_partition_and_notifies_grid(self):
         start = APP_ADAPTER.index("void refreshPresentation()")
