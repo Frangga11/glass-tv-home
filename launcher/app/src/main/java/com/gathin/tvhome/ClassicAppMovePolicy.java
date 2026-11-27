@@ -34,6 +34,11 @@ final class ClassicAppMovePolicy {
         return moveActive ? wasHidden : gridFocused;
     }
 
+    /** Focus may transfer only after the Classic ScrollView reaches its measured target. */
+    static boolean isScrollSettled(int currentY, int targetY) {
+        return Math.abs(currentY - targetY) <= 2;
+    }
+
     /** Internal launcher overlays must not cancel an in-progress Classic preview on pause. */
     static boolean shouldCancelOnPause(boolean moveTransactionActive, boolean internalOverlayShowing) {
         return moveTransactionActive && !internalOverlayShowing;
