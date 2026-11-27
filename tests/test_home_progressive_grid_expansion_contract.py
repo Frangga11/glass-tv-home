@@ -393,6 +393,15 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("dockAdapter.dockCapacity()", MAIN)
         self.assertIn("setKeepAllCarouselItems(horizontalCarouselMode, carouselPrelayoutExtent)", layout)
 
+    def test_classic_dock_down_handoff_ignores_key_repeat_until_focus_commits(self):
+        dock = MAIN[MAIN.index("public boolean onDockTileKey"):
+                    MAIN.index("public boolean onDockTileHeld")]
+        self.assertIn("if (classicDockGridHandoffPending) return true;", dock)
+        self.assertIn("classicDockGridHandoffPending = true;", dock)
+        focused = MAIN[MAIN.index("private void handleTileFocused"):
+                       MAIN.index("public boolean onDockTileKey")]
+        self.assertIn("if (!inDock) classicDockGridHandoffPending = false;", focused)
+
     def test_classic_grid_waits_for_header_layout_and_scroll_before_requesting_focus(self):
         start = MAIN.index("private void focusClassicGridTileWhenLaidOut")
         end = MAIN.index("private void focusTileWhenLaidOut", start)
