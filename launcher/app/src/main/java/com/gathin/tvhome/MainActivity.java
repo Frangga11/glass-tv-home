@@ -2464,7 +2464,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         lastFocusedDock = inDock;
         // Classic Grid is an expanded app surface: remove the complete header row from layout.
         // Keep the current state stable while a picked-up app crosses Dock/Grid during Move Mode.
-        if (classicHomeHostActive && movingPos < 0) setClassicGridChromeHidden(!inDock);
+        if (classicHomeHostActive) {
+            boolean hideClassicChrome = ClassicAppMovePolicy.shouldHideClassicChrome(
+                    true, !inDock, movingPos >= 0, classicGridChromeHidden);
+            setClassicGridChromeHidden(hideClassicChrome);
+        }
         if (inDock) lastDockFocusedKey = NavigationState.normalizeFocusKey(key);
         lastFocusedKey = NavigationState.normalizeFocusKey(key);
         android.content.SharedPreferences.Editor navigationEdit =
