@@ -27,6 +27,13 @@ final class ClassicAppMovePolicy {
         return currentIndex >= 0 && targetIndex == currentIndex;
     }
 
+    /** Classic chrome follows normal Grid/Dock focus, but stays steady during a move hand-off. */
+    static boolean shouldHideClassicChrome(boolean classicHostActive, boolean gridFocused,
+                                            boolean moveActive, boolean wasHidden) {
+        if (!classicHostActive) return false;
+        return moveActive ? wasHidden : gridFocused;
+    }
+
     /** Internal launcher overlays must not cancel an in-progress Classic preview on pause. */
     static boolean shouldCancelOnPause(boolean moveTransactionActive, boolean internalOverlayShowing) {
         return moveTransactionActive && !internalOverlayShowing;
