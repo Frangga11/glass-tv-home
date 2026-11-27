@@ -4286,6 +4286,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (generation != classicMoveReflowGeneration) return true;
                 animateClassicMoveReflowInRecycler(before, dockRecycler, true);
                 animateClassicMoveReflowInRecycler(before, grid, false);
+                if (classicMoveReflowAnimations.isEmpty()) {
+                    classicMoveReflowPending = false;
+                    if (movingPos >= 0) syncFocusedAppGliderImmediately();
+                }
                 return true;
             }
         });
