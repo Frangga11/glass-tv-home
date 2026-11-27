@@ -2462,6 +2462,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (!resuming && hasWindowFocus()) SoundEffects.playNav();
         lastFocused = position;
         lastFocusedDock = inDock;
+        // Classic Grid is an expanded app surface: remove the complete header row from layout.
+        // Keep the current state stable while a picked-up app crosses Dock/Grid during Move Mode.
+        if (classicHomeHostActive && movingPos < 0) setClassicGridChromeHidden(!inDock);
         if (inDock) lastDockFocusedKey = NavigationState.normalizeFocusKey(key);
         lastFocusedKey = NavigationState.normalizeFocusKey(key);
         android.content.SharedPreferences.Editor navigationEdit =
@@ -3045,6 +3048,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private ClassicHomeScrollView classicHomeScroll;
     private LinearLayout classicHomeContent;
     private boolean classicHomeHostActive;
+    /** Header row is removed from layout while Classic Grid owns normal DPAD focus. */
+    private boolean classicGridChromeHidden;
+    private int classicGridHeaderOriginalVisibility = View.VISIBLE;
     private View classicDockSpacer;
     private int classicDockHeightPx;
     private ViewGroup classicAppsOriginalParent;
@@ -3210,6 +3216,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Restore the independent RecyclerView hosts only when the user explicitly selects Horizontal mode. */
     private void deactivateClassicHomeHost() {
+        setClassicGridChromeHidden(false);
         if (!classicHomeHostActive) return;
         if (classicHomeContent != null) classicHomeContent.removeAllViews();
         if (classicHomeScroll != null && classicHomeScroll.getParent() == gridWrap) {
@@ -3306,7 +3313,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (position < COLUMNS) {
             // Home Universal scrolls the hero Dock band to the top edge for the first Grid row.
             int target = Math.max(0, dockRecycler.getTop() - Math.round(22 * density));
-            classicHomeScroll.smoothScrollTo(0, target);
+            if (Math.abs(classicHomeScroll.getScrollY() - target) > Math.round(8 * density)) {
+                classicHomeScroll.smoothScrollTo(0, target);
+            }
             return;
         }
         View item = card.getParent() instanceof View ? (View) card.getParent() : card;
@@ -3314,7 +3323,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int screenHeight = getResources().getDisplayMetrics().heightPixels;
         int target = y - (int) (screenHeight * 0.42f);
         int max = Math.max(0, classicHomeContent.getHeight() - classicHomeScroll.getHeight());
-        classicHomeScroll.smoothScrollTo(0, Math.max(0, Math.min(target, max)));
+        target = Math.max(0, Math.min(target, max));
+        if (Math.abs(classicHomeScroll.getScrollY() - target) > Math.round(8 * density)) {
+            classicHomeScroll.smoothScrollTo(0, target);
+        }
+    }
+
+    /** Refresh the two Classic adapters without rebuilding their shared ScrollView host. */
+    private void refreshClassicMoveAdapters() {
+        if (!classicHomeHostActive || dockAdapter == null || dockRecycler == null) {
+            applyDockLayout();
+            return;
+        }
+        // AppAdapter.moveAllEntries() already notified the Grid. Refresh only the independent Dock
+        // adapter; the Dock host, ScrollView offset, spacer and measured geometry stay untouched.
+        dockAdapter.refresh();
+        int count = dockAdapter.getItemCount();
+        if (tray != null && (lastDockDecorationCount != count || lastDockDecorationVertical)) {
+            tray.update(count, false);
+            lastDockDecorationCount = count;
+            lastDockDecorationVertical = false;
+            dockRecycler.invalidateItemDecorations();
+        }
+        dockRecycler.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
     }
 
     private void applyDockLayout() {
@@ -3806,6 +3837,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
+    /** Hide the complete clock/navigation/network/weather row and reclaim its layout height. */
+    private void setClassicGridChromeHidden(boolean hidden) {
+        View header = findViewById(R.id.homeHeaderRow);
+        if (header == null || classicGridChromeHidden == hidden) return;
+        if (hidden) {
+            classicGridHeaderOriginalVisibility = header.getVisibility();
+            header.animate().cancel();
+            header.setVisibility(View.GONE);
+        } else {
+            header.animate().cancel();
+            header.setVisibility(classicGridHeaderOriginalVisibility);
+        }
+        classicGridChromeHidden = hidden;
+    }
+
     /** Preserve original state while all Home header chrome is hidden during an expanded Grid frame. */
     private void setThreeRowFrameChromeHidden(boolean hidden) {
         if (hidden == horizontalThreeRowFrameActive) return;
@@ -4009,7 +4055,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (commit) SoundEffects.playSelect();
             else SoundEffects.playNav();
             if (dockAdapter != null) dockAdapter.refresh();
-            applyDockLayout();
+            if (classicHomeHostActive) refreshClassicMoveAdapters();
+            else applyDockLayout();
         }
         finishMoveState(false);
         moveHandoffPending = false;
@@ -4035,7 +4082,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (classicSession) {
             adapter.cancelMoveTransaction();
             if (dockAdapter != null) dockAdapter.refresh();
-            applyDockLayout();
+            if (classicHomeHostActive) refreshClassicMoveAdapters();
+            else applyDockLayout();
         }
         finishMoveState(false);
         moveHandoffPending = false;
@@ -4334,7 +4382,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             // The current Glass UI reveals its Grid on demand. When Classic Move Mode
             // transfers a Dock app into the Grid, reveal that destination before restoring focus.
             if (!nowInDock) horizontalGridExpanded = true;
-            applyDockLayout();
+            if (classicHomeHostActive) refreshClassicMoveAdapters();
+            else applyDockLayout();
             animateClassicMoveReflow(previousRects);
             int resolved = nowInDock ? dockAdapter.positionOf(movingKey) : adapter.positionOf(movingKey);
             if (resolved < 0) {
