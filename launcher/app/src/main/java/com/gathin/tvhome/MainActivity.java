@@ -2484,12 +2484,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     public void onTileFocused(int position, View card) {
         if (adapter == null || card == null || position < 0 || position >= adapter.getItemCount()) return;
+        if (classicPendingGridPosition == position) classicPendingGridPosition = RecyclerView.NO_POSITION;
         handleTileFocused(adapter.keyAt(position), position, card, false);
     }
 
     @Override
     public void onDockTileFocused(String key, View card) {
         if (dockAdapter == null || card == null) return;
+        classicPendingGridPosition = RecyclerView.NO_POSITION;
         classicDockGridHandoffPending = false;
         int position = dockAdapter.positionOf(key);
         if (position < 0) return;
@@ -3189,6 +3191,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private View classicGliderBlendTarget;
     private int classicGliderBlendStartY;
     private int classicGliderBlendTargetY;
+    /** Logical Grid destination while repeated DPAD events arrive before Android focus settles. */
+    private int classicPendingGridPosition = RecyclerView.NO_POSITION;
     /** True while visible cards are being reflowed for one Classic Move Mode step. */
     private boolean classicMoveReflowPending;
     private int classicGridHeaderOriginalVisibility = View.VISIBLE;
@@ -4876,11 +4880,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // The two orientations deliberately own different DPAD graphs. The shared Classic
         // ScrollView is only a rendering/scroll host; it does not select navigation semantics.
         if (adapter != null && adapter.isClassicVerticalMode()) {
+            int logicalPosition = classicPendingGridPosition >= 0
+                    ? classicPendingGridPosition : position;
             ClassicGridNavigationPolicy.Target classicTarget = ClassicGridNavigationPolicy.fromGrid(
-                    position, keyCode, COLUMNS, count,
+                    logicalPosition, keyCode, COLUMNS, count,
                     dockAdapter == null ? 0 : dockAdapter.getItemCount());
-            if (classicTarget.dock) focusDockTile(classicTarget.position);
-            else if (classicTarget.position != position) focusTile(classicTarget.position);
+            if (classicTarget.dock) {
+                classicPendingGridPosition = RecyclerView.NO_POSITION;
+                focusDockTile(classicTarget.position);
+            } else if (classicTarget.position != logicalPosition) {
+                classicPendingGridPosition = classicTarget.position;
+                focusTile(classicTarget.position);
+            }
             return true;
         }
         // During a measured row transition, the pending destination is the logical cursor.
