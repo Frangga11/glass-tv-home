@@ -416,6 +416,20 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     @Override
+    public void onViewRecycled(@NonNull Holder holder) {
+        // A holder may leave the active window while its card was focused. Stop its
+        // infinite Rim animator before it can be rebound to a different app.
+        holder.setBreathingRimFocused(false);
+        holder.card.animate().cancel();
+        holder.name.animate().cancel();
+        holder.card.setScaleX(1f);
+        holder.card.setScaleY(1f);
+        holder.name.setAlpha(0f);
+        holder.name.setTranslationY(0f);
+        super.onViewRecycled(holder);
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull Holder h, int position) {
         Entry e = gridSnapshot().gridItems.get(position);
         tileBinder.bind(h, e, true, iconAnimationsEnabled);
