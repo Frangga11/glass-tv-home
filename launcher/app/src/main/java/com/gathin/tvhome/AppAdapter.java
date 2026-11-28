@@ -861,6 +861,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         final ImageView icon;
         final TextView label;
         final TextView name;
+        final DockBreathingBorderView breathingRim;
         final boolean reducedMotion;
         private final boolean dockTile;
         private boolean iconAnimationsEnabled;
@@ -873,6 +874,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             icon = v.findViewById(R.id.icon);
             label = v.findViewById(R.id.label);
             name = v.findViewById(R.id.name);
+            breathingRim = v.findViewById(R.id.dockBreathingBorder);
             this.reducedMotion = reducedMotion;
             this.iconAnimationsEnabled = iconAnimationsEnabled;
             this.dockTile = dockTile;
@@ -896,6 +898,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             });
 
             card.setOnFocusChangeListener((view, focused) -> {
+                setBreathingRimFocused(focused);
                 float s = focused && iconAnimationsEnabled ? focusScale() : 1.0f;
                 view.animate().cancel();
                 name.animate().cancel();
@@ -931,6 +934,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
         float focusScale() {
             return AppAdapter.focusScale(dockTile);
+        }
+
+        void setBreathingRimFocused(boolean focused) {
+            if (breathingRim == null) return;
+            breathingRim.setVisibility(focused ? View.VISIBLE : View.GONE);
         }
 
         void setIconAnimationsEnabled(boolean enabled) {
