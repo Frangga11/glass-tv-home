@@ -35,6 +35,13 @@ class HomeSharedCyanBreathingFocusRowsTest(unittest.TestCase):
         self.assertIn("canvas.drawRoundRect(glowBounds", source)
         self.assertIn("canvas.drawLine(", source)
 
+    def test_rim_bloom_is_not_clipped_by_the_card_outline(self):
+        adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
+        self.assertIn("card.setClipToOutline(false);", adapter)
+        self.assertIn("banner.setOutlineProvider(card.getOutlineProvider());", adapter)
+        self.assertIn("banner.setClipToOutline(true);", adapter)
+        self.assertIn("card.getLayoutParams().width", adapter)
+
     def test_grid_does_not_draw_a_second_static_focus_outline(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider))", main)
