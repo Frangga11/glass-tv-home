@@ -42,7 +42,10 @@ class HomeSharedCyanBreathingFocusRowsTest(unittest.TestCase):
 
     def test_focus_animation_does_not_change_tile_geometry(self):
         adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
-        self.assertIn("static final float FOCUS_SCALE = 1.0f", adapter)
+        # Preserve the existing Classic/Home Universal focus zoom values.
+        self.assertIn("static final float DOCK_FOCUS_SCALE = 1.12f", adapter)
+        self.assertIn("static final float GRID_FOCUS_SCALE = 1.10f", adapter)
+        self.assertIn("static final float LAYOUT_FOCUS_RESERVATION_SCALE = 1.07f", adapter)
         listener = adapter.split("card.setOnFocusChangeListener", 1)[1].split(
             "void setIconAnimationsEnabled", 1
         )[0]
