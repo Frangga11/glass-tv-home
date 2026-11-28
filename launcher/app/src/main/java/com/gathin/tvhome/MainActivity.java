@@ -5742,7 +5742,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             int value = (Integer) animation.getAnimatedValue();
             int step = value - lastValue[0];
             lastValue[0] = value;
-            if (step != 0) grid.scrollBy(0, step);
+            if (step != 0) {
+                grid.scrollBy(0, step);
+                // The currently focused Grid card is moving with RecyclerView content.
+                // Hard-sync the single Glider to that visual card for this coordinated
+                // scroll frame; after settle, the newly focused card takes over via its
+                // existing spring transition in handleTileFocused().
+                syncFocusedAppGliderImmediately();
+            }
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
