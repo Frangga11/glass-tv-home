@@ -887,7 +887,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius(view.getWidth(), density));
                 }
             });
-            card.setClipToOutline(true);
+            // Keep the banner rounded, but let the shared Rim draw its atmospheric bloom
+            // outside the card bounds. The item root already permits child overflow.
+            card.setClipToOutline(false);
+            banner.setOutlineProvider(card.getOutlineProvider());
+            banner.setClipToOutline(true);
 
             card.setOnKeyListener((view, keyCode, event) -> {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
@@ -940,8 +944,14 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             if (breathingBorder == null) return;
             if (focused) {
                 float density = card.getResources().getDisplayMetrics().density;
-                float radius = cornerRadius(card.getWidth(), density);
-                breathingBorder.setCornerRadiusDp(radius / density);
+                int width = card.getWidth();
+                if (width <= 0 && card.getLayoutParams() != null) {
+                    width = card.getLayoutParams().width;
+                }
+                if (width > 0) {
+                    float radius = cornerRadius(width, density);
+                    breathingBorder.setCornerRadiusDp(radius / density);
+                }
                 breathingBorder.setVisibility(View.VISIBLE);
             } else {
                 breathingBorder.setVisibility(View.GONE);
