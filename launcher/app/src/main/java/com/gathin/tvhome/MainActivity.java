@@ -6140,6 +6140,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         int resolvedTarget = classicHomeScrollTarget(position, card);
+        if (classicGliderBlendActive) classicGliderBlendTargetY = resolvedTarget;
         if (!ClassicAppMovePolicy.isScrollSettled(classicHomeScroll.getScrollY(), resolvedTarget)) {
             if (attemptsRemaining > 0) {
                 if (resolvedTarget != targetScrollY) classicHomeScroll.smoothScrollTo(0, resolvedTarget);
