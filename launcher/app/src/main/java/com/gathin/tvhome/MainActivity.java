@@ -2430,13 +2430,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         classicGliderBlendActive = false;
         classicGliderBlendSource = null;
         classicGliderBlendTarget = null;
-        if (target != null && target.isShown()) {
+        if (target != null && target.isFocused() && target.isShown()) {
             float[] bounds = classicGliderTarget(target,
                     dockRecycler != null && isDescendantOf(target, dockRecycler));
             if (bounds != null && glider != null) {
                 glider.moveToVisualImmediately(bounds[0], bounds[1], bounds[2], bounds[3], bounds[4]);
             }
+        } else {
+            syncFocusedAppGlider();
         }
+    }
+
+    private void cancelClassicGliderBlend() {
+        if (!classicGliderBlendActive) return;
+        classicGliderBlendActive = false;
+        classicGliderBlendSource = null;
+        classicGliderBlendTarget = null;
+        syncFocusedAppGlider();
     }
 
     private void settleClassicDockGliderAfterScroll(int requestGeneration, int attemptsRemaining) {
@@ -6104,6 +6114,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     position, requestGeneration, attemptsRemaining - 1));
         } else {
             classicDockGridHandoffPending = false;
+            classicPendingGridPosition = RecyclerView.NO_POSITION;
+            cancelClassicGliderBlend();
             android.util.Log.w("TvHome.Classic", "Unable to resolve Classic Grid focus at " + position);
         }
     }
@@ -6174,6 +6186,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             onTileFocused(position, card);
         } else if (!card.requestFocus() || !card.isFocused()) {
             android.util.Log.w("TvHome.Classic", "Grid focus request rejected at " + position);
+            cancelClassicGliderBlend();
+            return;
         }
         finishClassicGliderBlend();
     }
