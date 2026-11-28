@@ -60,6 +60,18 @@ class HomeSharedCyanBreathingFocusRowsTest(unittest.TestCase):
             self.assertIn("holder.card.setScaleY(1f);", source)
             self.assertIn("super.onViewRecycled(holder);", source)
 
+    def test_glider_tracks_the_focused_card_during_coordinated_grid_scroll(self):
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        transition = main.split("private void animateHorizontalGridRowScroll", 1)[1].split(
+            "private void settleHorizontalGridRowTransition", 1
+        )[0]
+        self.assertIn("grid.scrollBy(0, step);", transition)
+        self.assertIn("syncFocusedAppGliderImmediately();", transition)
+        self.assertLess(
+            transition.index("grid.scrollBy(0, step);"),
+            transition.index("syncFocusedAppGliderImmediately();"),
+        )
+
     def test_grid_does_not_draw_a_second_static_focus_outline(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider))", main)
