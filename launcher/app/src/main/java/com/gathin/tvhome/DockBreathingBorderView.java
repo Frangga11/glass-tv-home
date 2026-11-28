@@ -97,7 +97,15 @@ public class DockBreathingBorderView extends View {
                 bounds.right - 2 * density, bounds.top + 16 * density);
     }
 
+    private boolean isFocusedCardAttached() {
+        android.view.ViewParent parent = getParent();
+        return isAttachedToWindow() && parent instanceof View && ((View) parent).isFocused();
+    }
+
     public void startAnimation() {
+        // RecyclerView can detach a cached holder without recycling it. Never restart an
+        // infinite animator merely because a still-visible Rim view was reattached.
+        if (getVisibility() != VISIBLE || !isFocusedCardAttached()) return;
         if (breathAnimator != null && breathAnimator.isRunning()) return;
 
         // Smooth 1600ms inhale-exhale cycle
@@ -126,7 +134,8 @@ public class DockBreathingBorderView extends View {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (getVisibility() == VISIBLE) {
-            startAnimation();
+            if (isFocusedCardAttached()) startAnimation();
+            else setVisibility(GONE);
         }
     }
 
