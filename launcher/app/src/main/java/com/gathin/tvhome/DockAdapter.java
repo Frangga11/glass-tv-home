@@ -110,6 +110,20 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     @Override
+    public void onViewRecycled(@NonNull AppAdapter.Holder holder) {
+        // Dock and Grid share Holder; recycling must never leave an animated Rim
+        // or a scaled card attached to the next app identity.
+        holder.setBreathingRimFocused(false);
+        holder.card.animate().cancel();
+        holder.name.animate().cancel();
+        holder.card.setScaleX(1f);
+        holder.card.setScaleY(1f);
+        holder.name.setAlpha(0f);
+        holder.name.setTranslationY(0f);
+        super.onViewRecycled(holder);
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull AppAdapter.Holder holder, int position) {
         AppAdapter.Entry entry = entries.get(position);
         ViewParent parent = holder.itemView.getParent();

@@ -11,8 +11,10 @@ GLIDER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Glider.java").rea
 class HomeFocusIntegrationRegressionTest(unittest.TestCase):
     def test_grid_and_dock_share_one_glider_focus_cursor(self):
         self.assertIn("card.setOnFocusChangeListener", ADAPTER)
-        self.assertNotIn("DockBreathingBorderView", ADAPTER)
-        self.assertNotIn("breathingBorder", ADAPTER)
+        # Glider is the moving focus glass; the historical breathing Rim is a
+        # separate card-edge treatment and must coexist without replacing it.
+        self.assertIn("DockBreathingBorderView", ADAPTER)
+        self.assertIn("setBreathingRimFocused(focused)", ADAPTER)
         self.assertIn("private final GlassRim rim;", GLIDER)
         self.assertIn("rim = new GlassRim(", GLIDER)
         self.assertIn("dockRecycler, tray.area", MAIN)

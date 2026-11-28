@@ -9,42 +9,89 @@ RES = ROOT / "launcher/app/src/main/res"
 
 
 class HomeSharedCyanBreathingFocusRowsTest(unittest.TestCase):
-    def test_glider_is_the_only_dock_and_grid_focus_cursor(self):
+    def test_both_rows_use_the_same_breathing_border_view_from_shared_item_layout(self):
         layout = ET.parse(RES / "layout/item_app.xml").getroot()
         ns = "{http://schemas.android.com/apk/res/android}"
-        self.assertFalse(any(node.attrib.get(ns + "id") == "@+id/dockBreathingBorder"
-                             for node in layout.iter()))
+        border = next(node for node in layout.iter()
+                      if node.attrib.get(ns + "id") == "@+id/dockBreathingBorder")
+        self.assertEqual(border.tag, "com.gathin.tvhome.DockBreathingBorderView")
+        self.assertEqual(border.attrib[ns + "visibility"], "gone")
         adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
-        self.assertNotIn("DockBreathingBorderView", adapter)
-        self.assertNotIn("breathingBorder", adapter)
+        self.assertIn("setBreathingRimFocused(focused);", adapter)
+        self.assertIn("breathingBorder.setVisibility(View.VISIBLE);", adapter)
+        self.assertIn("breathingBorder.setCornerRadiusDp(radius / density);", adapter)
+        self.assertIn("breathingBorder.setVisibility(View.GONE);", adapter)
+        self.assertIn("void setBreathingRimFocused(boolean focused)", adapter)
+        self.assertNotIn("focused && dockTile", adapter)
+
+    def test_canonical_cyan_breathing_animation_is_preserved(self):
+        source = (JAVA / "DockBreathingBorderView.java").read_text(encoding="utf-8")
+        self.assertIn("ValueAnimator.ofFloat(0f, 1f)", source)
+        self.assertIn("breathAnimator.setDuration(1600)", source)
+        self.assertIn("breathAnimator.setRepeatMode(ValueAnimator.REVERSE)", source)
+        self.assertIn("breathAnimator.setRepeatCount(ValueAnimator.INFINITE)", source)
+        self.assertIn("TvUiTokens.ACCENT_CYAN", source)
+        self.assertIn("new int[]{topColor, bottomColor}", source)
+        self.assertIn("canvas.drawRoundRect(glowBounds", source)
+        self.assertIn("canvas.drawLine(", source)
+
+    def test_rim_animator_only_runs_for_an_attached_focused_card(self):
+        source = (JAVA / "DockBreathingBorderView.java").read_text(encoding="utf-8")
+        self.assertIn("private boolean isFocusedCardAttached()", source)
+        self.assertIn("isAttachedToWindow() && parent instanceof View && ((View) parent).isFocused()", source)
+        self.assertIn("if (getVisibility() != VISIBLE || !isFocusedCardAttached()) return;", source)
+        self.assertIn("else setVisibility(GONE);", source)
+
+    def test_rim_bloom_is_not_clipped_by_the_card_outline(self):
+        adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
+        self.assertIn("card.setClipToOutline(false);", adapter)
+        self.assertIn("banner.setOutlineProvider(card.getOutlineProvider());", adapter)
+        self.assertIn("banner.setClipToOutline(true);", adapter)
+        self.assertIn("card.getLayoutParams().width", adapter)
+
+    def test_grid_and_dock_recycling_reset_rim_and_card_animation(self):
+        app_adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
+        dock_adapter = (JAVA / "DockAdapter.java").read_text(encoding="utf-8")
+        for source in (app_adapter, dock_adapter):
+            self.assertIn("void onViewRecycled(", source)
+            self.assertIn("holder.setBreathingRimFocused(false);", source)
+            self.assertIn("holder.card.animate().cancel();", source)
+            self.assertIn("holder.card.setScaleX(1f);", source)
+            self.assertIn("holder.card.setScaleY(1f);", source)
+            self.assertIn("super.onViewRecycled(holder);", source)
+
+    def test_glider_tracks_the_focused_card_during_coordinated_grid_scroll(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
-        self.assertIn("Glider is the sole app/Dock focus cursor", main)
-        self.assertIn("dockRecycler, tray.area", main)
-        self.assertIn("syncFocusedAppGlider();", main)
+        transition = main.split("private void animateHorizontalGridRowScroll", 1)[1].split(
+            "private void settleHorizontalGridRowTransition", 1
+        )[0]
+        self.assertIn("grid.scrollBy(0, step);", transition)
+        self.assertIn("syncFocusedAppGliderImmediately();", transition)
+        self.assertLess(
+            transition.index("grid.scrollBy(0, step);"),
+            transition.index("syncFocusedAppGliderImmediately();"),
+        )
 
     def test_grid_does_not_draw_a_second_static_focus_outline(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider))", main)
         self.assertNotIn("glider.addCompanion(grid)", main)
 
-    def test_focus_scale_changes_visual_transform_without_changing_layout_geometry(self):
+    def test_focus_animation_does_not_change_tile_geometry(self):
         adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
+        # Preserve the existing Classic/Home Universal focus zoom values.
         self.assertIn("static final float DOCK_FOCUS_SCALE = 1.12f", adapter)
         self.assertIn("static final float GRID_FOCUS_SCALE = 1.10f", adapter)
         self.assertIn("static final float LAYOUT_FOCUS_RESERVATION_SCALE = 1.07f", adapter)
-        self.assertIn("/ LAYOUT_FOCUS_RESERVATION_SCALE", adapter)
         listener = adapter.split("card.setOnFocusChangeListener", 1)[1].split(
             "void setIconAnimationsEnabled", 1
         )[0]
         self.assertIn("view.animate().scaleX(s).scaleY(s)", listener)
-        self.assertIn(".setDuration(focused ? 320 : 200)", listener)
-        self.assertIn("new OvershootInterpolator(1.8f)", adapter)
-        self.assertNotIn("setElevation(", adapter)
-        self.assertNotIn("translationZ(", adapter)
-        glider = (JAVA / "Glider.java").read_text(encoding="utf-8")
-        self.assertIn("void moveToScreen(", glider)
-        self.assertIn("void drawShape(", glider)
-        self.assertNotIn("DockBreathingBorderView", glider)
+        border = (JAVA / "DockBreathingBorderView.java").read_text(encoding="utf-8")
+        self.assertNotIn("setScaleX", border)
+        self.assertNotIn("setScaleY", border)
+        self.assertNotIn("setTranslationX", border)
+        self.assertNotIn("setTranslationY", border)
 
 
 if __name__ == "__main__":

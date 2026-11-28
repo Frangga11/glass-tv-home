@@ -2376,6 +2376,94 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
+    /** Build the Glider target from the card's current root-space rectangle. */
+    private float[] classicGliderTarget(View card, boolean inDock) {
+        if (card == null || root == null || card.getWidth() <= 0 || card.getHeight() <= 0) return null;
+        Rect bounds = new Rect(0, 0, card.getWidth(), card.getHeight());
+        root.offsetDescendantRectToMyCoords(card, bounds);
+        offsetByAncestorTranslation(card, bounds);
+        float pad = 6f * density;
+        float scale = isIconAnimationsEnabled() ? AppAdapter.focusScale(inDock) : 1f;
+        float width = card.getWidth() * scale + 2f * pad;
+        float height = card.getHeight() * scale + 2f * pad;
+        float left = bounds.exactCenterX() - width / 2f;
+        float top = bounds.exactCenterY() - height / 2f;
+        float radius = AppAdapter.cornerRadius(card.getWidth(), density) * scale;
+        return new float[] { left + pad, top + pad, left + width - pad, top + height - pad, radius };
+    }
+
+    /** Start a Classic-only blend. Both endpoints are remeasured on every ScrollView frame. */
+    private void beginClassicGliderBlend(View source, View target, int targetScrollY) {
+        if (!glassShown || glider == null || root == null || source == null || target == null
+                || classicHomeScroll == null) return;
+        if (source == target) return;
+        classicGliderBlendSource = source;
+        classicGliderBlendTarget = target;
+        classicGliderBlendStartY = classicHomeScroll.getScrollY();
+        classicGliderBlendTargetY = targetScrollY;
+        classicGliderBlendActive = true;
+        syncClassicGliderBlend();
+    }
+
+    private void syncClassicGliderBlend() {
+        if (!classicGliderBlendActive || glider == null || classicHomeScroll == null) return;
+        View source = classicGliderBlendSource;
+        View target = classicGliderBlendTarget;
+        if (source == null || target == null || source.getWidth() <= 0 || target.getWidth() <= 0) return;
+        float[] from = classicGliderTarget(source, dockRecycler != null && isDescendantOf(source, dockRecycler));
+        float[] to = classicGliderTarget(target, dockRecycler != null && isDescendantOf(target, dockRecycler));
+        if (from == null || to == null) return;
+        float progress = ClassicGliderBlend.progress(classicHomeScroll.getScrollY(),
+                classicGliderBlendStartY, classicGliderBlendTargetY);
+        glider.setStyle(isGlassEffectsEnabled() ? Glider.GLASS : Glider.DARK);
+        glider.moveToVisualImmediately(
+                ClassicGliderBlend.interpolate(from[0], to[0], progress),
+                ClassicGliderBlend.interpolate(from[1], to[1], progress),
+                ClassicGliderBlend.interpolate(from[2], to[2], progress),
+                ClassicGliderBlend.interpolate(from[3], to[3], progress),
+                ClassicGliderBlend.interpolate(from[4], to[4], progress));
+    }
+
+    private void finishClassicGliderBlend() {
+        if (!classicGliderBlendActive) return;
+        View target = classicGliderBlendTarget;
+        classicGliderBlendActive = false;
+        classicGliderBlendSource = null;
+        classicGliderBlendTarget = null;
+        if (target != null && target.isFocused() && target.isShown()) {
+            float[] bounds = classicGliderTarget(target,
+                    dockRecycler != null && isDescendantOf(target, dockRecycler));
+            if (bounds != null && glider != null) {
+                glider.moveToVisualImmediately(bounds[0], bounds[1], bounds[2], bounds[3], bounds[4]);
+            }
+        } else {
+            syncFocusedAppGlider();
+        }
+    }
+
+    private void cancelClassicGliderBlend() {
+        if (!classicGliderBlendActive) return;
+        classicGliderBlendActive = false;
+        classicGliderBlendSource = null;
+        classicGliderBlendTarget = null;
+        syncFocusedAppGlider();
+    }
+
+    private void settleClassicDockGliderAfterScroll(int requestGeneration, int attemptsRemaining) {
+        if (!classicHomeHostActive || !classicGliderBlendActive || classicHomeScroll == null) return;
+        if (Math.abs(classicHomeScroll.getScrollY()) <= 1) {
+            finishClassicGliderBlend();
+            return;
+        }
+        if (attemptsRemaining > 0) {
+            classicHomeScroll.postOnAnimation(
+                    () -> settleClassicDockGliderAfterScroll(requestGeneration, attemptsRemaining - 1));
+        } else {
+            classicHomeScroll.scrollTo(0, 0);
+            finishClassicGliderBlend();
+        }
+    }
+
     /** Synchronize normal Grid focus with a spring; Dock cards remain pixel-locked. */
     private void syncFocusedAppGlider() {
         if (!glassShown || glider == null || root == null || classicMoveReflowPending) return;
@@ -2406,12 +2494,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     public void onTileFocused(int position, View card) {
         if (adapter == null || card == null || position < 0 || position >= adapter.getItemCount()) return;
+        if (classicPendingGridPosition == position) classicPendingGridPosition = RecyclerView.NO_POSITION;
         handleTileFocused(adapter.keyAt(position), position, card, false);
     }
 
     @Override
     public void onDockTileFocused(String key, View card) {
         if (dockAdapter == null || card == null) return;
+        classicPendingGridPosition = RecyclerView.NO_POSITION;
         classicDockGridHandoffPending = false;
         int position = dockAdapter.positionOf(key);
         if (position < 0) return;
@@ -2525,7 +2615,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         float y = r.exactCenterY() - h / 2f;
 
         float cardRadius = AppAdapter.cornerRadius(card.getWidth(), density) * focusScale;
-        if (deferHorizontalCarouselGliderMove && inDock) {
+        if (classicGliderBlendActive) {
+            // Classic vertical ScrollView owns the shape until its interpolated handoff completes.
+            glider.setStyle(isGlassEffectsEnabled() ? Glider.GLASS : Glider.DARK);
+        } else if (deferHorizontalCarouselGliderMove && inDock) {
             // The previous focused card occupies the same final second-slot anchor. Leave the
             // shape alive there while RecyclerView carries the newly focused card underneath it.
         } else if (gliderOnPill) {
@@ -3102,6 +3195,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean classicGridChromeHidden;
     /** Debounces repeated DPAD_DOWN events while the Dock-to-Grid focus handoff is settling. */
     private boolean classicDockGridHandoffPending;
+    /** One-frame-synchronized focus interpolation owned only by the Classic vertical ScrollView. */
+    private boolean classicGliderBlendActive;
+    private View classicGliderBlendSource;
+    private View classicGliderBlendTarget;
+    private int classicGliderBlendStartY;
+    private int classicGliderBlendTargetY;
+    /** Logical Grid destination while repeated DPAD events arrive before Android focus settles. */
+    private int classicPendingGridPosition = RecyclerView.NO_POSITION;
     /** True while visible cards are being reflowed for one Classic Move Mode step. */
     private boolean classicMoveReflowPending;
     private int classicGridHeaderOriginalVisibility = View.VISIBLE;
@@ -3179,6 +3280,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 updateTopFade();
                 updateHomeShelfAnchor();
                 if (!glassShown || glider == null) return;
+                if (classicGliderBlendActive) {
+                    syncClassicGliderBlend();
+                    return;
+                }
                 View focused = getCurrentFocus();
                 if (focused != null && isDescendantOf(focused, dockRecycler)) syncFocusedDockGlider();
                 else syncFocusedAppGlider();
@@ -3881,6 +3986,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void setClassicGridChromeHidden(boolean hidden) {
         View header = findViewById(R.id.homeHeaderRow);
         if (header == null || classicGridChromeHidden == hidden) return;
+        View anchor = classicHomeHostActive ? focusedCardFromCurrentFocus() : null;
+        Rect before = null;
+        if (anchor != null && root != null) {
+            before = new Rect(0, 0, anchor.getWidth(), anchor.getHeight());
+            root.offsetDescendantRectToMyCoords(anchor, before);
+            offsetByAncestorTranslation(anchor, before);
+        }
         if (hidden) {
             classicGridHeaderOriginalVisibility = header.getVisibility();
             header.animate().cancel();
@@ -3890,6 +4002,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             header.setVisibility(classicGridHeaderOriginalVisibility);
         }
         classicGridChromeHidden = hidden;
+        if (before != null && classicHomeScroll != null) {
+            final View stableAnchor = anchor;
+            final int beforeTop = before.top;
+            // Preserve the focused card's root-space Y through the header's one layout pass.
+            runAfterClassicHomeLayout(() -> {
+                if (!classicHomeHostActive || stableAnchor == null || !stableAnchor.isShown()
+                        || root == null || classicHomeScroll == null) return;
+                Rect after = new Rect(0, 0, stableAnchor.getWidth(), stableAnchor.getHeight());
+                root.offsetDescendantRectToMyCoords(stableAnchor, after);
+                offsetByAncestorTranslation(stableAnchor, after);
+                int correction = after.top - beforeTop;
+                if (correction != 0) classicHomeScroll.scrollBy(0, correction);
+            });
+        }
     }
 
     /** Preserve original state while all Home header chrome is hidden during an expanded Grid frame. */
@@ -4764,11 +4890,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // The two orientations deliberately own different DPAD graphs. The shared Classic
         // ScrollView is only a rendering/scroll host; it does not select navigation semantics.
         if (adapter != null && adapter.isClassicVerticalMode()) {
+            int logicalPosition = classicPendingGridPosition >= 0
+                    ? classicPendingGridPosition : position;
             ClassicGridNavigationPolicy.Target classicTarget = ClassicGridNavigationPolicy.fromGrid(
-                    position, keyCode, COLUMNS, count,
+                    logicalPosition, keyCode, COLUMNS, count,
                     dockAdapter == null ? 0 : dockAdapter.getItemCount());
-            if (classicTarget.dock) focusDockTile(classicTarget.position);
-            else if (classicTarget.position != position) focusTile(classicTarget.position);
+            if (classicTarget.dock) {
+                classicPendingGridPosition = RecyclerView.NO_POSITION;
+                focusDockTile(classicTarget.position);
+            } else if (classicTarget.position != logicalPosition) {
+                classicPendingGridPosition = classicTarget.position;
+                focusTile(classicTarget.position);
+            }
             return true;
         }
         // During a measured row transition, the pending destination is the logical cursor.
@@ -4955,7 +5088,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         final int requestGeneration = ++gridFocusRequestGeneration;
         final int targetPosition = NavigationState.resolveHomePosition(-1, position, dockAdapter.getItemCount());
         if (classicHomeHostActive && classicHomeScroll != null) {
-            classicHomeScroll.smoothScrollTo(0, 0);
+            RecyclerView.ViewHolder targetHolder = dockRecycler.findViewHolderForAdapterPosition(targetPosition);
+            View targetCard = targetHolder == null ? null : targetHolder.itemView.findViewById(R.id.card);
+            View sourceCard = focusedCardFromCurrentFocus();
+            if (targetCard != null && targetCard.isShown() && targetCard.isFocusable()
+                    && sourceCard != null && isDescendantOf(sourceCard, grid)) {
+                beginClassicGliderBlend(sourceCard, targetCard, 0);
+                classicHomeScroll.smoothScrollTo(0, 0);
+                targetCard.requestFocus();
+                classicHomeScroll.postOnAnimation(
+                        () -> settleClassicDockGliderAfterScroll(requestGeneration, 48));
+            } else {
+                classicHomeScroll.smoothScrollTo(0, 0);
+            }
             dockRecycler.postOnAnimation(() -> focusDockTileWhenLaidOut(targetPosition, 10, requestGeneration));
             return;
         }
@@ -5742,7 +5887,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             int value = (Integer) animation.getAnimatedValue();
             int step = value - lastValue[0];
             lastValue[0] = value;
-            if (step != 0) grid.scrollBy(0, step);
+            if (step != 0) {
+                grid.scrollBy(0, step);
+                // The currently focused Grid card is moving with RecyclerView content.
+                // Hard-sync the single Glider to that visual card for this coordinated
+                // scroll frame; after settle, the newly focused card takes over via its
+                // existing spring transition in handleTileFocused().
+                syncFocusedAppGliderImmediately();
+            }
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
@@ -5942,9 +6094,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (card != null && card.isShown() && card.isFocusable()) {
             int targetScrollY = classicHomeScrollTarget(position, card);
             if (!ClassicAppMovePolicy.isScrollSettled(classicHomeScroll.getScrollY(), targetScrollY)) {
-                // Scroll first, focus second. The Dock remains the sole focus owner while it
-                // moves out of the way; the Glider therefore cannot be stranded between rows.
+                // Commit the destination immediately, then let the Classic ScrollView and Glider
+                // travel together. The logical focus no longer waits for a polling loop at rest.
+                View sourceCard = focusedCardFromCurrentFocus();
+                beginClassicGliderBlend(sourceCard, card, targetScrollY);
                 classicHomeScroll.smoothScrollTo(0, targetScrollY);
+                card.requestFocus();
                 classicHomeScroll.postOnAnimation(() -> settleClassicGridFocusAfterScroll(
                         position, requestGeneration, targetScrollY, 48));
                 return;
@@ -5959,6 +6114,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     position, requestGeneration, attemptsRemaining - 1));
         } else {
             classicDockGridHandoffPending = false;
+            classicPendingGridPosition = RecyclerView.NO_POSITION;
+            cancelClassicGliderBlend();
             android.util.Log.w("TvHome.Classic", "Unable to resolve Classic Grid focus at " + position);
         }
     }
@@ -6006,6 +6163,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         int resolvedTarget = classicHomeScrollTarget(position, card);
+        if (classicGliderBlendActive) classicGliderBlendTargetY = resolvedTarget;
         if (!ClassicAppMovePolicy.isScrollSettled(classicHomeScroll.getScrollY(), resolvedTarget)) {
             if (attemptsRemaining > 0) {
                 if (resolvedTarget != targetScrollY) classicHomeScroll.smoothScrollTo(0, resolvedTarget);
@@ -6028,7 +6186,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             onTileFocused(position, card);
         } else if (!card.requestFocus() || !card.isFocused()) {
             android.util.Log.w("TvHome.Classic", "Grid focus request rejected at " + position);
+            cancelClassicGliderBlend();
+            return;
         }
+        finishClassicGliderBlend();
     }
 
     private void focusTileWhenLaidOut(int position, int requestGeneration, int attemptsRemaining) {
