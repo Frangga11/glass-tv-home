@@ -35,6 +35,13 @@ class HomeSharedCyanBreathingFocusRowsTest(unittest.TestCase):
         self.assertIn("canvas.drawRoundRect(glowBounds", source)
         self.assertIn("canvas.drawLine(", source)
 
+    def test_rim_animator_only_runs_for_an_attached_focused_card(self):
+        source = (JAVA / "DockBreathingBorderView.java").read_text(encoding="utf-8")
+        self.assertIn("private boolean isFocusedCardAttached()", source)
+        self.assertIn("isAttachedToWindow() && parent instanceof View && ((View) parent).isFocused()", source)
+        self.assertIn("if (getVisibility() != VISIBLE || !isFocusedCardAttached()) return;", source)
+        self.assertIn("else setVisibility(GONE);", source)
+
     def test_rim_bloom_is_not_clipped_by_the_card_outline(self):
         adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
         self.assertIn("card.setClipToOutline(false);", adapter)
