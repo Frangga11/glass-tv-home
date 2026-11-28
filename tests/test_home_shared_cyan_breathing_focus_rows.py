@@ -42,6 +42,17 @@ class HomeSharedCyanBreathingFocusRowsTest(unittest.TestCase):
         self.assertIn("banner.setClipToOutline(true);", adapter)
         self.assertIn("card.getLayoutParams().width", adapter)
 
+    def test_grid_and_dock_recycling_reset_rim_and_card_animation(self):
+        app_adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
+        dock_adapter = (JAVA / "DockAdapter.java").read_text(encoding="utf-8")
+        for source in (app_adapter, dock_adapter):
+            self.assertIn("void onViewRecycled(", source)
+            self.assertIn("holder.setBreathingRimFocused(false);", source)
+            self.assertIn("holder.card.animate().cancel();", source)
+            self.assertIn("holder.card.setScaleX(1f);", source)
+            self.assertIn("holder.card.setScaleY(1f);", source)
+            self.assertIn("super.onViewRecycled(holder);", source)
+
     def test_grid_does_not_draw_a_second_static_focus_outline(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider))", main)
