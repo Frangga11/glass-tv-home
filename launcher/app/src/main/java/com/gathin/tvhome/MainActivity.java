@@ -2440,8 +2440,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void settleClassicDockGliderAfterScroll(int requestGeneration, int attemptsRemaining) {
-        if (!classicHomeHostActive || requestGeneration != gridFocusRequestGeneration
-                || !classicGliderBlendActive || classicHomeScroll == null) return;
+        if (!classicHomeHostActive || !classicGliderBlendActive || classicHomeScroll == null) return;
         if (Math.abs(classicHomeScroll.getScrollY()) <= 1) {
             finishClassicGliderBlend();
             return;
