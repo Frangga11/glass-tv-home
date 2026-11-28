@@ -21,6 +21,7 @@ final class TileBinder {
         holder.name.setText(entry.name);
         holder.name.setVisibility(showName ? android.view.View.VISIBLE : android.view.View.INVISIBLE);
         boolean focused = holder.card.isFocused();
+        holder.setBreathingRimFocused(focused);
         holder.name.setAlpha(focused ? 1f : 0f);
         holder.card.setScaleX(focused && iconAnimationsEnabled ? holder.focusScale() : 1f);
         holder.card.setScaleY(focused && iconAnimationsEnabled ? holder.focusScale() : 1f);
